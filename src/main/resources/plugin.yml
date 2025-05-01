@@ -1,0 +1,12 @@
+name: BukkitDiscordWebhooks
+authors: [Evangelos Dedes @Vagdedes]
+main: ai.idealistic.bdw.Register
+version: 1.0.0
+website: https://builtbybit.com/resources/64165
+description: Bring your Minecraft server to life with Discord Webhooks!
+api-version: 1.13
+load: POSTWORLD
+folia-supported: true
+commands:
+  bdw:
+  bukkitdiscordwebhooks:
