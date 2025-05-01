@@ -4,6 +4,7 @@ import ai.idealistic.bdw.Register;
 import ai.idealistic.bdw.utils.AwarenessNotifications;
 import ai.idealistic.bdw.utils.JavaURL;
 import ai.idealistic.bdw.utils.RequestUtils;
+import ai.idealistic.bdw.utils.WebhookThread;
 import lombok.Getter;
 import org.bukkit.event.Event;
 import org.jetbrains.annotations.NotNull;
@@ -17,7 +18,7 @@ public class DiscordWebhook {
 
     public static final int MAX_WEBHOOK_URLS = 10;
     public static final int MAX_FIELDS = 25;
-    private static final int TIME_OUT_SECONDS = 3;
+    private static final int TIME_OUT_MILLISECONDS = 3_000;
     private static final String CONNECTION_METHOD = "POST";
 
     @Getter
@@ -223,69 +224,68 @@ public class DiscordWebhook {
         }
     }
 
-    public boolean send(Event event) {
-        if (enabled
-                && validate()) {
-            for (String url : webhookURLs) {
-                try {
-                    StringBuilder fields = new StringBuilder();
-                    fields.append("[");
-                    int count = 0;
+    public void send(Event event) {
+        WebhookThread.run(() -> {
+            if (enabled
+                    && validate()) {
+                for (String url : webhookURLs) {
+                    try {
+                        StringBuilder fields = new StringBuilder();
+                        fields.append("[");
+                        int count = 0;
 
-                    for (DiscordField field : this.fields) {
-                        count++;
-                        fields.append("{\"name\":\"")
-                                .append(field.getName())
-                                .append("\",\"value\":\"")
-                                .append(field.getValue())
-                                .append("\",\"inline\":")
-                                .append(field.isInline())
-                                .append("}");
+                        for (DiscordField field : this.fields) {
+                            count++;
+                            fields.append("{\"name\":\"")
+                                    .append(field.getName())
+                                    .append("\",\"value\":\"")
+                                    .append(field.getValue())
+                                    .append("\",\"inline\":")
+                                    .append(field.isInline())
+                                    .append("}");
 
-                        if (count < this.fields.size()) {
-                            fields.append(",");
+                            if (count < this.fields.size()) {
+                                fields.append(",");
+                            }
                         }
-                    }
-                    fields.append("]");
+                        fields.append("]");
 
-                    String[] strings = RequestUtils.get(
-                            "https://www.vagdedes.com/minecraft/cloud/?"
-                                    + "identification=BuiltByBit|%%__USER__%%|%%__NONCE__%%"
-                                    + "&action=add"
-                                    + "&data=advancedDiscordWebhooks"
-                                    + "&version=" + Register.plugin.getDescription().getVersion()
-                                    + "&webhook_url=" + URLEncoder.encode(url, "UTF-8")
-                                    + "&avatar_url=" + URLEncoder.encode(avatarURL, "UTF-8")
-                                    + "&color=" + URLEncoder.encode(color, "UTF-8")
-                                    + "&author=" + URLEncoder.encode(author, "UTF-8")
-                                    + "&author_url=" + URLEncoder.encode(authorURL, "UTF-8")
-                                    + "&author_icon_url=" + URLEncoder.encode(authorIconURL, "UTF-8")
-                                    + "&title=" + URLEncoder.encode(title, "UTF-8")
-                                    + "&title_url=" + URLEncoder.encode(titleURL, "UTF-8")
-                                    + "&description=" + URLEncoder.encode(description, "UTF-8")
-                                    + "&footer=" + URLEncoder.encode(footer, "UTF-8")
-                                    + "&footer_icon_url=" + URLEncoder.encode(footerIconURL, "UTF-8")
-                                    + "&content=" + URLEncoder.encode(content, "UTF-8")
-                                    + "&fields=" + URLEncoder.encode(fields.toString(), "UTF-8"),
-                            CONNECTION_METHOD,
-                            TIME_OUT_SECONDS
-                    );
+                        String[] strings = RequestUtils.get(
+                                "https://www.vagdedes.com/minecraft/cloud/?"
+                                        + "identification=BuiltByBit|%%__USER__%%|%%__NONCE__%%"
+                                        + "&action=add"
+                                        + "&data=advancedDiscordWebhooks"
+                                        + "&version=" + Register.plugin.getDescription().getVersion()
+                                        + "&webhook_url=" + URLEncoder.encode(url, "UTF-8")
+                                        + "&avatar_url=" + URLEncoder.encode(avatarURL, "UTF-8")
+                                        + "&color=" + URLEncoder.encode(color, "UTF-8")
+                                        + "&author=" + URLEncoder.encode(author, "UTF-8")
+                                        + "&author_url=" + URLEncoder.encode(authorURL, "UTF-8")
+                                        + "&author_icon_url=" + URLEncoder.encode(authorIconURL, "UTF-8")
+                                        + "&title=" + URLEncoder.encode(title, "UTF-8")
+                                        + "&title_url=" + URLEncoder.encode(titleURL, "UTF-8")
+                                        + "&description=" + URLEncoder.encode(description, "UTF-8")
+                                        + "&footer=" + URLEncoder.encode(footer, "UTF-8")
+                                        + "&footer_icon_url=" + URLEncoder.encode(footerIconURL, "UTF-8")
+                                        + "&content=" + URLEncoder.encode(content, "UTF-8")
+                                        + "&fields=" + URLEncoder.encode(fields.toString(), "UTF-8"),
+                                CONNECTION_METHOD,
+                                TIME_OUT_MILLISECONDS
+                        );
 
-                    if (strings.length > 0) {
-                        if (strings[0].equals("true")) {
-                            return true;
+                        if (strings.length > 0) {
+                            if (!strings[0].equals("true")) {
+                                AwarenessNotifications.send(strings[0]);
+                            }
                         } else {
-                            AwarenessNotifications.send(strings[0]);
+                            AwarenessNotifications.send("...");
                         }
-                    } else {
-                        AwarenessNotifications.send("...");
+                    } catch (Exception ex) {
+                        AwarenessNotifications.send(ex.getMessage());
                     }
-                } catch (Exception ex) {
-                    AwarenessNotifications.send(ex.getMessage());
                 }
             }
-        }
-        return false;
+        });
     }
 
     public void reload() {
@@ -302,6 +302,7 @@ public class DiscordWebhook {
         this.footer = this.config.getString("webhook.footer");
         this.footerIconURL = this.config.getString("webhook.footer_icon_url");
         this.content = this.config.getString("webhook.content");
+        this.webhookURLs.clear();
 
         for (int i = 1; i <= DiscordWebhook.MAX_WEBHOOK_URLS; i++) {
             String url = this.config.getString("webhook.url." + i);
@@ -311,6 +312,8 @@ public class DiscordWebhook {
                 this.webhookURLs.add(url);
             }
         }
+        this.fields.clear();
+
         for (int i = 1; i <= DiscordWebhook.MAX_FIELDS; i++) {
             String name = this.config.getString("webhook.field." + i + ".name");
             String value = this.config.getString("webhook.field." + i + ".value");
@@ -318,6 +321,7 @@ public class DiscordWebhook {
 
             if (name != null
                     && !name.isEmpty()
+                    && value != null
                     && !value.isEmpty()) {
                 this.fields.add(new DiscordField(name, value, inline));
             }
