@@ -35,6 +35,12 @@ public class ConfigurationBuilder {
         return Register.plugin.getDataFolder() + "/" + fileName + ".yml";
     }
 
+    public void clear() {
+        bool.clear();
+        ints.clear();
+        dbls.clear();
+        str.clear();
+    }
 
     private void create() {
         addOption("options.enabled", false);
@@ -104,11 +110,14 @@ public class ConfigurationBuilder {
     public String getString(String path) {
         String data = str.get(path);
 
-        if (data != null
-                || str.containsKey(path)) {
+        if (data != null) {
             return data;
         }
         String value = getPath().getString(path);
+
+        if (value == null) {
+            value = "";
+        }
         str.put(path, value);
         return value;
     }

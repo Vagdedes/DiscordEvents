@@ -76,8 +76,7 @@ public class EventListeners implements Listener {
                     } else {
                         cache.reload();
                     }
-
-                } catch (Throwable ignored) {
+                } catch (Exception ignored) {
                 }
             }
         }
