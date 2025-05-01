@@ -37,25 +37,27 @@ public class ConfigurationBuilder {
 
 
     private void create() {
-        addOption("avatar_url", "");
-        addOption("color", "");
-        addOption("author", "");
-        addOption("author_url", "");
-        addOption("author_icon_url", "");
-        addOption("title", "");
-        addOption("title_url", "");
-        addOption("description", "");
-        addOption("footer", "");
-        addOption("footer_icon_url", "");
-        addOption("content", "");
+        addOption("options.enabled", false);
+
+        addOption("webhook.avatar_url", "");
+        addOption("webhook.color", "");
+        addOption("webhook.author", "");
+        addOption("webhook.author_url", "");
+        addOption("webhook.author_icon_url", "");
+        addOption("webhook.title", "");
+        addOption("webhook.title_url", "");
+        addOption("webhook.description", "");
+        addOption("webhook.footer", "");
+        addOption("webhook.footer_icon_url", "");
+        addOption("webhook.content", "");
 
         for (int i = 1; i <= DiscordWebhook.MAX_WEBHOOK_URLS; i++) {
-            addOption("webhook_url." + i, "");
+            addOption("webhook.url." + i, "");
         }
         for (int i = 1; i <= DiscordWebhook.MAX_FIELDS; i++) {
-            addOption("fields." + i + ".name", "");
-            addOption("fields." + i + ".value", "");
-            addOption("fields." + i + ".inline", false);
+            addOption("webhook.fields." + i + ".name", "");
+            addOption("webhook.fields." + i + ".value", "");
+            addOption("webhook.fields." + i + ".inline", false);
         }
     }
 

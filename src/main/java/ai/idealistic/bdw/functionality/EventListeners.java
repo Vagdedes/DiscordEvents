@@ -23,9 +23,15 @@ public class EventListeners implements Listener {
         }
         for (Map.Entry<String, Set<Class<? extends Event>>> entry : EventFinder.getAll()) {
             try {
-                String pluginName = entry.getKey().split("\\.", 2)[0].replace(
+                String pluginName = entry.getKey().replace(
+                        ".jar",
+                        ""
+                ).replace(
                         "-",
                         "_"
+                ).replace(
+                        ".",
+                        "_dot_"
                 ).toLowerCase();
 
                 for (Class<? extends Event> clazz : entry.getValue()) {
