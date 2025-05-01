@@ -40,6 +40,8 @@ public class DiscordWebhook {
             invalidation;
     @Getter
     private boolean enabled;
+    private double cooldown;
+    private long expiration;
     private final Map<Integer, String> webhookURLs;
     private final Map<Integer, DiscordField> fields;
     private final ConfigurationBuilder config;
@@ -66,6 +68,7 @@ public class DiscordWebhook {
         this.content = "";
         this.invalidation = null;
         this.enabled = false;
+        this.cooldown = 0.0;
     }
 
     private boolean validate() {
@@ -75,8 +78,9 @@ public class DiscordWebhook {
         }
         if (webhookURLs.isEmpty()) {
             AwarenessNotifications.send(
-                    this.invalidation = "Webhook URLs of event '"
+                    this.invalidation = "Webhook URLs of the event '"
                             + getEventName()
+                            + " (" + pluginName + ")"
                             + "' are empty"
             );
             return false;
@@ -84,8 +88,9 @@ public class DiscordWebhook {
         for (String url : webhookURLs.values()) {
             if (url == null || url.isEmpty()) {
                 AwarenessNotifications.send(
-                        this.invalidation = "Webhook URL of event '"
+                        this.invalidation = "Webhook URL of the event '"
                                 + getEventName()
+                                + " (" + pluginName + ")"
                                 + "' is empty"
                 );
                 return false;
@@ -94,8 +99,9 @@ public class DiscordWebhook {
                 AwarenessNotifications.send(
                         this.invalidation = "Webhook URL '"
                                 + url
-                                + "' of event '"
+                                + "' of the event '"
                                 + getEventName()
+                                + " (" + pluginName + ")"
                                 + "' is invalid"
                 );
                 return false;
@@ -103,8 +109,9 @@ public class DiscordWebhook {
         }
         if (fields.size() > MAX_FIELDS) {
             AwarenessNotifications.send(
-                    this.invalidation = "Fields of event '"
+                    this.invalidation = "Fields of the event '"
                             + getEventName()
+                            + " (" + pluginName + ")"
                             + "' are too many, must be less 25 or less"
             );
             return false;
@@ -118,8 +125,9 @@ public class DiscordWebhook {
                     AwarenessNotifications.send(
                             this.invalidation = "Field '"
                                     + count
-                                    + "' name of event '"
+                                    + "' name of the event '"
                                     + getEventName()
+                                    + " (" + pluginName + ")"
                                     + "' is too long, must be 256 characters or less"
                     );
                     return false;
@@ -128,8 +136,9 @@ public class DiscordWebhook {
                     AwarenessNotifications.send(
                             this.invalidation = "Field '"
                                     + count
-                                    + "' value of event '"
+                                    + "' value of the event '"
                                     + getEventName()
+                                    + " (" + pluginName + ")"
                                     + "' is too long, must be 1024 characters or less"
                     );
                     return false;
@@ -140,8 +149,9 @@ public class DiscordWebhook {
             AwarenessNotifications.send(
                     this.invalidation = "Avatar URL '"
                             + avatarURL
-                            + "' of event '"
+                            + "' of the event '"
                             + getEventName()
+                            + " (" + pluginName + ")"
                             + "' is invalid"
             );
             return false;
@@ -149,8 +159,9 @@ public class DiscordWebhook {
             AwarenessNotifications.send(
                     this.invalidation = "Author URL '"
                             + authorURL
-                            + "' of event '"
+                            + "' of the event '"
                             + getEventName()
+                            + " (" + pluginName + ")"
                             + "' is invalid"
             );
             return false;
@@ -158,8 +169,9 @@ public class DiscordWebhook {
             AwarenessNotifications.send(
                     this.invalidation = "Author icon URL '"
                             + authorIconURL
-                            + "' of event '"
+                            + "' of the event '"
                             + getEventName()
+                            + " (" + pluginName + ")"
                             + "' is invalid"
             );
             return false;
@@ -167,8 +179,9 @@ public class DiscordWebhook {
             AwarenessNotifications.send(
                     this.invalidation = "Title URL '"
                             + titleURL
-                            + "' of event '"
+                            + "' of the event '"
                             + getEventName()
+                            + " (" + pluginName + ")"
                             + "' is invalid"
             );
             return false;
@@ -176,8 +189,9 @@ public class DiscordWebhook {
             AwarenessNotifications.send(
                     this.invalidation = "Footer icon URL '"
                             + footerIconURL
-                            + "' of event '"
+                            + "' of the event '"
                             + getEventName()
+                            + " (" + pluginName + ")"
                             + "' is invalid"
             );
             return false;
@@ -186,55 +200,62 @@ public class DiscordWebhook {
             AwarenessNotifications.send(
                     this.invalidation = "Color '"
                             + color
-                            + "' of event '"
+                            + "' of the event '"
                             + getEventName()
+                            + " (" + pluginName + ")"
                             + "' is invalid, must be 6 characters long"
             );
             return false;
         } else if (content != null
                 && content.length() > 2000) {
             AwarenessNotifications.send(
-                    this.invalidation = "Content of event '"
+                    this.invalidation = "Content of the event '"
                             + getEventName()
+                            + " (" + pluginName + ")"
                             + "' is too long, must be 2000 characters or less"
             );
             return false;
         } else if (description != null
                 && description.length() > 4096) {
             AwarenessNotifications.send(
-                    this.invalidation = "Description of event '"
+                    this.invalidation = "Description of the event '"
                             + getEventName()
+                            + " (" + pluginName + ")"
                             + "' is too long, must be 2048 characters or less"
             );
             return false;
         } else if (footer != null
                 && footer.length() > 2048) {
             AwarenessNotifications.send(
-                    this.invalidation = "Footer name of event '"
+                    this.invalidation = "Footer name of the event '"
                             + getEventName()
+                            + " (" + pluginName + ")"
                             + "' is too long, must be 2048 characters or less"
             );
             return false;
         } else if (title != null
                 && title.length() > 256) {
             AwarenessNotifications.send(
-                    this.invalidation = "Title of event '"
+                    this.invalidation = "Title of the event '"
                             + getEventName()
+                            + " (" + pluginName + ")"
                             + "' is too long, must be 256 characters or less"
             );
             return false;
         } else if (author != null
                 && author.length() > 256) {
             AwarenessNotifications.send(
-                    this.invalidation = "Author name of event '"
+                    this.invalidation = "Author name of the event '"
                             + getEventName()
+                            + " (" + pluginName + ")"
                             + "' is too long, must be 256 characters or less"
             );
             return false;
         } else if (webhookURLs.size() > MAX_WEBHOOK_URLS) {
             AwarenessNotifications.send(
-                    this.invalidation = "Webhook URLs of event '"
+                    this.invalidation = "Webhook URLs of the event '"
                             + getEventName()
+                            + " (" + pluginName + ")"
                             + "' are too many, must be less than 10"
             );
             return false;
@@ -247,6 +268,12 @@ public class DiscordWebhook {
         WebhookThread.run(() -> {
             if (enabled
                     && validate()) {
+                if (cooldown > 0.0) {
+                    if (expiration > System.currentTimeMillis()) {
+                        return;
+                    }
+                    expiration = System.currentTimeMillis() + Math.round(cooldown * 1_000L);
+                }
                 for (String url : webhookURLs.values()) {
                     try {
                         StringBuilder fields = new StringBuilder();
@@ -293,11 +320,17 @@ public class DiscordWebhook {
                         );
 
                         if (strings.length > 0) {
-                            if (!strings[0].equals("true")) {
+                            if (strings[0].equals("true")) {
                                 AwarenessNotifications.send(strings[0]);
                             }
                         } else {
-                            AwarenessNotifications.send("...");
+                            AwarenessNotifications.send(
+                                    "The webserver returned an empty response for the event '"
+                                            + getEventName()
+                                            + "' of the plugin '"
+                                            + pluginName
+                                            + "'"
+                            );
                         }
                     } catch (Exception ex) {
                         AwarenessNotifications.send(ex.getMessage());
@@ -312,6 +345,7 @@ public class DiscordWebhook {
         String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
         this.config.setOption("information.last_reload", date);
         this.enabled = this.config.getBoolean("options.enabled");
+        this.cooldown = Math.max(this.config.getDouble("options.cooldown"), 0.0);
 
         this.avatarURL = this.config.getString("webhook.avatar_url");
         this.color = this.config.getString("webhook.color");
@@ -364,6 +398,15 @@ public class DiscordWebhook {
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
         this.config.setOption("options.enabled", enabled);
+    }
+
+    public boolean setOptionIfExists(String optionName, String optionValue) {
+        if (this.config.setOptionIfExists(optionName, optionValue)) {
+            this.reload();
+            return true;
+        } else {
+            return false;
+        }
     }
 
 }

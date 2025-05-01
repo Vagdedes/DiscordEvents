@@ -50,6 +50,31 @@ public class CommandExecution implements CommandExecutor {
                 } else {
                     def(sender, isPlayer);
                 }
+            } else if (args.length >= 5) {
+                if (args[0].equalsIgnoreCase("set-option")) {
+                    if (isPlayer
+                            && !Permissions.has((Player) sender, Permission.OPTION)) {
+                        sender.sendMessage(NO_PERMISSION);
+                        return true;
+                    }
+                    StringBuilder value = new StringBuilder();
+
+                    for (int i = 4; i < args.length; i++) {
+                        value.append(args[i]).append(" ");
+                    }
+                    value = new StringBuilder(value.toString().trim());
+                    Boolean option = BdwManager.setOption(args[1], args[2], args[3], value.toString());
+
+                    if (option == null) {
+                        sender.sendMessage("§eThe Discord Webhook of this plugin or event could not be found.");
+                    } else if (!option) {
+                        sender.sendMessage("§cThe Discord Webhook '" + args[2] + "' of the plugin '" + args[1] + "' has no such option.");
+                    } else {
+                        sender.sendMessage("§aThe Discord Webhook '" + args[2] + "' of the plugin '" + args[1] + "' has been modified.");
+                    }
+                } else {
+                    def(sender, isPlayer);
+                }
             } else {
                 def(sender, isPlayer);
             }

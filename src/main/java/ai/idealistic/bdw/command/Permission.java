@@ -4,7 +4,7 @@ import ai.idealistic.bdw.Register;
 import lombok.Getter;
 
 public enum Permission {
-    TOGGLE, RELOAD, ADMIN;
+    TOGGLE, RELOAD, OPTION, ADMIN;
 
     @Getter
     private final String key;

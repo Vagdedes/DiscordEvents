@@ -17,6 +17,7 @@ public class CommandTab implements TabCompleter {
     static {
         commands.put("toggle", new Permission[]{Permission.TOGGLE});
         commands.put("reload", new Permission[]{Permission.RELOAD});
+        commands.put("set-option", new Permission[]{Permission.OPTION});
     }
 
     @Override

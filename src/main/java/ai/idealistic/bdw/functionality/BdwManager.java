@@ -42,4 +42,18 @@ public class BdwManager {
         return opposite;
     }
 
+    public static Boolean setOption(
+            String pluginName,
+            String eventName,
+            String optionName,
+            String optionValue
+    ) {
+        DiscordWebhook webhook = EventListeners.getWebhook(pluginName, eventName);
+
+        if (webhook == null) {
+            return null;
+        }
+        return webhook.setOptionIfExists(optionName, optionValue);
+    }
+
 }

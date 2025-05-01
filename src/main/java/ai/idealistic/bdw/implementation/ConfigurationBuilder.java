@@ -38,6 +38,7 @@ public class ConfigurationBuilder {
 
     private void create() {
         addOption("options.enabled", false);
+        addOption("options.cooldown", 0.1);
 
         addOption("webhook.avatar_url", "");
         addOption("webhook.color", "");
@@ -157,6 +158,32 @@ public class ConfigurationBuilder {
             this.str.remove(path);
             this.bool.remove(path);
         } catch (Exception ignored) {
+        }
+    }
+
+    public boolean setOptionIfExists(String path, Object value) {
+        YamlConfiguration filea = YamlConfiguration.loadConfiguration(file);
+
+        if (!file.exists()) {
+            try {
+                file.createNewFile();
+            } catch (Exception ignored) {
+            }
+        }
+        filea.set(path, value);
+
+        if (filea.contains(path)) {
+            try {
+                filea.save(file);
+                this.dbls.remove(path);
+                this.ints.remove(path);
+                this.str.remove(path);
+                this.bool.remove(path);
+            } catch (Exception ignored) {
+            }
+            return true;
+        } else {
+            return false;
         }
     }
 
