@@ -254,7 +254,7 @@ public class DiscordWebhook {
                                 "https://www.vagdedes.com/minecraft/cloud/?"
                                         + "identification=BuiltByBit|%%__USER__%%|%%__NONCE__%%"
                                         + "&action=add"
-                                        + "&data=advancedDiscordWebhooks"
+                                        + "&data=advancedDiscordWebhook"
                                         + "&version=" + Register.plugin.getDescription().getVersion()
                                         + "&webhook_url=" + URLEncoder.encode(url, "UTF-8")
                                         + "&avatar_url=" + URLEncoder.encode(avatarURL, "UTF-8")
