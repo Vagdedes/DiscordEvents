@@ -52,7 +52,19 @@ public class DiscordWebhook {
         this.webhookURLs = new ConcurrentHashMap<>(1);
         this.fields = new ConcurrentHashMap<>(1);
         this.config = new ConfigurationBuilder(this);
-        this.reload();
+        this.avatarURL = "";
+        this.color = "";
+        this.author = "";
+        this.authorURL = "";
+        this.authorIconURL = "";
+        this.title = "";
+        this.titleURL = "";
+        this.description = "";
+        this.footer = "";
+        this.footerIconURL = "";
+        this.content = "";
+        this.invalidation = null;
+        this.enabled = false;
     }
 
     private boolean validate() {

@@ -40,11 +40,13 @@ public class EventListeners implements Listener {
                         continue;
                     }
                     // Skip abstract classes or interfaces
-                    if (Modifier.isAbstract(clazz.getModifiers()) || clazz.isInterface()) {
+                    if (Modifier.isAbstract(clazz.getModifiers())
+                            || clazz.isInterface()) {
                         continue;
                     }
                     // Skip if class is synthetic or anonymous (e.g. lambda-generated)
-                    if (clazz.isSynthetic() || clazz.isAnonymousClass()) {
+                    if (clazz.isSynthetic()
+                            || clazz.isAnonymousClass()) {
                         continue;
                     }
                     // Check for getHandlerList method
@@ -72,6 +74,7 @@ public class EventListeners implements Listener {
                                 (listener, event) -> webhook.send(event),
                                 Register.plugin
                         );
+                        webhook.reload();
                         listeners.put(hashCode, webhook);
                     } else {
                         cache.reload();
