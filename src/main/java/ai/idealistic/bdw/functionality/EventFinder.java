@@ -24,7 +24,12 @@ import java.util.jar.JarFile;
 
 public class EventFinder {
 
-    public static final String bukkitPackage = "org.bukkit.event";
+    public static final String[] nativePackages = new String[]{
+            "org.bukkit.event",
+            "org.spigotmc.event",
+            "io.papermc.paper.event",
+            "com.destroystokyo.paper.event"
+    };
     private static final Map<String, Set<Class<? extends Event>>>
             events = new HashMap<>(1);
 
@@ -32,26 +37,33 @@ public class EventFinder {
         return events.entrySet();
     }
 
-    static void update() {
-        try {
-            Set<Class<? extends Event>> set = events.get(bukkitPackage);
+    private static String toRegexPackage(String input) {
+        if (input == null || input.isEmpty()) return ".*";
+        return input.replace(".", "\\.") + "\\..*";
+    }
 
-            if (set == null
-                    || set.isEmpty()) {
-                forceLoadClasses(bukkitPackage, Bukkit.class.getClassLoader());
-                ClassLoader bukkitCL = Bukkit.class.getClassLoader();
-                Reflections bukkitReflections = new Reflections(new ConfigurationBuilder()
-                        .addClassLoaders(bukkitCL)
-                        .setUrls(ClasspathHelper.forPackage("org.bukkit.event", bukkitCL))
-                        .setScanners(new SubTypesScanner(false))
-                        .filterInputsBy(new FilterBuilder().include("org\\.bukkit\\.event\\..*"))
-                );
-                events.put(
-                        bukkitPackage,
-                        bukkitReflections.getSubTypesOf(Event.class)
-                );
+    static void update() {
+        for (String nativePackage : nativePackages) {
+            try {
+                Set<Class<? extends Event>> set = events.get(nativePackage);
+
+                if (set == null
+                        || set.isEmpty()) {
+                    forceLoadClasses(nativePackage, Bukkit.class.getClassLoader());
+                    ClassLoader bukkitCL = Bukkit.class.getClassLoader();
+                    Reflections bukkitReflections = new Reflections(new ConfigurationBuilder()
+                            .addClassLoaders(bukkitCL)
+                            .setUrls(ClasspathHelper.forPackage(nativePackage, bukkitCL))
+                            .setScanners(new SubTypesScanner(false))
+                            .filterInputsBy(new FilterBuilder().include(toRegexPackage(nativePackage)))
+                    );
+                    events.put(
+                            nativePackage,
+                            bukkitReflections.getSubTypesOf(Event.class)
+                    );
+                }
+            } catch (Exception ignored) {
             }
-        } catch (Exception ignored) {
         }
 
         for (Plugin plugin : Bukkit.getPluginManager().getPlugins()) {

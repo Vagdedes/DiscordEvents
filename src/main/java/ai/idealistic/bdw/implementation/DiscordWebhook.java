@@ -309,7 +309,7 @@ public class DiscordWebhook {
     public void reload() {
         this.config.clear();
         String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
-        this.config.setOption("statistics.last_reload", date);
+        this.config.setOption("information.last_reload", date);
         this.enabled = this.config.getBoolean("options.enabled");
 
         this.avatarURL = this.config.getString("webhook.avatar_url");
