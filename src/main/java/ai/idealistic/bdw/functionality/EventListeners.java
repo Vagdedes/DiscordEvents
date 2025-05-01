@@ -23,7 +23,10 @@ public class EventListeners implements Listener {
         }
         for (Map.Entry<String, Set<Class<? extends Event>>> entry : EventFinder.getAll()) {
             try {
-                String pluginName = entry.getKey().split("\\.", 2)[0];
+                String pluginName = entry.getKey().split("\\.", 2)[0].replace(
+                        "-",
+                        "_"
+                ).toLowerCase();
 
                 for (Class<? extends Event> clazz : entry.getValue()) {
                     Method getHandlerList = clazz.getMethod("getHandlerList");
@@ -40,7 +43,7 @@ public class EventListeners implements Listener {
                         listeners.put(clazz.hashCode(), webhook);
 
                         pm.registerEvent(
-                                (Class<? extends Event>) clazz,
+                                clazz,
                                 new AllEvents(),
                                 EventPriority.HIGHEST,
                                 (l, event) -> webhook.send(event),

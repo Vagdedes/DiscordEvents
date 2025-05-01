@@ -1,26 +1,26 @@
 package ai.idealistic.bdw.functionality;
 
-import ai.idealistic.bdw.utils.GeneralThread;
+import ai.idealistic.bdw.utils.WebhookThread;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class BdwManager {
 
-    private static final GeneralThread.ThreadPool
-            thread = new GeneralThread.ThreadPool(50L);
+    private static final ExecutorService thread = Executors.newSingleThreadExecutor();
 
-    private static final Object lock = new Object();
-    private static boolean isRunning = false;
+    private static final Runnable runnable = () -> {
+        EventFinder.update(); // Always first
+        EventListeners.update();
+    };
 
     public static void update() {
-        synchronized (lock) {
-            if (isRunning) {
-                return;
-            }
-            isRunning = thread.executeIfFree(() -> {
-                EventFinder.update(); // Always first
-                EventListeners.update();
-                isRunning = false;
-            });
-        }
+        thread.submit(runnable);
+    }
+
+    public static void disable() {
+        thread.shutdown();
+        WebhookThread.shutdown();
     }
 
 }

@@ -1,6 +1,7 @@
 package ai.idealistic.bdw.functionality;
 
 import ai.idealistic.bdw.Register;
+import ai.idealistic.bdw.utils.AwarenessNotifications;
 import org.bukkit.event.Event;
 import org.reflections.Reflections;
 import org.reflections.util.ClasspathHelper;
@@ -33,7 +34,8 @@ public class EventFinder {
                         bukkitReflections.getSubTypesOf(Event.class)
                 );
             }
-        } catch (Exception ignored) {
+        } catch (Exception exception) {
+            AwarenessNotifications.send(exception.getMessage());
         }
 
         File pluginsDir = Register.plugin.getDataFolder().getParentFile();
@@ -58,7 +60,8 @@ public class EventFinder {
                                     pluginName,
                                     reflections.getSubTypesOf(Event.class)
                             );
-                        } catch (Exception ignored) {
+                        } catch (Exception exception) {
+                            AwarenessNotifications.send(exception.getMessage());
                         }
                     }
                 }
