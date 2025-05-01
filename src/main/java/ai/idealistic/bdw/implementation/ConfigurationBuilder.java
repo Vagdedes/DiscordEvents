@@ -113,7 +113,7 @@ public class ConfigurationBuilder {
         return value;
     }
 
-    private void addOption(String path, Object value) {
+    public void addOption(String path, Object value) {
         YamlConfiguration filea = YamlConfiguration.loadConfiguration(file);
 
         if (!file.exists()) {
@@ -129,6 +129,23 @@ public class ConfigurationBuilder {
                 filea.save(file);
             } catch (Exception ignored) {
             }
+        }
+    }
+
+    public void setOption(String path, Object value) {
+        YamlConfiguration filea = YamlConfiguration.loadConfiguration(file);
+
+        if (!file.exists()) {
+            try {
+                file.createNewFile();
+            } catch (Exception ignored) {
+            }
+        }
+        filea.set(path, value);
+
+        try {
+            filea.save(file);
+        } catch (Exception ignored) {
         }
     }
 

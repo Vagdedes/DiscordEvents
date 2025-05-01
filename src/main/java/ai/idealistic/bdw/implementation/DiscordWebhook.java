@@ -10,7 +10,9 @@ import org.bukkit.event.Event;
 import org.jetbrains.annotations.NotNull;
 
 import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class DiscordWebhook {
@@ -55,6 +57,11 @@ public class DiscordWebhook {
 
     private boolean validate() {
         if (webhookURLs.isEmpty()) {
+            AwarenessNotifications.send(
+                    this.invalidation = "Webhook URLs of event '"
+                            + getEventName()
+                            + "' are empty"
+            );
             return false;
         }
         if (this.invalidation != null) {
@@ -298,6 +305,8 @@ public class DiscordWebhook {
     }
 
     public void reload() {
+        String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+        this.config.setOption("statistics.last_reload", date);
         this.enabled = this.config.getBoolean("options.enabled");
 
         this.avatarURL = nn(this.config.getString("webhook.avatar_url"));
