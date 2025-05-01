@@ -1,6 +1,7 @@
 package ai.idealistic.bdw.implementation;
 
 import ai.idealistic.bdw.Register;
+import ai.idealistic.bdw.functionality.EventFinder;
 import lombok.Getter;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -21,7 +22,12 @@ public class ConfigurationBuilder {
 
     public ConfigurationBuilder(DiscordWebhook webhook) {
         this.webhook = webhook;
-        this.file = new File(getDirectory("")); // todo
+
+        if (webhook.getPluginName().equals(EventFinder.bukkitPackage)) {
+            this.file = new File(getDirectory("bukkit/" + webhook.getEventName()));
+        } else {
+            this.file = new File(getDirectory(webhook.getPluginName() + "/" + webhook.getEventName()));
+        }
         create();
     }
 

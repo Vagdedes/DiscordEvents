@@ -23,7 +23,7 @@ public class EventListeners implements Listener {
         }
         for (Map.Entry<String, Set<Class<? extends Event>>> entry : EventFinder.getAll()) {
             try {
-                String pluginName = entry.getKey();
+                String pluginName = entry.getKey().split("\\.", 2)[0];
 
                 for (Class<? extends Event> clazz : entry.getValue()) {
                     Method getHandlerList = clazz.getMethod("getHandlerList");

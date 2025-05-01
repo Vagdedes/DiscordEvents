@@ -266,4 +266,8 @@ public class DiscordWebhook {
         }
     }
 
+    public String getEventName() {
+        return event.getSimpleName();
+    }
+
 }

@@ -16,7 +16,7 @@ import java.util.Set;
 
 public class EventFinder {
 
-    private static final String bukkitPackage = "org.bukkit.event";
+    public static final String bukkitPackage = "org.bukkit.event";
     private static final Map<String, Set<Class<? extends Event>>>
             events = new HashMap<>(1);
 
