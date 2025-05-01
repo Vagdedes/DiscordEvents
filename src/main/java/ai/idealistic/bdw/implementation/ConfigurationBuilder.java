@@ -46,7 +46,11 @@ public class ConfigurationBuilder {
         for (int i = 1; i <= DiscordWebhook.MAX_WEBHOOK_URLS; i++) {
             addOption("webhook_url." + i, "");
         }
-        // todo fields
+        for (int i = 1; i <= DiscordWebhook.MAX_FIELDS; i++) {
+            addOption("fields." + i + ".name", "");
+            addOption("fields." + i + ".value", "");
+            addOption("fields." + i + ".inline", false);
+        }
     }
 
     private YamlConfiguration getPath() {

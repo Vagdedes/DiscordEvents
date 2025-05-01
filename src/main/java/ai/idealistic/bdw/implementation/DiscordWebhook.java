@@ -6,10 +6,9 @@ import lombok.Getter;
 import org.bukkit.event.Event;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 
 public class DiscordWebhook {
 
@@ -39,7 +38,7 @@ public class DiscordWebhook {
     @Getter
     private final Collection<String> webhookURLs;
     @Getter
-    private final Map<String, String> fields;
+    private final Collection<DiscordField> fields;
     private final ConfigurationBuilder config;
 
     public DiscordWebhook(
@@ -49,7 +48,7 @@ public class DiscordWebhook {
         this.pluginName = pluginName;
         this.event = event;
         this.webhookURLs = new HashSet<>(1);
-        this.fields = new HashMap<>(1);
+        this.fields = new ArrayList<>(1);
         this.config = new ConfigurationBuilder(this);
         this.invalidation = null;
         this.reload();
@@ -91,12 +90,30 @@ public class DiscordWebhook {
             );
             return false;
         } else {
-            for (Map.Entry<String, String> entry : fields.entrySet()) {
-                if (entry.getKey() != null
-                        && !entry.getKey().isEmpty()
-                        && entry.getValue() != null
-                        && !entry.getValue().isEmpty()) {
-                    // todo
+            int count = 0;
+
+            for (DiscordField field : fields) {
+                count++;
+
+                if (field.getName().length() > 256) {
+                    AwarenessNotifications.send(
+                            this.invalidation = "Field '"
+                                    + count
+                                    + "' name of event '"
+                                    + event.getName()
+                                    + "' is too long, must be 256 characters or less"
+                    );
+                    return false;
+                }
+                if (field.getValue().length() > 1024) {
+                    AwarenessNotifications.send(
+                            this.invalidation = "Field '"
+                                    + count
+                                    + "' value of event '"
+                                    + event.getName()
+                                    + "' is too long, must be 1024 characters or less"
+                    );
+                    return false;
                 }
             }
         }
@@ -236,7 +253,17 @@ public class DiscordWebhook {
                 this.webhookURLs.add(url);
             }
         }
-        // todo fields
+        for (int i = 1; i <= DiscordWebhook.MAX_FIELDS; i++) {
+            String name = this.config.getString("field." + i + ".name");
+            String value = this.config.getString("field." + i + ".value");
+            boolean inline = this.config.getBoolean("field." + i + ".inline");
+
+            if (name != null
+                    && !name.isEmpty()
+                    && !value.isEmpty()) {
+                this.fields.add(new DiscordField(name, value, inline));
+            }
+        }
     }
 
 }
