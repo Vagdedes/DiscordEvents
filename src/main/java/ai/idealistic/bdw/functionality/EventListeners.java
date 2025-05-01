@@ -11,6 +11,7 @@ import org.bukkit.plugin.PluginManager;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class EventListeners implements Listener {
 
@@ -20,42 +21,34 @@ public class EventListeners implements Listener {
         if (!Register.isPluginEnabled()) {
             return;
         }
-        for (Class<?> clazz : EventFinder.getAll()) {
+        for (Map.Entry<String, Set<Class<? extends Event>>> entry : EventFinder.getAll()) {
             try {
-                Method getHandlerList = clazz.getMethod("getHandlerList");
-                getHandlerList.setAccessible(true);
-                PluginManager pm = Register.plugin.getServer().getPluginManager();
-                int hashCode = clazz.hashCode();
-                DiscordWebhook cache = listeners.get(hashCode);
+                String pluginName = entry.getKey();
 
-                if (cache == null) {
-                    DiscordWebhook webhook = new DiscordWebhook(
-                            clazz,
-                            "",
-                            "",
-                            "",
-                            "",
-                            "",
-                            "",
-                            "",
-                            "",
-                            "",
-                            "",
-                            "",
-                            new HashMap<>(1),
-                            ""
-                    );
-                    listeners.put(clazz.hashCode(), webhook);
+                for (Class<? extends Event> clazz : entry.getValue()) {
+                    Method getHandlerList = clazz.getMethod("getHandlerList");
+                    getHandlerList.setAccessible(true);
+                    PluginManager pm = Register.plugin.getServer().getPluginManager();
+                    int hashCode = clazz.hashCode();
+                    DiscordWebhook cache = listeners.get(hashCode);
 
-                    pm.registerEvent(
-                            (Class<? extends Event>) clazz,
-                            new AllEvents(),
-                            EventPriority.HIGHEST,
-                            (l, event) -> webhook.send(event),
-                            Register.plugin
-                    );
-                } else {
-                    cache.reload();
+                    if (cache == null) {
+                        DiscordWebhook webhook = new DiscordWebhook(
+                                pluginName,
+                                clazz
+                        );
+                        listeners.put(clazz.hashCode(), webhook);
+
+                        pm.registerEvent(
+                                (Class<? extends Event>) clazz,
+                                new AllEvents(),
+                                EventPriority.HIGHEST,
+                                (l, event) -> webhook.send(event),
+                                Register.plugin
+                        );
+                    } else {
+                        cache.reload();
+                    }
                 }
             } catch (Exception ignored) {
             }

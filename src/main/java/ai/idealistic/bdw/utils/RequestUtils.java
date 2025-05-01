@@ -19,7 +19,7 @@ public class RequestUtils {
 
         URL url = new URL(split[0]);
         HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
-        connection.addRequestProperty("User-Agent", "1"); // todo change ID
+        connection.addRequestProperty("User-Agent", "29");
         connection.setRequestMethod(method);
         connection.setReadTimeout(timeOut);
         connection.setDoOutput(true);

@@ -12,6 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ConfigurationBuilder {
 
     @Getter
+    private final DiscordWebhook webhook;
     private final File file;
     private final Map<String, Boolean>
             bool = new ConcurrentHashMap<>(1);
@@ -20,6 +21,7 @@ public class ConfigurationBuilder {
     private final Map<String, String> str = new ConcurrentHashMap<>(1);
 
     public ConfigurationBuilder(DiscordWebhook webhook) {
+        this.webhook = webhook;
         this.file = new File(getDirectory("")); // todo
         create();
     }
@@ -30,7 +32,19 @@ public class ConfigurationBuilder {
 
 
     private void create() {
-        // todo
+        // todo webhook urls
+        addOption("avatar_url", "");
+        addOption("color", "");
+        addOption("author", "");
+        addOption("author_url", "");
+        addOption("author_icon_url", "");
+        addOption("title", "");
+        addOption("title_url", "");
+        addOption("description", "");
+        addOption("footer", "");
+        addOption("footer_icon_url", "");
+        addOption("content", "");
+        // todo fields
     }
 
     private YamlConfiguration getPath() {

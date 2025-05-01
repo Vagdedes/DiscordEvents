@@ -6,6 +6,9 @@ import lombok.Getter;
 import org.bukkit.event.Event;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 public class DiscordWebhook {
@@ -14,79 +17,73 @@ public class DiscordWebhook {
     private static final String CONNECTION_METHOD = "POST";
 
     @Getter
+    private final String pluginName;
+    @Getter
     private final Class<?> event;
     @Getter
-    private final String
-            webhookURL,
+    private String
             avatarURL,
             color,
-            authorName,
+            author,
             authorURL,
             authorIconURL,
-            titleName,
+            title,
             titleURL,
             description,
-            footerName,
+            footer,
             footerIconURL,
-            content;
+            content,
+            invalidation;
+    @Getter
+    private final Collection<String> webhookURLs;
     @Getter
     private final Map<String, String> fields;
     private final ConfigurationBuilder config;
 
     public DiscordWebhook(
-            @NotNull Class<?> event,
-            @NotNull String webhookURL,
-            @NotNull String avatarURL,
-            @NotNull String color,
-            @NotNull String authorName,
-            @NotNull String authorURL,
-            @NotNull String authorIconURL,
-            @NotNull String titleName,
-            @NotNull String titleURL,
-            @NotNull String description,
-            @NotNull String footerName,
-            @NotNull String footerIconURL,
-            @NotNull Map<String, String> fields,
-            @NotNull String content
+            @NotNull String pluginName,
+            @NotNull Class<?> event
     ) {
+        this.pluginName = pluginName;
         this.event = event;
-        this.webhookURL = webhookURL;
-        this.avatarURL = avatarURL;
-        this.color = color;
-        this.authorName = authorName;
-        this.authorURL = authorURL;
-        this.authorIconURL = authorIconURL;
-        this.titleName = titleName;
-        this.titleURL = titleURL;
-        this.description = description;
-        this.footerName = footerName;
-        this.footerIconURL = footerIconURL;
-        this.fields = fields;
-        this.content = content;
+        this.webhookURLs = new HashSet<>(1);
+        this.fields = new HashMap<>(1);
         this.config = new ConfigurationBuilder(this);
+        this.invalidation = null;
+        this.reload();
     }
 
     public boolean validate() {
-        if (webhookURL == null
-                || webhookURL.isEmpty()) {
-            AwarenessNotifications.send(
-                    "Webhook URL of event '"
-                            + event.getName()
-                            + "' is empty"
-            );
+        if (webhookURLs.isEmpty()) {
             return false;
-        } else if (!JavaURL.isValid(webhookURL, true)) {
-            AwarenessNotifications.send(
-                    "Webhook URL '"
-                            + webhookURL
-                            + "' of event '"
-                            + event.getName()
-                            + "' is invalid"
-            );
+        }
+        if (this.invalidation != null) {
+            AwarenessNotifications.send(this.invalidation);
             return false;
-        } else if (!JavaURL.isValid(avatarURL, true)) {
+        }
+        for (String url : webhookURLs) {
+            if (url == null || url.isEmpty()) {
+                AwarenessNotifications.send(
+                        this.invalidation = "Webhook URL of event '"
+                                + event.getName()
+                                + "' is empty"
+                );
+                return false;
+            }
+            if (!JavaURL.isValid(url, true)) {
+                AwarenessNotifications.send(
+                        this.invalidation = "Webhook URL '"
+                                + url
+                                + "' of event '"
+                                + event.getName()
+                                + "' is invalid"
+                );
+                return false;
+            }
+        }
+        if (!JavaURL.isValid(avatarURL, true)) {
             AwarenessNotifications.send(
-                    "Avatar URL '"
+                    this.invalidation = "Avatar URL '"
                             + avatarURL
                             + "' of event '"
                             + event.getName()
@@ -95,7 +92,7 @@ public class DiscordWebhook {
             return false;
         } else if (!JavaURL.isValid(authorURL, true)) {
             AwarenessNotifications.send(
-                    "Author URL '"
+                    this.invalidation = "Author URL '"
                             + authorURL
                             + "' of event '"
                             + event.getName()
@@ -104,7 +101,7 @@ public class DiscordWebhook {
             return false;
         } else if (!JavaURL.isValid(authorIconURL, true)) {
             AwarenessNotifications.send(
-                    "Author icon URL '"
+                    this.invalidation = "Author icon URL '"
                             + authorIconURL
                             + "' of event '"
                             + event.getName()
@@ -113,7 +110,7 @@ public class DiscordWebhook {
             return false;
         } else if (!JavaURL.isValid(titleURL, true)) {
             AwarenessNotifications.send(
-                    "Title URL '"
+                    this.invalidation = "Title URL '"
                             + titleURL
                             + "' of event '"
                             + event.getName()
@@ -122,7 +119,7 @@ public class DiscordWebhook {
             return false;
         } else if (!JavaURL.isValid(footerIconURL, true)) {
             AwarenessNotifications.send(
-                    "Footer icon URL '"
+                    this.invalidation = "Footer icon URL '"
                             + footerIconURL
                             + "' of event '"
                             + event.getName()
@@ -132,7 +129,7 @@ public class DiscordWebhook {
         } else if (color != null
                 && color.length() != 6) {
             AwarenessNotifications.send(
-                    "Color '"
+                    this.invalidation = "Color '"
                             + color
                             + "' of event '"
                             + event.getName()
@@ -142,7 +139,7 @@ public class DiscordWebhook {
         } else if (content != null
                 && content.length() > 2000) {
             AwarenessNotifications.send(
-                    "Content of event '"
+                    this.invalidation = "Content of event '"
                             + event.getName()
                             + "' is too long, must be 2000 characters or less"
             );
@@ -150,23 +147,22 @@ public class DiscordWebhook {
         } else if (description != null
                 && description.length() > 2048) {
             AwarenessNotifications.send(
-                    "Description of event '"
+                    this.invalidation = "Description of event '"
                             + event.getName()
                             + "' is too long, must be 2048 characters or less"
             );
             return false;
-        } else if (footerName != null
-                && footerName.length() > 2048) {
+        } else if (footer != null
+                && footer.length() > 2048) {
             AwarenessNotifications.send(
-                    "Footer name of event '"
+                    this.invalidation = "Footer name of event '"
                             + event.getName()
                             + "' is too long, must be 2048 characters or less"
             );
             return false;
-        } else if (fields != null
-                && fields.size() > 25) {
+        } else if (fields.size() > 25) {
             AwarenessNotifications.send(
-                    "Fields of event '"
+                    this.invalidation = "Fields of event '"
                             + event.getName()
                             + "' are too many, must be less 25 or less"
             );
@@ -186,7 +182,20 @@ public class DiscordWebhook {
     }
 
     public void reload() {
+        this.avatarURL = this.config.getString("avatar_url");
+        this.color = this.config.getString("color");
+        this.author = this.config.getString("author");
+        this.authorURL = this.config.getString("author_url");
+        this.authorIconURL = this.config.getString("author_icon_url");
+        this.title = this.config.getString("title");
+        this.titleURL = this.config.getString("title_url");
+        this.description = this.config.getString("description");
+        this.footer = this.config.getString("footer");
+        this.footerIconURL = this.config.getString("footer_icon_url");
+        this.content = this.config.getString("content");
 
+        // todo webhook urls
+        // todo fields
     }
 
 }
