@@ -38,6 +38,7 @@ public class DiscordWebhook {
             footerIconURL,
             content,
             invalidation;
+    @Getter
     private boolean enabled;
     private final Map<Integer, String> webhookURLs;
     private final Map<Integer, DiscordField> fields;
@@ -358,6 +359,11 @@ public class DiscordWebhook {
 
     public String getEventName() {
         return event.getSimpleName();
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+        this.config.setOption("options.enabled", enabled);
     }
 
 }

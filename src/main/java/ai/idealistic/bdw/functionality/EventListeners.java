@@ -23,16 +23,7 @@ public class EventListeners implements Listener {
             return;
         }
         for (Map.Entry<String, Set<Class<? extends Event>>> entry : EventFinder.getAll()) {
-            String pluginName = entry.getKey().replace(
-                    ".jar",
-                    ""
-            ).replace(
-                    "-",
-                    "_"
-            ).replace(
-                    ".",
-                    "_dot_"
-            ).toLowerCase();
+            String pluginName = preparePluginName(entry.getKey());
 
             for (Class<? extends Event> clazz : entry.getValue()) {
                 try {
@@ -62,7 +53,7 @@ public class EventListeners implements Listener {
 
                     // All checks passed, register listener
                     PluginManager pm = Register.plugin.getServer().getPluginManager();
-                    int hashCode = clazz.hashCode();
+                    int hashCode = prepareEventHashCode(pluginName, clazz.getSimpleName());
                     DiscordWebhook cache = listeners.get(hashCode);
 
                     if (cache == null) {
@@ -83,6 +74,30 @@ public class EventListeners implements Listener {
                 }
             }
         }
+    }
+
+    private static String preparePluginName(String s) {
+        return s.replace(
+                ".jar",
+                ""
+        ).replace(
+                "-",
+                "_"
+        ).replace(
+                ".",
+                "_dot_"
+        ).toLowerCase();
+    }
+
+    private static int prepareEventHashCode(String pluginName, String s) {
+        return (pluginName.hashCode() * 31) + s.toLowerCase().hashCode();
+    }
+
+    static DiscordWebhook getWebhook(String pluginName, String eventName) {
+        return listeners.get(prepareEventHashCode(
+                preparePluginName(pluginName),
+                eventName
+        ));
     }
 
 }
