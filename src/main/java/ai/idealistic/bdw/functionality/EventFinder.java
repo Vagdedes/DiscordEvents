@@ -73,7 +73,7 @@ public class EventFinder {
                         .addClassLoaders(pluginClassLoader)
                         .setUrls(jarUrl)
                         .setScanners(new SubTypesScanner(false))
-                        .filterInputsBy(new FilterBuilder().include(".*")) // Or more specific package filters
+                        .filterInputsBy(new FilterBuilder().include(".*"))
                 );
 
                 Set<Class<? extends Event>> eventClasses = reflections.getSubTypesOf(Event.class);
@@ -91,7 +91,6 @@ public class EventFinder {
                 URL resource = resources.nextElement();
                 try (InputStream in = resource.openStream();
                      BufferedReader reader = new BufferedReader(new InputStreamReader(in))) {
-
                     File file = new File(resource.toURI());
                     if (!file.exists()) continue;
 
@@ -100,13 +99,12 @@ public class EventFinder {
                             .forEach(p -> {
                                 String fullPath = p.toString().replace(File.separatorChar, '.');
                                 int start = fullPath.indexOf(basePackage);
-                                String className = fullPath.substring(start, fullPath.length() - 6); // remove ".class"
+                                String className = fullPath.substring(start, fullPath.length() - 6);
 
-                                if (className.contains("$")) return; // skip inner/anonymous
+                                if (className.contains("$")) return;
                                 try {
-                                    Class<?> clazz = Class.forName(className, false, classLoader);
+                                    Class.forName(className, false, classLoader);
                                 } catch (Throwable ignored) {
-                                    // You can log failed classes here if needed
                                 }
                             });
 
@@ -128,7 +126,7 @@ public class EventFinder {
                             String className = entry.getName()
                                     .replace('/', '.')
                                     .replace(".class", "");
-                            if (className.contains("$")) return; // skip inner classes
+                            if (className.contains("$")) return;
 
                             try {
                                 Class<?> clazz = Class.forName(className, false, loader);
