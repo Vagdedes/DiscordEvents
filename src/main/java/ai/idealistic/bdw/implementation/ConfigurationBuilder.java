@@ -2,7 +2,6 @@ package ai.idealistic.bdw.implementation;
 
 import ai.idealistic.bdw.Register;
 import lombok.Getter;
-import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
@@ -32,7 +31,6 @@ public class ConfigurationBuilder {
 
 
     private void create() {
-        // todo webhook urls
         addOption("avatar_url", "");
         addOption("color", "");
         addOption("author", "");
@@ -44,6 +42,10 @@ public class ConfigurationBuilder {
         addOption("footer", "");
         addOption("footer_icon_url", "");
         addOption("content", "");
+
+        for (int i = 1; i <= DiscordWebhook.MAX_WEBHOOK_URLS; i++) {
+            addOption("webhook_url." + i, "");
+        }
         // todo fields
     }
 
@@ -102,26 +104,6 @@ public class ConfigurationBuilder {
         return value;
     }
 
-    public String getColorfulString(String path) {
-        String data = str.get(path);
-
-        if (data != null) {
-            return data;
-        }
-        if (!file.exists()) {
-            create();
-        }
-        String value = getPath().getString(path);
-
-        if (value == null) {
-            return path;
-        } else {
-            value = ChatColor.translateAlternateColorCodes('&', value);
-        }
-        str.put(path, value);
-        return value;
-    }
-
     private void addOption(String path, Object value) {
         YamlConfiguration filea = YamlConfiguration.loadConfiguration(file);
 
@@ -139,12 +121,6 @@ public class ConfigurationBuilder {
             } catch (Exception ignored) {
             }
         }
-    }
-
-    public void clear() {
-        bool.clear();
-        ints.clear();
-        str.clear();
     }
 
 }

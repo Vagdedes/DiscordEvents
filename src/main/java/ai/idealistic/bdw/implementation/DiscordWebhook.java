@@ -13,6 +13,8 @@ import java.util.Map;
 
 public class DiscordWebhook {
 
+    public static final int MAX_WEBHOOK_URLS = 10;
+    public static final int MAX_FIELDS = 25;
     private static final int TIME_OUT_SECONDS = 3;
     private static final String CONNECTION_METHOD = "POST";
 
@@ -81,6 +83,23 @@ public class DiscordWebhook {
                 return false;
             }
         }
+        if (fields.size() > MAX_FIELDS) {
+            AwarenessNotifications.send(
+                    this.invalidation = "Fields of event '"
+                            + event.getName()
+                            + "' are too many, must be less 25 or less"
+            );
+            return false;
+        } else {
+            for (Map.Entry<String, String> entry : fields.entrySet()) {
+                if (entry.getKey() != null
+                        && !entry.getKey().isEmpty()
+                        && entry.getValue() != null
+                        && !entry.getValue().isEmpty()) {
+                    // todo
+                }
+            }
+        }
         if (!JavaURL.isValid(avatarURL, true)) {
             AwarenessNotifications.send(
                     this.invalidation = "Avatar URL '"
@@ -145,7 +164,7 @@ public class DiscordWebhook {
             );
             return false;
         } else if (description != null
-                && description.length() > 2048) {
+                && description.length() > 4096) {
             AwarenessNotifications.send(
                     this.invalidation = "Description of event '"
                             + event.getName()
@@ -160,11 +179,27 @@ public class DiscordWebhook {
                             + "' is too long, must be 2048 characters or less"
             );
             return false;
-        } else if (fields.size() > 25) {
+        } else if (title != null
+                && title.length() > 256) {
             AwarenessNotifications.send(
-                    this.invalidation = "Fields of event '"
+                    this.invalidation = "Title of event '"
                             + event.getName()
-                            + "' are too many, must be less 25 or less"
+                            + "' is too long, must be 256 characters or less"
+            );
+            return false;
+        } else if (author != null
+                && author.length() > 256) {
+            AwarenessNotifications.send(
+                    this.invalidation = "Author name of event '"
+                            + event.getName()
+                            + "' is too long, must be 256 characters or less"
+            );
+            return false;
+        } else if (webhookURLs.size() > MAX_WEBHOOK_URLS) {
+            AwarenessNotifications.send(
+                    this.invalidation = "Webhook URLs of event '"
+                            + event.getName()
+                            + "' are too many, must be less than 10"
             );
             return false;
         } else {
@@ -194,7 +229,13 @@ public class DiscordWebhook {
         this.footerIconURL = this.config.getString("footer_icon_url");
         this.content = this.config.getString("content");
 
-        // todo webhook urls
+        for (int i = 1; i <= DiscordWebhook.MAX_WEBHOOK_URLS; i++) {
+            String url = this.config.getString("webhook_url." + i);
+
+            if (url != null && !url.isEmpty()) {
+                this.webhookURLs.add(url);
+            }
+        }
         // todo fields
     }
 
