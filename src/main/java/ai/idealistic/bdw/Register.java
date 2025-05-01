@@ -1,5 +1,7 @@
 package ai.idealistic.bdw;
 
+import ai.idealistic.bdw.command.CommandExecution;
+import ai.idealistic.bdw.command.CommandTab;
 import ai.idealistic.bdw.functionality.BdwManager;
 import ai.idealistic.bdw.listeners.AllEvents;
 import ai.idealistic.bdw.listeners.PluginStates;
@@ -10,6 +12,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class Register extends JavaPlugin {
 
     public static Plugin plugin = null;
+    public static final String
+            command = "bukkitdiscordwebhooks",
+            shortCommand = "bdw";
 
     public void onEnable() {
         plugin = this;
@@ -18,6 +23,12 @@ public class Register extends JavaPlugin {
         pm.registerEvents(new PluginStates(), this);
         pm.registerEvents(new AllEvents(), this);
         BdwManager.update();
+
+        this.getCommand(command).setExecutor(new CommandExecution());
+        this.getCommand(command).setTabCompleter(new CommandTab());
+
+        this.getCommand(shortCommand).setExecutor(new CommandExecution());
+        this.getCommand(shortCommand).setTabCompleter(new CommandTab());
     }
 
     public void onDisable() {
