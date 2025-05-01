@@ -13,6 +13,7 @@ public class Register extends JavaPlugin {
 
     public void onEnable() {
         plugin = this;
+
         PluginManager pm = getServer().getPluginManager();
         pm.registerEvents(new PluginStates(), this);
         pm.registerEvents(new AllEvents(), this);

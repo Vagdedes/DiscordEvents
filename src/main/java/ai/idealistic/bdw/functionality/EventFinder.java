@@ -101,7 +101,7 @@ public class EventFinder {
                                 int start = fullPath.indexOf(basePackage);
                                 String className = fullPath.substring(start, fullPath.length() - 6);
 
-                                if (className.contains("$")) return;
+                                if (className.isEmpty() || className.contains("$")) return;
                                 try {
                                     Class.forName(className, false, classLoader);
                                 } catch (Throwable ignored) {
@@ -126,10 +126,9 @@ public class EventFinder {
                             String className = entry.getName()
                                     .replace('/', '.')
                                     .replace(".class", "");
-                            if (className.contains("$")) return;
-
+                            if (className.isEmpty() || className.contains("$")) return;
                             try {
-                                Class<?> clazz = Class.forName(className, false, loader);
+                                Class.forName(className, false, loader);
                             } catch (Throwable ignored) {
                             }
                         });

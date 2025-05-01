@@ -36,6 +36,9 @@ public class EventListeners implements Listener {
 
             for (Class<? extends Event> clazz : entry.getValue()) {
                 try {
+                    if (clazz == null) {
+                        continue;
+                    }
                     // Skip abstract classes or interfaces
                     if (Modifier.isAbstract(clazz.getModifiers()) || clazz.isInterface()) {
                         continue;
