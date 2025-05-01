@@ -288,20 +288,24 @@ public class DiscordWebhook {
         });
     }
 
+    private static String nn(String str) {
+        return str == null ? "" : str;
+    }
+
     public void reload() {
         this.enabled = this.config.getBoolean("options.enabled");
 
-        this.avatarURL = this.config.getString("webhook.avatar_url");
-        this.color = this.config.getString("webhook.color");
-        this.author = this.config.getString("webhook.author");
-        this.authorURL = this.config.getString("webhook.author_url");
-        this.authorIconURL = this.config.getString("webhook.author_icon_url");
-        this.title = this.config.getString("webhook.title");
-        this.titleURL = this.config.getString("webhook.title_url");
-        this.description = this.config.getString("webhook.description");
-        this.footer = this.config.getString("webhook.footer");
-        this.footerIconURL = this.config.getString("webhook.footer_icon_url");
-        this.content = this.config.getString("webhook.content");
+        this.avatarURL = nn(this.config.getString("webhook.avatar_url"));
+        this.color = nn(this.config.getString("webhook.color"));
+        this.author = nn(this.config.getString("webhook.author"));
+        this.authorURL = nn(this.config.getString("webhook.author_url"));
+        this.authorIconURL = nn(this.config.getString("webhook.author_icon_url"));
+        this.title = nn(this.config.getString("webhook.title"));
+        this.titleURL = nn(this.config.getString("webhook.title_url"));
+        this.description = nn(this.config.getString("webhook.description"));
+        this.footer = nn(this.config.getString("webhook.footer"));
+        this.footerIconURL = nn(this.config.getString("webhook.footer_icon_url"));
+        this.content = nn(this.config.getString("webhook.content"));
         this.webhookURLs.clear();
 
         for (int i = 1; i <= DiscordWebhook.MAX_WEBHOOK_URLS; i++) {
@@ -316,14 +320,16 @@ public class DiscordWebhook {
 
         for (int i = 1; i <= DiscordWebhook.MAX_FIELDS; i++) {
             String name = this.config.getString("webhook.field." + i + ".name");
-            String value = this.config.getString("webhook.field." + i + ".value");
-            boolean inline = this.config.getBoolean("webhook.field." + i + ".inline");
 
             if (name != null
-                    && !name.isEmpty()
-                    && value != null
-                    && !value.isEmpty()) {
-                this.fields.add(new DiscordField(name, value, inline));
+                    && !name.isEmpty()) {
+                String value = this.config.getString("webhook.field." + i + ".value");
+
+                if (value != null
+                        && !value.isEmpty()) {
+                    boolean inline = this.config.getBoolean("webhook.field." + i + ".inline");
+                    this.fields.add(new DiscordField(name, value, inline));
+                }
             }
         }
         this.invalidation = null;

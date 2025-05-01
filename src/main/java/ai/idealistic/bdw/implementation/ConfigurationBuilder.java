@@ -71,8 +71,7 @@ public class ConfigurationBuilder {
     public boolean getBoolean(String path) {
         Boolean data = bool.get(path);
 
-        if (data != null
-                || bool.containsKey(path)) {
+        if (data != null) {
             return data;
         }
         boolean value = getPath().getBoolean(path);
@@ -83,8 +82,7 @@ public class ConfigurationBuilder {
     public int getInteger(String path) {
         Integer data = ints.get(path);
 
-        if (data != null
-                || ints.containsKey(path)) {
+        if (data != null) {
             return data;
         }
         int value = getPath().getInt(path);
@@ -95,8 +93,7 @@ public class ConfigurationBuilder {
     public double getDouble(String path) {
         Double data = dbls.get(path);
 
-        if (data != null
-                || dbls.containsKey(path)) {
+        if (data != null) {
             return data;
         }
         double value = getPath().getDouble(path);
