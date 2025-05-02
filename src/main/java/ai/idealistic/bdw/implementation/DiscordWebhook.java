@@ -265,44 +265,35 @@ public class DiscordWebhook {
         }
     }
 
-    private void loadMethods(Event event) {
-        if (this.methods == null) {
-            Map<String, Method> methods = EventReader.getValidMethods(event);
-            this.methods = methods;
+    private void loadMethods() {
+        Map<String, Method> methods = EventReader.getValidMethods(event);
+        this.methods = methods;
 
-            if (!methods.isEmpty()) {
-                for (Map.Entry<String, Method> entry : methods.entrySet()) {
-                    String methodName = entry.getKey();
-                    Object invokation;
+        if (!methods.isEmpty()) {
+            for (Map.Entry<String, Method> entry : methods.entrySet()) {
+                String methodName = entry.getKey();
+                String[] placeholders = EventReader.getPlaceholders(
+                        methodName,
+                        entry.getValue().getReturnType()
+                );
 
-                    try {
-                        invokation = entry.getValue().invoke(event);
-                    } catch (Exception ex) {
-                        invokation = null;
-                    }
-
-                    if (invokation == null) {
-                        // todo retry
-                    } else {
-                        config.setOption(
-                                "information.placeholders." + methodName,
-                                ArrayReader.toString(EventReader.getPlaceholders(
-                                        methodName,
-                                        invokation
-                                ))
-                        );
-                    }
+                if (placeholders.length == 0) {
+                    config.setOption(
+                            "information.placeholders." + methodName,
+                            null
+                    );
+                } else {
+                    config.setOption(
+                            "information.placeholders." + methodName,
+                            ArrayReader.toString(placeholders)
+                    );
                 }
-            } else {
-                // todo retry
             }
         }
     }
 
     public void send(Event event) {
         WebhookThread.run(() -> {
-            this.loadMethods(event);
-
             if (enabled
                     && validate()) {
                 if (cooldown > 0.0) {
@@ -377,6 +368,8 @@ public class DiscordWebhook {
     }
 
     public void reload() {
+        this.loadMethods();
+
         this.config.clear();
         String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
         this.config.setOption("information.last_reload", date);

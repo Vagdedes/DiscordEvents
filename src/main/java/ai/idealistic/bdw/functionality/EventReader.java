@@ -6,7 +6,6 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
 
 import javax.xml.stream.Location;
@@ -19,15 +18,15 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class EventReader {
 
-    public static String[] getPlaceholders(String methodName, Object object) {
+    public static String[] getPlaceholders(String methodName, Class<?> returnType) {
         Collection<String> list = new ArrayList<>();
 
-        if (object instanceof World) {
+        if (returnType.equals(World.class)) {
             list.addAll(Arrays.asList(EventPlaceholders.getPlaceholders(
                     methodName,
                     EventPlaceholders.worldPlaceholders
             )));
-        } else if (object instanceof Location) {
+        } else if (returnType.equals(Location.class)) {
             list.addAll(Arrays.asList(EventPlaceholders.getPlaceholders(
                     methodName,
                     EventPlaceholders.locationPlaceholders
@@ -44,7 +43,7 @@ public class EventReader {
                     methodName,
                     EventPlaceholders.materialPlaceholders
             )));
-        } else if (object instanceof Block) {
+        } else if (returnType.equals(Block.class)) {
             list.addAll(Arrays.asList(EventPlaceholders.getPlaceholders(
                     methodName,
                     EventPlaceholders.blockPlaceholders
@@ -61,7 +60,7 @@ public class EventReader {
                     methodName,
                     EventPlaceholders.materialPlaceholders
             )));
-        } else if (object instanceof ItemStack) {
+        } else if (returnType.equals(ItemStack.class)) {
             list.addAll(Arrays.asList(EventPlaceholders.getPlaceholders(
                     methodName,
                     EventPlaceholders.itemPlaceholders
@@ -70,27 +69,66 @@ public class EventReader {
                     methodName,
                     EventPlaceholders.materialPlaceholders
             )));
-        } else if (object instanceof Material) {
+        } else if (returnType.equals(Material.class)) {
             list.addAll(Arrays.asList(EventPlaceholders.getPlaceholders(
                     methodName,
                     EventPlaceholders.materialPlaceholders
             )));
-        } else if (object instanceof Entity) {
-            if (object instanceof Player) {
-                list.addAll(Arrays.asList(EventPlaceholders.getPlaceholders(
-                        methodName,
-                        EventPlaceholders.playerPlaceholders
-                )));
-                list.addAll(Arrays.asList(EventPlaceholders.getPlaceholders(
-                        methodName,
-                        EventPlaceholders.livingEntityPlaceholders
-                )));
-            } else if (object instanceof LivingEntity) {
-                list.addAll(Arrays.asList(EventPlaceholders.getPlaceholders(
-                        methodName,
-                        EventPlaceholders.livingEntityPlaceholders
-                )));
-            }
+        } else if (returnType.equals(Player.class)) {
+            list.addAll(Arrays.asList(EventPlaceholders.getPlaceholders(
+                    methodName,
+                    EventPlaceholders.playerPlaceholders
+            )));
+            list.addAll(Arrays.asList(EventPlaceholders.getPlaceholders(
+                    methodName,
+                    EventPlaceholders.livingEntityPlaceholders
+            )));
+            list.addAll(Arrays.asList(EventPlaceholders.getPlaceholders(
+                    methodName,
+                    EventPlaceholders.entityPlaceholders
+            )));
+            list.addAll(Arrays.asList(EventPlaceholders.getPlaceholders(
+                    methodName,
+                    EventPlaceholders.locationPlaceholders
+            )));
+            list.addAll(Arrays.asList(EventPlaceholders.getPlaceholders(
+                    methodName,
+                    EventPlaceholders.worldPlaceholders
+            )));
+            list.addAll(Arrays.asList(EventPlaceholders.getPlaceholders(
+                    methodName,
+                    EventPlaceholders.blockPlaceholders
+            )));
+            list.addAll(Arrays.asList(EventPlaceholders.getPlaceholders(
+                    methodName,
+                    EventPlaceholders.materialPlaceholders
+            )));
+        } else if (returnType.equals(LivingEntity.class)) {
+            list.addAll(Arrays.asList(EventPlaceholders.getPlaceholders(
+                    methodName,
+                    EventPlaceholders.livingEntityPlaceholders
+            )));
+            list.addAll(Arrays.asList(EventPlaceholders.getPlaceholders(
+                    methodName,
+                    EventPlaceholders.entityPlaceholders
+            )));
+            list.addAll(Arrays.asList(EventPlaceholders.getPlaceholders(
+                    methodName,
+                    EventPlaceholders.locationPlaceholders
+            )));
+            list.addAll(Arrays.asList(EventPlaceholders.getPlaceholders(
+                    methodName,
+                    EventPlaceholders.worldPlaceholders
+            )));
+            list.addAll(Arrays.asList(EventPlaceholders.getPlaceholders(
+                    methodName,
+                    EventPlaceholders.blockPlaceholders
+            )));
+            list.addAll(Arrays.asList(EventPlaceholders.getPlaceholders(
+                    methodName,
+                    EventPlaceholders.materialPlaceholders
+            )));
+        } else if (returnType.equals(Entity.class)) {
             list.addAll(Arrays.asList(EventPlaceholders.getPlaceholders(
                     methodName,
                     EventPlaceholders.entityPlaceholders
@@ -115,18 +153,15 @@ public class EventReader {
         return list.toArray(new String[0]);
     }
 
-    public static Map<String, Method> getValidMethods(Event event) {
+    public static Map<String, Method> getValidMethods(Class<?> event) {
         Map<String, Method> methods = new ConcurrentHashMap<>(1);
 
-        for (Method method : event.getClass().getDeclaredMethods()) {
-            try {
-                method.setAccessible(true);
+        for (Method method : event.getDeclaredMethods()) {
+            method.setAccessible(true);
 
-                if (method.getReturnType() != Void.TYPE
-                        && method.getParameterCount() == 0) {
-                    methods.put(method.getName().toLowerCase(), method);
-                }
-            } catch (Exception ignored) {
+            if (method.getReturnType() != Void.TYPE
+                    && method.getParameterCount() == 0) {
+                methods.put(method.getName().toLowerCase(), method);
             }
         }
         return methods;
