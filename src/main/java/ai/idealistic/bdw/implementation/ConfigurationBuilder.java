@@ -2,10 +2,13 @@ package ai.idealistic.bdw.implementation;
 
 import ai.idealistic.bdw.Register;
 import lombok.Getter;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ConfigurationBuilder {
@@ -37,6 +40,12 @@ public class ConfigurationBuilder {
     }
 
     private void create() {
+        if (!file.exists()) {
+            try {
+                file.createNewFile();
+            } catch (Exception ignored) {
+            }
+        }
         addOption("options.enabled", false);
         addOption("options.cooldown", 0.1);
 
@@ -118,15 +127,27 @@ public class ConfigurationBuilder {
     }
 
     public void addOption(String path, Object value) {
-        YamlConfiguration filea = YamlConfiguration.loadConfiguration(file);
+        if (file.exists()) {
+            YamlConfiguration filea = YamlConfiguration.loadConfiguration(file);
 
-        if (!file.exists()) {
-            try {
-                file.createNewFile();
-            } catch (Exception ignored) {
+            if (!filea.contains(path)) {
+                filea.set(path, value);
+
+                try {
+                    filea.save(file);
+                    this.dbls.remove(path);
+                    this.ints.remove(path);
+                    this.str.remove(path);
+                    this.bool.remove(path);
+                } catch (Exception ignored) {
+                }
             }
         }
-        if (!filea.contains(path)) {
+    }
+
+    public void setOption(String path, Object value) {
+        if (file.exists()) {
+            YamlConfiguration filea = YamlConfiguration.loadConfiguration(file);
             filea.set(path, value);
 
             try {
@@ -140,51 +161,41 @@ public class ConfigurationBuilder {
         }
     }
 
-    public void setOption(String path, Object value) {
-        YamlConfiguration filea = YamlConfiguration.loadConfiguration(file);
-
-        if (!file.exists()) {
-            try {
-                file.createNewFile();
-            } catch (Exception ignored) {
-            }
-        }
-        filea.set(path, value);
-
-        try {
-            filea.save(file);
-            this.dbls.remove(path);
-            this.ints.remove(path);
-            this.str.remove(path);
-            this.bool.remove(path);
-        } catch (Exception ignored) {
-        }
-    }
-
     public boolean setOptionIfExists(String path, Object value) {
-        YamlConfiguration filea = YamlConfiguration.loadConfiguration(file);
+        if (file.exists()) {
+            YamlConfiguration filea = YamlConfiguration.loadConfiguration(file);
+            filea.set(path, value);
 
-        if (!file.exists()) {
-            try {
-                file.createNewFile();
-            } catch (Exception ignored) {
+            if (filea.contains(path)) {
+                try {
+                    filea.save(file);
+                    this.dbls.remove(path);
+                    this.ints.remove(path);
+                    this.str.remove(path);
+                    this.bool.remove(path);
+                } catch (Exception ignored) {
+                }
+                return true;
+            } else {
+                return false;
             }
-        }
-        filea.set(path, value);
-
-        if (filea.contains(path)) {
-            try {
-                filea.save(file);
-                this.dbls.remove(path);
-                this.ints.remove(path);
-                this.str.remove(path);
-                this.bool.remove(path);
-            } catch (Exception ignored) {
-            }
-            return true;
         } else {
             return false;
         }
+    }
+
+    public Set<String> getKeys(String path, boolean deep) {
+        YamlConfiguration filea = YamlConfiguration.loadConfiguration(file);
+
+        if (!file.exists()) {
+            create();
+        }
+        ConfigurationSection section = filea.getConfigurationSection(path);
+
+        if (section == null) {
+            return new HashSet<>(0);
+        }
+        return section.getKeys(deep);
     }
 
 }

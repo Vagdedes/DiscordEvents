@@ -13,6 +13,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class DiscordWebhook {
@@ -291,6 +292,18 @@ public class DiscordWebhook {
                     config.setOption(
                             "information.placeholders." + methodName,
                             ArrayReader.toString(placeholders)
+                    );
+                }
+            }
+        }
+        Set<String> keys = this.config.getKeys("information.placeholders", false);
+
+        if (!keys.isEmpty()) {
+            for (String key : keys) {
+                if (!methods.containsKey(key)) {
+                    config.setOption(
+                            "information.placeholders." + key,
+                            null
                     );
                 }
             }
