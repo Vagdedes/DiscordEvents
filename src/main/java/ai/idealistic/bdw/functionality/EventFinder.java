@@ -1,5 +1,6 @@
 package ai.idealistic.bdw.functionality;
 
+import ai.idealistic.bdw.Register;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Event;
 import org.bukkit.plugin.Plugin;
@@ -128,6 +129,9 @@ public class EventFinder {
     }
 
     private static void forceLoadPluginClasses(Plugin plugin) {
+        if (plugin.equals(Register.plugin)) {
+            return;
+        }
         try {
             URL jarUrl = plugin.getClass().getProtectionDomain().getCodeSource().getLocation();
             try (JarFile jarFile = new JarFile(new File(jarUrl.toURI()))) {

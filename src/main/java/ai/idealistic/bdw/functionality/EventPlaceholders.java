@@ -4,6 +4,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -16,6 +17,7 @@ import java.util.Set;
 
 public class EventPlaceholders {
 
+    private static final String isNull = "(null)";
     private static final Set<Integer> noMethods = new HashSet<>(1);
 
     static final String[]
@@ -163,6 +165,11 @@ public class EventPlaceholders {
                     prepare(method, prefix, "has-raids"),
                     String.valueOf(object == Boolean.TRUE)
             );
+        } else {
+            string = string.replace(
+                    prepare(method, prefix, "has-raids"),
+                    isNull
+            );
         }
         object = hasWorldMethod(world, "getPVP");
 
@@ -171,13 +178,10 @@ public class EventPlaceholders {
                     prepare(method, prefix, "pvp-allowed"),
                     String.valueOf(object == Boolean.TRUE)
             );
-        }
-        object = hasWorldMethod(world, "hasSkyLight");
-
-        if (object instanceof Boolean) {
+        } else {
             string = string.replace(
-                    prepare(method, prefix, "has-sky-light"),
-                    String.valueOf(object == Boolean.TRUE)
+                    prepare(method, prefix, "pvp-allowed"),
+                    isNull
             );
         }
         object = hasWorldMethod(world, "hasSkyLight");
@@ -186,6 +190,24 @@ public class EventPlaceholders {
             string = string.replace(
                     prepare(method, prefix, "has-sky-light"),
                     String.valueOf(object == Boolean.TRUE)
+            );
+        } else {
+            string = string.replace(
+                    prepare(method, prefix, "has-sky-light"),
+                    isNull
+            );
+        }
+        object = hasWorldMethod(world, "hasSkyLight");
+
+        if (object instanceof Boolean) {
+            string = string.replace(
+                    prepare(method, prefix, "has-sky-light"),
+                    String.valueOf(object == Boolean.TRUE)
+            );
+        } else {
+            string = string.replace(
+                    prepare(method, prefix, "has-sky-light"),
+                    isNull
             );
         }
         object = hasWorldMethod(world, "isHardcore");
@@ -195,6 +217,11 @@ public class EventPlaceholders {
                     prepare(method, prefix, "is-hardcore"),
                     String.valueOf(object == Boolean.TRUE)
             );
+        } else {
+            string = string.replace(
+                    prepare(method, prefix, "is-hardcore"),
+                    isNull
+            );
         }
         object = hasWorldMethod(world, "getGameTime");
 
@@ -202,6 +229,11 @@ public class EventPlaceholders {
             string = string.replace(
                     prepare(method, prefix, "game-time"),
                     new Timestamp((long) object).toString().substring(0, 19)
+            );
+        } else {
+            string = string.replace(
+                    prepare(method, prefix, "game-time"),
+                    isNull
             );
         }
         return string;
@@ -354,6 +386,11 @@ public class EventPlaceholders {
                     prepare(method, prefix, "is-air"),
                     String.valueOf(object == Boolean.TRUE)
             );
+        } else {
+            string = string.replace(
+                    prepare(method, prefix, "is-air"),
+                    isNull
+            );
         }
         object = hasMaterialMethod(material, "isLiquid");
 
@@ -361,6 +398,11 @@ public class EventPlaceholders {
             string = string.replace(
                     prepare(method, prefix, "is-item"),
                     String.valueOf(object == Boolean.TRUE)
+            );
+        } else {
+            string = string.replace(
+                    prepare(method, prefix, "is-item"),
+                    isNull
             );
         }
         return string;
@@ -461,31 +503,8 @@ public class EventPlaceholders {
                 prepare(method, prefix, "fire-ticks"),
                 String.valueOf(entity.getFireTicks())
         ).replace(
-                prepare(method, prefix, "name"),
-                entity.getName()
-        ).replace(
-                prepare(method, prefix, "custom-name"),
-                entity.getCustomName() == null
-                        ? "(null)"
-                        : entity.getCustomName()
-        ).replace(
-                prepare(method, prefix, "facing"),
-                entity.getFacing().name().toLowerCase().replace("_", "-")
-        ).replace(
-                prepare(method, prefix, "is-silent"),
-                String.valueOf(entity.isSilent())
-        ).replace(
-                prepare(method, prefix, "is-glowing"),
-                String.valueOf(entity.isGlowing())
-        ).replace(
-                prepare(method, prefix, "is-persistent"),
-                String.valueOf(entity.isPersistent())
-        ).replace(
                 prepare(method, prefix, "is-valid"),
                 String.valueOf(entity.isValid())
-        ).replace(
-                prepare(method, prefix, "is-visual-fire"),
-                String.valueOf(entity.isVisualFire())
         ).replace(
                 prepare(method, prefix, "is-inside-vehicle"),
                 String.valueOf(entity.isInsideVehicle())
@@ -493,15 +512,116 @@ public class EventPlaceholders {
                 prepare(method, prefix, "is-dead"),
                 String.valueOf(entity.isDead())
         ).replace(
-                prepare(method, prefix, "height"),
-                String.valueOf(entity.getHeight())
-        ).replace(
                 prepare(method, prefix, "is-frozen"),
                 String.valueOf(
                         MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)
                                 && entity.isFrozen()
                 )
         );
+        Object object = hasEntityMethod(entity, "getName");
+
+        if (object instanceof Boolean) {
+            string = string.replace(
+                    prepare(method, prefix, "name"),
+                    String.valueOf(object == Boolean.TRUE)
+            );
+        } else {
+            string = string.replace(
+                    prepare(method, prefix, "name"),
+                    isNull
+            );
+        }
+        object = hasEntityMethod(entity, "getCustomName");
+
+        if (object instanceof Boolean) {
+            string = string.replace(
+                    prepare(method, prefix, "custom-name"),
+                    String.valueOf(object == Boolean.TRUE)
+            );
+        } else {
+            string = string.replace(
+                    prepare(method, prefix, "custom-name"),
+                    isNull
+            );
+        }
+        object = hasEntityMethod(entity, "isSilent");
+
+        if (object instanceof Boolean) {
+            string = string.replace(
+                    prepare(method, prefix, "is-silent"),
+                    String.valueOf(object == Boolean.TRUE)
+            );
+        } else {
+            string = string.replace(
+                    prepare(method, prefix, "is-silent"),
+                    isNull
+            );
+        }
+        object = hasEntityMethod(entity, "isGlowing");
+
+        if (object instanceof Boolean) {
+            string = string.replace(
+                    prepare(method, prefix, "is-glowing"),
+                    String.valueOf(object == Boolean.TRUE)
+            );
+        } else {
+            string = string.replace(
+                    prepare(method, prefix, "is-glowing"),
+                    isNull
+            );
+        }
+        object = hasEntityMethod(entity, "isPersistent");
+
+        if (object instanceof Boolean) {
+            string = string.replace(
+                    prepare(method, prefix, "is-persistent"),
+                    String.valueOf(object == Boolean.TRUE)
+            );
+        } else {
+            string = string.replace(
+                    prepare(method, prefix, "is-persistent"),
+                    isNull
+            );
+        }
+        object = hasEntityMethod(entity, "isVisualFire");
+
+        if (object instanceof Boolean) {
+            string = string.replace(
+                    prepare(method, prefix, "is-visual-fire"),
+                    String.valueOf(object == Boolean.TRUE)
+            );
+        } else {
+            string = string.replace(
+                    prepare(method, prefix, "is-visual-fire"),
+                    isNull
+            );
+        }
+        object = hasEntityMethod(entity, "getFacing");
+
+        if (object instanceof BlockFace) {
+            string = string.replace(
+                    prepare(method, prefix, "facing"),
+                    ((BlockFace) object).name().toLowerCase().replace("_", "-")
+            );
+        } else {
+            string = string.replace(
+                    prepare(method, prefix, "facing"),
+                    isNull
+            );
+        }
+        object = hasEntityMethod(entity, "getHeight");
+
+        if (object instanceof Double) {
+            string = string.replace(
+                    prepare(method, prefix, "height"),
+                    String.valueOf(object)
+            );
+        } else {
+            string = string.replace(
+                    prepare(method, prefix, "height"),
+                    isNull
+            );
+        }
 
         string = getLocation(
                 entity.getLocation(),
