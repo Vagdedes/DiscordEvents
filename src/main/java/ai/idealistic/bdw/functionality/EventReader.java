@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 
 import javax.xml.stream.Location;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -21,24 +22,7 @@ public class EventReader {
     public static String[] getPlaceholders(String methodName, Class<?> returnType) {
         Collection<String> list = new ArrayList<>();
 
-        if (returnType.equals(String.class)
-                || returnType.equals(Integer.class)
-                || returnType.equals(int.class)
-                || returnType.equals(Double.class)
-                || returnType.equals(double.class)
-                || returnType.equals(Float.class)
-                || returnType.equals(float.class)
-                || returnType.equals(Long.class)
-                || returnType.equals(long.class)
-                || returnType.equals(Short.class)
-                || returnType.equals(short.class)
-                || returnType.equals(Boolean.class)
-                || returnType.equals(boolean.class)) {
-            list.add(EventPlaceholders.getPlaceholder(
-                    methodName,
-                    EventPlaceholders.nativePlaceholder
-            ));
-        } else if (returnType.equals(World.class)) {
+        if (returnType.equals(World.class)) {
             list.addAll(Arrays.asList(EventPlaceholders.getPlaceholders(
                     methodName,
                     EventPlaceholders.worldPlaceholders
@@ -167,20 +151,35 @@ public class EventReader {
                     EventPlaceholders.materialPlaceholders
             )));
         }
+        list.add(EventPlaceholders.getPlaceholder(
+                methodName,
+                EventPlaceholders.customPlaceholder
+        ));
         return list.toArray(new String[0]);
     }
 
     public static Map<String, Method> getValidMethods(Class<?> event) {
-        Map<String, Method> methods = new ConcurrentHashMap<>(1);
+        Map<String, Method> methods = new ConcurrentHashMap<>();
 
-        for (Method method : event.getDeclaredMethods()) {
-            method.setAccessible(true);
+        while (event != null
+                && event != Object.class) {
+            for (Method method : event.getDeclaredMethods()) {
+                method.setAccessible(true);
 
-            if (method.getReturnType() != Void.TYPE
-                    && method.getParameterCount() == 0) {
-                methods.put(method.getName().toLowerCase(), method);
+                if (method.getReturnType() != Void.TYPE
+                        && method.getParameterCount() == 0
+                        && !Modifier.isStatic(method.getModifiers())) {
+                    String methodName = method.getName().toLowerCase();
+
+                    if (!methodName.equals("callevent")
+                            && !methodName.equals("gethandlers")) {
+                        methods.putIfAbsent(methodName, method);
+                    }
+                }
             }
+            event = event.getSuperclass();
         }
+
         return methods;
     }
 

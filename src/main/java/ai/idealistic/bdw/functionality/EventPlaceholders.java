@@ -22,7 +22,7 @@ public class EventPlaceholders {
     private static final Set<Integer> noMethods = new HashSet<>(1);
 
     static final String
-            nativePlaceholder = ":native}";
+            customPlaceholder = ":custom}";
     static final String[]
             worldPlaceholders = {
             ":world:name}",
@@ -921,24 +921,18 @@ public class EventPlaceholders {
         return string;
     }
 
-    static boolean isNative(Object object) {
-        return object instanceof Boolean
-                || object instanceof Number
-                || object instanceof String;
-    }
-
-    public static String getNative(
+    public static String getCustom(
             Object object,
             String methodName,
             String string) {
         if (object == null) {
             string = string.replace(
-                    "{" + methodName + nativePlaceholder,
+                    "{" + methodName + customPlaceholder,
                     isNull
             );
         } else {
             string = string.replace(
-                    "{" + methodName + nativePlaceholder,
+                    "{" + methodName + customPlaceholder,
                     object.toString()
             );
         }
