@@ -294,8 +294,8 @@ public class DiscordWebhook {
                         fields.append("]");
 
                         String[] strings = RequestUtils.get(
-                                "https://www.vagdedes.com/minecraft/cloud/?"
-                                        + "identification=" + IDs.platform() + "|%%__USER__%%|%%__NONCE__%%"
+                                "https://www.vagdedes.com/minecraft/cloud/"
+                                        + "?identification=" + IDs.platform() + "|%%__USER__%%|%%__NONCE__%%"
                                         + "&action=add"
                                         + "&data=advancedDiscordWebhook"
                                         + "&version=" + Register.plugin.getDescription().getVersion()
