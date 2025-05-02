@@ -45,19 +45,70 @@ public class EventPlaceholders {
             ":world:has-sky-light}",
     },
             locationPlaceholders = {
-
+                    ":location:x}",
+                    ":location:y}",
+                    ":location:z}",
+                    ":location:block-x}",
+                    ":location:block-y}",
+                    ":location:block-z}",
+                    ":location:yaw}",
+                    ":location:pitch}"
             },
             blockPlaceholders = {
 
             },
             itemPlaceholders = {
-
+                    ":item:amount}",
+                    ":item:durability}",
+                    ":item:type}",
+                    ":item:has-meta}",
+                    ":item:has-enchants}",
+                    ":item:enchantment-count}",
+                    ":item:has-display-name}",
+                    ":item:has-lore}",
+                    ":item:has-custom-model-data}",
+                    ":item:has-localized-name}",
             },
             materialPlaceholders = {
+                    ":material:type}",
+                    ":material:is-block}",
+                    ":material:is-edible}",
+                    ":material:is-solid}",
+                    ":material:is-transparent}",
+                    ":material:is-flammable}",
+                    ":material:is-item}",
+                    ":material:is-air}",
+                    ":material:is-liquid}",
+                    ":material:is-interactable}",
+                    ":material:is-occluding}",
             },
             entityPlaceholders = {
+                    ":entity:type}",
+                    ":entity:id}",
+                    ":entity:uuid}",
+                    ":entity:fall-distance}",
+                    ":entity:fire-ticks}",
+                    ":entity:is-valid}",
+                    ":entity:is-inside-vehicle}",
+                    ":entity:is-dead}",
+                    ":entity:is-frozen}",
+                    ":entity:name}",
+                    ":entity:custom-name}",
+                    ":entity:custom-name-visible}",
+                    ":entity:is-silent}",
+                    ":entity:is-glowing}",
+                    ":entity:is-persistent}",
+                    ":entity:is-visual-fire}",
+                    ":entity:facing}",
+                    ":entity:height}"
             },
             livingEntityPlaceholders = {
+                    ":living-entity:health}",
+                    ":living-entity:max-health}",
+                    ":living-entity:is-swimming}",
+                    ":living-entity:is-gliding}",
+                    ":living-entity:is-sleeping}",
+                    ":living-entity:has-ai}"
             },
             playerPlaceholders = {
             };
@@ -248,9 +299,6 @@ public class EventPlaceholders {
         String prefix = "location";
 
         string = string.replace(
-                prepare(method, prefix, "world"),
-                location.getWorld().getName()
-        ).replace(
                 prepare(method, prefix, "x"),
                 String.valueOf(location.getX())
         ).replace(
@@ -260,13 +308,21 @@ public class EventPlaceholders {
                 prepare(method, prefix, "z"),
                 String.valueOf(location.getZ())
         ).replace(
+                prepare(method, prefix, "block-x"),
+                String.valueOf(location.getBlockX())
+        ).replace(
+                prepare(method, prefix, "block-y"),
+                String.valueOf(location.getBlockY())
+        ).replace(
+                prepare(method, prefix, "block-z"),
+                String.valueOf(location.getBlockZ())
+        ).replace(
                 prepare(method, prefix, "yaw"),
                 String.valueOf(location.getYaw())
         ).replace(
                 prepare(method, prefix, "pitch"),
                 String.valueOf(location.getPitch())
         );
-        // todo
 
         string = getWorld(
                 location.getWorld(),
@@ -320,8 +376,53 @@ public class EventPlaceholders {
         string = string.replace(
                 prepare(method, prefix, "amount"),
                 String.valueOf(itemStack.getAmount())
+        ).replace(
+                prepare(method, prefix, "durability"),
+                String.valueOf(itemStack.getDurability())
+        ).replace(
+                prepare(method, prefix, "type"),
+                itemStack.getType().name().toLowerCase().replace("_", "-")
+        ).replace(
+                prepare(method, prefix, "has-meta"),
+                String.valueOf(itemStack.hasItemMeta())
+        ).replace(
+                prepare(method, prefix, "has-enchants"),
+                String.valueOf(itemStack.hasItemMeta()
+                        && itemStack.getItemMeta().hasEnchants())
+        ).replace(
+                prepare(method, prefix, "enchantment-count"),
+                String.valueOf(itemStack.getEnchantments().size())
+        ).replace(
+                prepare(method, prefix, "has-display-name"),
+                String.valueOf(
+                        itemStack.hasItemMeta()
+                                && itemStack.getItemMeta().hasDisplayName()
+                )
+        ).replace(
+                prepare(method, prefix, "has-lore"),
+                String.valueOf(
+                        itemStack.hasItemMeta()
+                                && itemStack.getItemMeta().hasLore()
+                )
+        ).replace(
+                prepare(method, prefix, "has-custom-model-data"),
+                String.valueOf(
+                        itemStack.hasItemMeta()
+                                && itemStack.getItemMeta().hasCustomModelData()
+                )
+        ).replace(
+                prepare(method, prefix, "has-custom-model-data"),
+                String.valueOf(
+                        itemStack.hasItemMeta()
+                                && itemStack.getItemMeta().hasCustomModelData()
+                )
+        ).replace(
+                prepare(method, prefix, "has-localized-name"),
+                String.valueOf(
+                        itemStack.hasItemMeta()
+                                && itemStack.getItemMeta().hasLocalizedName()
+                )
         );
-        // todo
 
         string = getMaterial(
                 itemStack.getType(),
@@ -405,6 +506,32 @@ public class EventPlaceholders {
                     isNull
             );
         }
+        object = hasMaterialMethod(material, "isInteractable");
+
+        if (object instanceof Boolean) {
+            string = string.replace(
+                    prepare(method, prefix, "is-interactable"),
+                    String.valueOf(object == Boolean.TRUE)
+            );
+        } else {
+            string = string.replace(
+                    prepare(method, prefix, "is-interactable"),
+                    isNull
+            );
+        }
+        object = hasMaterialMethod(material, "isOccluding");
+
+        if (object instanceof Boolean) {
+            string = string.replace(
+                    prepare(method, prefix, "is-occluding"),
+                    String.valueOf(object == Boolean.TRUE)
+            );
+        } else {
+            string = string.replace(
+                    prepare(method, prefix, "is-occluding"),
+                    isNull
+            );
+        }
         return string;
     }
 
@@ -421,6 +548,15 @@ public class EventPlaceholders {
         ).replace(
                 prepare(method, prefix, "is-sprinting"),
                 String.valueOf(player.isSprinting())
+        ).replace(
+                prepare(method, prefix, "is-flying"),
+                String.valueOf(player.isFlying())
+        ).replace(
+                prepare(method, prefix, "is-op"),
+                String.valueOf(player.isOp())
+        ).replace(
+                prepare(method, prefix, "game-mode"),
+                player.getGameMode().name().toLowerCase().replace("_", "-")
         );
 
         string = getLivingEntity(
@@ -455,6 +591,16 @@ public class EventPlaceholders {
                 String.valueOf(
                         MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)
                                 && entity.isGliding()
+                )
+        ).replace(
+                prepare(method, prefix, "is-sleeping"),
+                String.valueOf(
+                        entity.isSleeping()
+                )
+        ).replace(
+                prepare(method, prefix, "has-ai"),
+                String.valueOf(
+                        entity.hasAI()
                 )
         );
 
@@ -520,10 +666,10 @@ public class EventPlaceholders {
         );
         Object object = hasEntityMethod(entity, "getName");
 
-        if (object instanceof Boolean) {
+        if (object instanceof String) {
             string = string.replace(
                     prepare(method, prefix, "name"),
-                    String.valueOf(object == Boolean.TRUE)
+                    object.toString()
             );
         } else {
             string = string.replace(
@@ -533,14 +679,27 @@ public class EventPlaceholders {
         }
         object = hasEntityMethod(entity, "getCustomName");
 
-        if (object instanceof Boolean) {
+        if (object instanceof String) {
             string = string.replace(
                     prepare(method, prefix, "custom-name"),
-                    String.valueOf(object == Boolean.TRUE)
+                    object.toString()
             );
         } else {
             string = string.replace(
                     prepare(method, prefix, "custom-name"),
+                    isNull
+            );
+        }
+        object = hasEntityMethod(entity, "isCustomNameVisible");
+
+        if (object instanceof Boolean) {
+            string = string.replace(
+                    prepare(method, prefix, "custom-name-visible"),
+                    String.valueOf(object == Boolean.TRUE)
+            );
+        } else {
+            string = string.replace(
+                    prepare(method, prefix, "custom-name-visible"),
                     isNull
             );
         }
