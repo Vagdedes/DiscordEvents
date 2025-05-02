@@ -102,13 +102,13 @@ public class EventPlaceholders {
                 String.valueOf(world.getSpawnLocation().getZ())
         ).replace(
                 prepare(method, prefix, "difficulty"),
-                world.getDifficulty().name().toLowerCase()
+                world.getDifficulty().name().toLowerCase().replace("_", "-")
         ).replace(
                 prepare(method, prefix, "hardcore"),
                 world.isHardcore() ? "Hardcore" : "Not Hardcore"
         ).replace(
                 prepare(method, prefix, "environment"),
-                world.getEnvironment().name().toLowerCase()
+                world.getEnvironment().name().toLowerCase().replace("_", "-")
         ).replace(
                 prepare(method, prefix, "seed"),
                 String.valueOf(world.getSeed())
@@ -130,44 +130,34 @@ public class EventPlaceholders {
                         : "Clear Weather"
         ).replace(
                 prepare(method, prefix, "is-thundering"),
-                world.isThundering()
-                        ? "Thundering Weather"
-                        : "Clear Weather"
+                String.valueOf(world.isThundering())
         ).replace(
                 prepare(method, prefix, "has-storm"),
-                world.hasStorm()
-                        ? "Storm Weather"
-                        : "Clear Weather"
+                String.valueOf(world.hasStorm())
         ).replace(
                 prepare(method, prefix, "allow-animals"),
-                world.getAllowAnimals()
-                        ? "Animals Allowed"
-                        : "No Animals"
+                String.valueOf(world.getAllowAnimals())
         ).replace(
                 prepare(method, prefix, "allow-monsters"),
-                world.getAllowMonsters()
-                        ? "Monsters Allowed"
-                        : "No Monsters"
+                String.valueOf(world.getAllowMonsters())
         ).replace(
                 prepare(method, prefix, "game-rules"),
                 Arrays.toString(world.getGameRules())
+        ).replace(
+                prepare(method, prefix, "border-size"),
+                String.valueOf(
+                        MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8)
+                                ? world.getWorldBorder().getSize()
+                                : -1
+                )
         );
-
-        if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8)) {
-            string = string.replace(
-                    prepare(method, prefix, "border-size"),
-                    Double.toString(world.getWorldBorder().getSize())
-            );
-        }
 
         Object object = hasWorldMethod(world, "hasRaids");
 
         if (object instanceof Boolean) {
             string = string.replace(
                     prepare(method, prefix, "has-raids"),
-                    object == Boolean.TRUE
-                            ? "Raids"
-                            : "No Raids"
+                    object == Boolean.TRUE ? "true" : "false"
             );
         }
         object = hasWorldMethod(world, "getPVP");
@@ -246,7 +236,7 @@ public class EventPlaceholders {
 
         string = string.replace(
                 prepare(method, prefix, "biome"),
-                block.getBiome().name().toLowerCase()
+                block.getBiome().name().toLowerCase().replace("_", "-")
         );
         // todo
 
@@ -314,7 +304,14 @@ public class EventPlaceholders {
             String string
     ) {
         String prefix = "player";
-        // todo
+
+        string = string.replace(
+                prepare(method, prefix, "is-sneaking"),
+                String.valueOf(player.isSneaking())
+        ).replace(
+                prepare(method, prefix, "is-sprinting"),
+                String.valueOf(player.isSprinting())
+        );
 
         string = getLivingEntity(
                 player,
@@ -331,6 +328,26 @@ public class EventPlaceholders {
     ) {
         String prefix = "living-entity";
 
+        string = string.replace(
+                prepare(method, prefix, "health"),
+                String.valueOf(entity.getHealth())
+        ).replace(
+                prepare(method, prefix, "max-health"),
+                String.valueOf(entity.getMaxHealth())
+        ).replace(
+                prepare(method, prefix, "is-swimming"),
+                String.valueOf(
+                        MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)
+                                && entity.isSwimming()
+                )
+        ).replace(
+                prepare(method, prefix, "is-gliding"),
+                String.valueOf(
+                        MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)
+                                && entity.isGliding()
+                )
+        );
+
         string = getEntity(
                 entity,
                 method,
@@ -345,7 +362,64 @@ public class EventPlaceholders {
             String string
     ) {
         String prefix = "entity";
-        // todo
+
+        string = string.replace(
+                prepare(method, prefix, "type"),
+                entity.getType().name().toLowerCase().replace("_", "-")
+        ).replace(
+                prepare(method, prefix, "id"),
+                String.valueOf(entity.getEntityId())
+        ).replace(
+                prepare(method, prefix, "uuid"),
+                entity.getUniqueId().toString()
+        ).replace(
+                prepare(method, prefix, "fall-distance"),
+                String.valueOf(entity.getFallDistance())
+        ).replace(
+                prepare(method, prefix, "fire-ticks"),
+                String.valueOf(entity.getFireTicks())
+        ).replace(
+                prepare(method, prefix, "name"),
+                entity.getName()
+        ).replace(
+                prepare(method, prefix, "custom-name"),
+                entity.getCustomName() == null
+                        ? "(null)"
+                        : entity.getCustomName()
+        ).replace(
+                prepare(method, prefix, "facing"),
+                entity.getFacing().name().toLowerCase().replace("_", "-")
+        ).replace(
+                prepare(method, prefix, "is-silent"),
+                String.valueOf(entity.isSilent())
+        ).replace(
+                prepare(method, prefix, "is-glowing"),
+                String.valueOf(entity.isGlowing())
+        ).replace(
+                prepare(method, prefix, "is-persistent"),
+                String.valueOf(entity.isPersistent())
+        ).replace(
+                prepare(method, prefix, "is-valid"),
+                String.valueOf(entity.isValid())
+        ).replace(
+                prepare(method, prefix, "is-visual-fire"),
+                String.valueOf(entity.isVisualFire())
+        ).replace(
+                prepare(method, prefix, "is-inside-vehicle"),
+                String.valueOf(entity.isInsideVehicle())
+        ).replace(
+                prepare(method, prefix, "is-dead"),
+                String.valueOf(entity.isDead())
+        ).replace(
+                prepare(method, prefix, "height"),
+                String.valueOf(entity.getHeight())
+        ).replace(
+                prepare(method, prefix, "is-frozen"),
+                String.valueOf(
+                        MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)
+                                && entity.isFrozen()
+                )
+        );
 
         string = getLocation(
                 entity.getLocation(),
