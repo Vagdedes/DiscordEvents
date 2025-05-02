@@ -150,6 +150,23 @@ public class EventPlaceholders {
                     ":player:walk-speed}",
                     ":player:fly-speed}",
                     ":player:total-experience}",
+            },
+            killerPlaceholders = { // same as player but for killer
+                    ":killer:is-sneaking}",
+                    ":killer:is-sprinting}",
+                    ":killer:is-flying}",
+                    ":killer:is-op}",
+                    ":killer:game-mode}",
+                    ":killer:is-invisible}",
+                    ":killer:display-name}",
+                    ":killer:player-list-name}",
+                    ":killer:level}",
+                    ":killer:exp}",
+                    ":killer:is-player-time-relative}",
+                    ":killer:player-time}",
+                    ":killer:walk-speed}",
+                    ":killer:fly-speed}",
+                    ":killer:total-experience}",
             };
 
     static String getPlaceholder(String method, String placeholder) {
@@ -707,7 +724,8 @@ public class EventPlaceholders {
     private static String getPlayer(
             Player player,
             String method,
-            String string
+            String string,
+            String prefix
     ) {
         if (player == null) {
             for (String placeholder : playerPlaceholders) {
@@ -718,8 +736,6 @@ public class EventPlaceholders {
             }
             return string;
         }
-        String prefix = "player";
-
         string = string.replace(
                 prepare(method, prefix, "is-sneaking"),
                 String.valueOf(player.isSneaking())
@@ -815,6 +831,12 @@ public class EventPlaceholders {
                         isNull
                 );
             }
+            for (String placeholder : killerPlaceholders) {
+                string = string.replace(
+                        "{" + method + placeholder,
+                        isNull
+                );
+            }
             return string;
         }
         String prefix = "living-entity";
@@ -867,10 +889,24 @@ public class EventPlaceholders {
         entity.isRiptiding();
         entity.getArrowsInBody(); // int
         entity.getCategory(); // enum
-        entity.getKiller();
         entity.getLeashHolder();
         entity.getCategory(); // enum
         entity.canBreatheUnderwater();
+        Player killer = entity.getKiller();
+
+        if (killer != null) {
+            string = getPlayer(
+                    killer,
+                    method,
+                    string,
+                    "killer"
+            );
+        } else {
+            string = string.replace(
+                    prepare(method, prefix, "killer"),
+                    isNull
+            );
+        }
         Object object = hasLivingEntityMethod(entity, "isSleeping");
 
         if (object instanceof Boolean) {
@@ -1202,7 +1238,8 @@ public class EventPlaceholders {
                 return getPlayer(
                         (Player) object,
                         methodName,
-                        string
+                        string,
+                        "player"
                 );
             } else if (object instanceof LivingEntity) {
                 return getLivingEntity(
