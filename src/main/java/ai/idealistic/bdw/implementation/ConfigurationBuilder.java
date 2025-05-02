@@ -19,7 +19,7 @@ public class ConfigurationBuilder {
     private final Map<String, Double> dbls = new ConcurrentHashMap<>(1);
     private final Map<String, String> str = new ConcurrentHashMap<>(1);
 
-    public ConfigurationBuilder(DiscordWebhook webhook) {
+    ConfigurationBuilder(DiscordWebhook webhook) {
         this.webhook = webhook;
         this.file = new File(getDirectory(webhook.getPluginName() + "/" + webhook.getEventName()));
         create();

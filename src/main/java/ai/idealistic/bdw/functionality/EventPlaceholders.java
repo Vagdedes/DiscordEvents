@@ -1,5 +1,6 @@
 package ai.idealistic.bdw.functionality;
 
+import ai.idealistic.bdw.utils.ArrayReader;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -12,7 +13,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.sql.Timestamp;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -56,7 +56,7 @@ public class EventPlaceholders {
                     ":location:pitch}"
             },
             blockPlaceholders = {
-
+                    ":block:biome}",
             },
             itemPlaceholders = {
                     ":item:amount}",
@@ -205,7 +205,7 @@ public class EventPlaceholders {
                 String.valueOf(world.getAllowMonsters())
         ).replace(
                 prepare(method, prefix, "game-rules"),
-                Arrays.toString(world.getGameRules())
+                ArrayReader.toString(world.getGameRules())
         ).replace(
                 prepare(method, prefix, "border-size"),
                 String.valueOf(
@@ -356,7 +356,6 @@ public class EventPlaceholders {
                 prepare(method, prefix, "biome"),
                 block.getBiome().name().toLowerCase().replace("_", "-")
         );
-        // todo
 
         string = getLocation(
                 block.getLocation(),

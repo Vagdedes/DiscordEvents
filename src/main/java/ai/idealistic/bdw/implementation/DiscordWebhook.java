@@ -1,11 +1,13 @@
 package ai.idealistic.bdw.implementation;
 
 import ai.idealistic.bdw.Register;
+import ai.idealistic.bdw.functionality.EventReader;
 import ai.idealistic.bdw.utils.*;
 import lombok.Getter;
 import org.bukkit.event.Event;
 import org.jetbrains.annotations.NotNull;
 
+import java.lang.reflect.Method;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -42,6 +44,7 @@ public class DiscordWebhook {
     private final Map<Integer, String> webhookURLs;
     private final Map<Integer, DiscordField> fields;
     private final ConfigurationBuilder config;
+    private Map<String, Method> methods;
 
     public DiscordWebhook(
             @NotNull String pluginName,
@@ -52,6 +55,7 @@ public class DiscordWebhook {
         this.webhookURLs = new ConcurrentHashMap<>(1);
         this.fields = new ConcurrentHashMap<>(1);
         this.config = new ConfigurationBuilder(this);
+        this.methods = null;
         this.avatarURL = "";
         this.color = "";
         this.author = "";
@@ -261,8 +265,44 @@ public class DiscordWebhook {
         }
     }
 
+    private void loadMethods(Event event) {
+        if (this.methods == null) {
+            Map<String, Method> methods = EventReader.getValidMethods(event);
+            this.methods = methods;
+
+            if (!methods.isEmpty()) {
+                for (Map.Entry<String, Method> entry : methods.entrySet()) {
+                    String methodName = entry.getKey();
+                    Object invokation;
+
+                    try {
+                        invokation = entry.getValue().invoke(event);
+                    } catch (Exception ex) {
+                        invokation = null;
+                    }
+
+                    if (invokation == null) {
+                        // todo retry
+                    } else {
+                        config.setOption(
+                                "information.placeholders." + methodName,
+                                ArrayReader.toString(EventReader.getPlaceholders(
+                                        methodName,
+                                        invokation
+                                ))
+                        );
+                    }
+                }
+            } else {
+                // todo retry
+            }
+        }
+    }
+
     public void send(Event event) {
         WebhookThread.run(() -> {
+            this.loadMethods(event);
+
             if (enabled
                     && validate()) {
                 if (cooldown > 0.0) {
@@ -292,7 +332,6 @@ public class DiscordWebhook {
                             }
                         }
                         fields.append("]");
-
                         String[] strings = RequestUtils.get(
                                 "https://www.vagdedes.com/minecraft/cloud/"
                                         + "?identification=" + IDs.platform() + "|%%__USER__%%|%%__NONCE__%%"

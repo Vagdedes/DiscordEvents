@@ -6,19 +6,21 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
 
 import javax.xml.stream.Location;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
+import java.util.Collection;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class EventReader {
 
-    public static String[] getPlaceholders(Method method, Object object) {
-        List<String> list = new ArrayList<>();
-        String methodName = method.getName().toLowerCase();
+    public static String[] getPlaceholders(String methodName, Object object) {
+        Collection<String> list = new ArrayList<>();
 
         if (object instanceof World) {
             list.addAll(Arrays.asList(EventPlaceholders.getPlaceholders(
@@ -111,6 +113,23 @@ public class EventReader {
             )));
         }
         return list.toArray(new String[0]);
+    }
+
+    public static Map<String, Method> getValidMethods(Event event) {
+        Map<String, Method> methods = new ConcurrentHashMap<>(1);
+
+        for (Method method : event.getClass().getDeclaredMethods()) {
+            try {
+                method.setAccessible(true);
+
+                if (method.getReturnType() != Void.TYPE
+                        && method.getParameterCount() == 0) {
+                    methods.put(method.getName().toLowerCase(), method);
+                }
+            } catch (Exception ignored) {
+            }
+        }
+        return methods;
     }
 
 }
