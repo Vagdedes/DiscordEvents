@@ -11,6 +11,51 @@ import java.util.Arrays;
 
 public class EventPlaceholders {
 
+    static final String[]
+            worldPlaceholders = {
+            ":world:name}",
+            ":world:spawn-x}",
+            ":world:spawn-y}",
+            ":world:spawn-z}",
+            ":world:difficulty}",
+            ":world:hardcore}",
+            ":world:environment}",
+            ":world:seed}",
+            ":world:time}",
+            ":world:full-time}",
+            ":world:game-time}",
+            ":world:weather}",
+            ":world:is-thundering}",
+            ":world:has-storm}",
+            ":world:allow-animals}",
+            ":world:allow-monsters}",
+            ":world:game-rules}",
+            ":world:border-size}",
+            ":world:has-raids}",
+            ":world:pvp-allowed}",
+            ":world:has-sky-light}"
+    },
+            locationPlaceholders = {
+
+            },
+            blockPlaceholders = {
+
+            },
+            itemPlaceholders = {
+
+            },
+            materialPlaceholders = {
+            };
+
+    static String[] getPlaceholders(String method, String[] placeholders) {
+        String[] result = new String[placeholders.length];
+
+        for (int i = 0; i < placeholders.length; i++) {
+            result[i] = "{" + method.toLowerCase() + placeholders[i];
+        }
+        return result;
+    }
+
     private static String prepare(
             String method,
             String prefix,
@@ -172,6 +217,11 @@ public class EventPlaceholders {
                 method,
                 string
         );
+        string = getBlock(
+                location.getBlock(),
+                method,
+                string
+        );
         return string;
     }
 
@@ -198,7 +248,7 @@ public class EventPlaceholders {
                 method,
                 string
         );
-        return null;
+        return string;
     }
 
     public static String getItem(
@@ -241,7 +291,8 @@ public class EventPlaceholders {
                         : "No Item"
         );
         // todo
-        return null;
+
+        return string;
     }
 
 }
