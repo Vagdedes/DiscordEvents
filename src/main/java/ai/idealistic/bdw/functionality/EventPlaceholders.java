@@ -1,5 +1,6 @@
 package ai.idealistic.bdw.functionality;
 
+import ai.idealistic.bdw.listeners.ChunksEvent;
 import ai.idealistic.bdw.utils.ArrayReader;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -395,7 +396,12 @@ public class EventPlaceholders {
             String method,
             String string
     ) {
-        if (block == null) {
+        if (block == null
+                || !ChunksEvent.isLoaded(
+                block.getWorld(),
+                block.getX() >> 4,
+                block.getZ() >> 4
+        )) {
             for (String placeholder : blockPlaceholders) {
                 string = string.replace(
                         "{" + method + placeholder,
@@ -726,6 +732,7 @@ public class EventPlaceholders {
         player.getPlayerTime(); // long
         player.getWalkSpeed(); // float
         player.getFlySpeed(); // float
+        player.getTotalExperience();
         Object object = hasPlayerMethod(player, "isInvisible");
 
         if (object instanceof Boolean) {

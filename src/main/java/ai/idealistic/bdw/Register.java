@@ -4,6 +4,7 @@ import ai.idealistic.bdw.command.CommandExecution;
 import ai.idealistic.bdw.command.CommandTab;
 import ai.idealistic.bdw.functionality.BdwManager;
 import ai.idealistic.bdw.listeners.AllEvents;
+import ai.idealistic.bdw.listeners.ChunksEvent;
 import ai.idealistic.bdw.listeners.PluginStates;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
@@ -23,6 +24,7 @@ public class Register extends JavaPlugin {
         PluginManager pm = getServer().getPluginManager();
         pm.registerEvents(new PluginStates(), this);
         pm.registerEvents(new AllEvents(), this);
+        pm.registerEvents(new ChunksEvent(), this);
         BdwManager.update();
 
         this.getCommand(command).setExecutor(new CommandExecution());
