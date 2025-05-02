@@ -724,15 +724,29 @@ public class EventPlaceholders {
         ).replace(
                 prepare(method, prefix, "player-list-name"),
                 player.getPlayerListName()
+        ).replace(
+                prepare(method, prefix, "level"),
+                String.valueOf(player.getLevel())
+        ).replace(
+                prepare(method, prefix, "exp"),
+                String.valueOf(player.getExp())
+        ).replace(
+                prepare(method, prefix, "is-player-time-relative"),
+                String.valueOf(player.isPlayerTimeRelative())
+        ).replace(
+                prepare(method, prefix, "player-time"),
+                String.valueOf(player.getPlayerTime()) // todo
+        ).replace(
+                prepare(method, prefix, "walk-speed"),
+                String.valueOf(player.getWalkSpeed())
+        ).replace(
+                prepare(method, prefix, "fly-speed"),
+                String.valueOf(player.getFlySpeed())
+        ).replace(
+                prepare(method, prefix, "total-experience"),
+                String.valueOf(player.getTotalExperience())
         );
         player.getClientViewDistance(); // int
-        player.getLevel(); // int
-        player.getExp(); // float
-        player.isPlayerTimeRelative();
-        player.getPlayerTime(); // long
-        player.getWalkSpeed(); // float
-        player.getFlySpeed(); // float
-        player.getTotalExperience();
         Object object = hasPlayerMethod(player, "isInvisible");
 
         if (object instanceof Boolean) {
@@ -805,26 +819,38 @@ public class EventPlaceholders {
                 )
         ).replace(
                 prepare(method, prefix, "eye-height"),
-                String.valueOf(
-                        entity.getEyeHeight()
-                )
+                String.valueOf(entity.getEyeHeight())
+        ).replace(
+                prepare(method, prefix, "is-leashed"),
+                String.valueOf(entity.isLeashed())
+        ).replace(
+                prepare(method, prefix, "can-pickup-items"),
+                String.valueOf(entity.getCanPickupItems())
+        ).replace(
+                prepare(method, prefix, "active-potion-effects"),
+                String.valueOf(entity.getActivePotionEffects().size())
+        ).replace(
+                prepare(method, prefix, "remove-when-far-away"),
+                String.valueOf(entity.getRemoveWhenFarAway())
+        ).replace(
+                prepare(method, prefix, "last-damage"),
+                String.valueOf(entity.getLastDamage())
+        ).replace(
+                prepare(method, prefix, "maximum-no-damage-ticks"),
+                String.valueOf(entity.getMaximumNoDamageTicks())
+        ).replace(
+                prepare(method, prefix, "no-damage-ticks"),
+                String.valueOf(entity.getNoDamageTicks())
         );
         entity.isClimbing();
         entity.isCollidable();
         entity.isRiptiding();
         entity.getArrowsInBody(); // int
-        entity.isLeashed();
         entity.getCategory(); // enum
-        entity.getCanPickupItems();
-        entity.getActivePotionEffects().size();
-        entity.getRemoveWhenFarAway();
         entity.getKiller();
-        entity.getLastDamage(); // double
         entity.getLeashHolder();
         entity.getCategory(); // enum
         entity.canBreatheUnderwater();
-        entity.getMaximumNoDamageTicks();
-        entity.getNoDamageTicks();
         Object object = hasLivingEntityMethod(entity, "isSleeping");
 
         if (object instanceof Boolean) {
@@ -920,14 +946,26 @@ public class EventPlaceholders {
                         MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)
                                 && entity.isFrozen()
                 )
+        ).replace(
+                prepare(method, prefix, "ticks-lived"),
+                String.valueOf(
+                        entity.getTicksLived()
+                )
+        ).replace(
+                prepare(method, prefix, "has-passenger"),
+                String.valueOf(
+                        entity.getPassenger() != null
+                )
+        ).replace(
+                prepare(method, prefix, "max-fire-ticks"),
+                String.valueOf(
+                        entity.getMaxFireTicks()
+                )
         );
-        entity.getTicksLived();
         entity.getFreezeTicks();
         entity.getMaxFreezeTicks();
-        entity.getMaxFireTicks();
         entity.getPortalCooldown();
         entity.getPassengers().size();
-        entity.getPassenger();
         entity.getSpawnCategory(); // enum
         entity.getPose(); // enum
         entity.getVehicle();
