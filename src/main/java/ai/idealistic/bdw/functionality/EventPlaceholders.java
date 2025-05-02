@@ -9,6 +9,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.sql.Timestamp;
 import java.util.Arrays;
@@ -111,6 +112,11 @@ public class EventPlaceholders {
                     ":living-entity:has-ai}"
             },
             playerPlaceholders = {
+                    ":player:is-sneaking}",
+                    ":player:is-sprinting}",
+                    ":player:is-flying}",
+                    ":player:is-op}",
+                    ":player:game-mode}"
             };
 
     static String[] getPlaceholders(String method, String[] placeholders) {
@@ -366,6 +372,20 @@ public class EventPlaceholders {
         return string;
     }
 
+    private static Object hasItemMetaMethod(ItemMeta meta, String methodName) {
+        int hash = (meta.getClass().hashCode() * 31) + methodName.hashCode();
+
+        if (noMethods.contains(hash)) {
+            return null;
+        }
+        try {
+            return meta.getClass().getMethod(methodName).invoke(meta);
+        } catch (Exception e) {
+            noMethods.add(hash);
+            return null;
+        }
+    }
+
     public static String getItem(
             ItemStack itemStack,
             String method,
@@ -404,25 +424,37 @@ public class EventPlaceholders {
                         itemStack.hasItemMeta()
                                 && itemStack.getItemMeta().hasLore()
                 )
-        ).replace(
-                prepare(method, prefix, "has-custom-model-data"),
-                String.valueOf(
-                        itemStack.hasItemMeta()
-                                && itemStack.getItemMeta().hasCustomModelData()
-                )
-        ).replace(
-                prepare(method, prefix, "has-custom-model-data"),
-                String.valueOf(
-                        itemStack.hasItemMeta()
-                                && itemStack.getItemMeta().hasCustomModelData()
-                )
-        ).replace(
-                prepare(method, prefix, "has-localized-name"),
-                String.valueOf(
-                        itemStack.hasItemMeta()
-                                && itemStack.getItemMeta().hasLocalizedName()
-                )
         );
+
+        if (itemStack.hasItemMeta()) {
+            ItemMeta meta = itemStack.getItemMeta();
+            Object object = hasItemMetaMethod(meta, "hasCustomModelData");
+
+            if (object instanceof Integer) {
+                string = string.replace(
+                        prepare(method, prefix, "has-custom-model-data"),
+                        String.valueOf(object)
+                );
+            } else {
+                string = string.replace(
+                        prepare(method, prefix, "has-custom-model-data"),
+                        isNull
+                );
+            }
+            object = hasItemMetaMethod(meta, "hasLocalizedName");
+
+            if (object instanceof String) {
+                string = string.replace(
+                        prepare(method, prefix, "has-localized-name"),
+                        object.toString()
+                );
+            } else {
+                string = string.replace(
+                        prepare(method, prefix, "has-localized-name"),
+                        isNull
+                );
+            }
+        }
 
         string = getMaterial(
                 itemStack.getType(),
@@ -567,6 +599,20 @@ public class EventPlaceholders {
         return string;
     }
 
+    private static Object hasLivingEntityMethod(LivingEntity entity, String methodName) {
+        int hash = (entity.getClass().hashCode() * 31) + methodName.hashCode();
+
+        if (noMethods.contains(hash)) {
+            return null;
+        }
+        try {
+            return entity.getClass().getMethod(methodName).invoke(entity);
+        } catch (Exception e) {
+            noMethods.add(hash);
+            return null;
+        }
+    }
+
     public static String getLivingEntity(
             LivingEntity entity,
             String method,
@@ -592,17 +638,33 @@ public class EventPlaceholders {
                         MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)
                                 && entity.isGliding()
                 )
-        ).replace(
-                prepare(method, prefix, "is-sleeping"),
-                String.valueOf(
-                        entity.isSleeping()
-                )
-        ).replace(
-                prepare(method, prefix, "has-ai"),
-                String.valueOf(
-                        entity.hasAI()
-                )
         );
+        Object object = hasLivingEntityMethod(entity, "isSleeping");
+
+        if (object instanceof Boolean) {
+            string = string.replace(
+                    prepare(method, prefix, "is-sleeping"),
+                    String.valueOf(object == Boolean.TRUE)
+            );
+        } else {
+            string = string.replace(
+                    prepare(method, prefix, "is-sleeping"),
+                    isNull
+            );
+        }
+        object = hasLivingEntityMethod(entity, "hasAI");
+
+        if (object instanceof Boolean) {
+            string = string.replace(
+                    prepare(method, prefix, "has-ai"),
+                    String.valueOf(object == Boolean.TRUE)
+            );
+        } else {
+            string = string.replace(
+                    prepare(method, prefix, "has-ai"),
+                    isNull
+            );
+        }
 
         string = getEntity(
                 entity,
