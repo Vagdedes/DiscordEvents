@@ -3,7 +3,7 @@ authors: [Evangelos Dedes @Vagdedes]
 main: ai.idealistic.bdw.Register
 version: 1.0.0
 website: https://builtbybit.com/resources/64165
-description: Set up Discord Webhooks for any plugin and any event!
+description: Bridge every Minecraft event to Discord with full control. No fluff. No coding. Just raw power.
 api-version: 1.13
 load: POSTWORLD
 folia-supported: true
