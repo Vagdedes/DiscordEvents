@@ -13,13 +13,13 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.sql.Timestamp;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class EventPlaceholders {
 
     private static final String isNull = "(null)";
-    private static final Set<Integer> noMethods = new HashSet<>(1);
+    private static final Map<Integer, Boolean> noMethods = new ConcurrentHashMap<>(1);
 
     static final String
             customPlaceholder = ":custom}";
@@ -145,13 +145,13 @@ public class EventPlaceholders {
     private static Object hasWorldMethod(World world, String methodName) {
         int hash = (world.getClass().hashCode() * 31) + methodName.hashCode();
 
-        if (noMethods.contains(hash)) {
+        if (noMethods.containsKey(hash)) {
             return null;
         }
         try {
             return world.getClass().getMethod(methodName).invoke(world);
         } catch (Exception e) {
-            noMethods.add(hash);
+            noMethods.put(hash, true);
             return null;
         }
     }
@@ -398,13 +398,13 @@ public class EventPlaceholders {
     private static Object hasItemMetaMethod(ItemMeta meta, String methodName) {
         int hash = (meta.getClass().hashCode() * 31) + methodName.hashCode();
 
-        if (noMethods.contains(hash)) {
+        if (noMethods.containsKey(hash)) {
             return null;
         }
         try {
             return meta.getClass().getMethod(methodName).invoke(meta);
         } catch (Exception e) {
-            noMethods.add(hash);
+            noMethods.put(hash, true);
             return null;
         }
     }
@@ -499,13 +499,13 @@ public class EventPlaceholders {
     private static Object hasMaterialMethod(Material material, String methodName) {
         int hash = (material.getClass().hashCode() * 31) + methodName.hashCode();
 
-        if (noMethods.contains(hash)) {
+        if (noMethods.containsKey(hash)) {
             return null;
         }
         try {
             return material.getClass().getMethod(methodName).invoke(material);
         } catch (Exception e) {
-            noMethods.add(hash);
+            noMethods.put(hash, true);
             return null;
         }
     }
@@ -652,13 +652,13 @@ public class EventPlaceholders {
     private static Object hasLivingEntityMethod(LivingEntity entity, String methodName) {
         int hash = (entity.getClass().hashCode() * 31) + methodName.hashCode();
 
-        if (noMethods.contains(hash)) {
+        if (noMethods.containsKey(hash)) {
             return null;
         }
         try {
             return entity.getClass().getMethod(methodName).invoke(entity);
         } catch (Exception e) {
-            noMethods.add(hash);
+            noMethods.put(hash, true);
             return null;
         }
     }
@@ -736,13 +736,13 @@ public class EventPlaceholders {
     private static Object hasEntityMethod(Entity entity, String methodName) {
         int hash = (entity.getClass().hashCode() * 31) + methodName.hashCode();
 
-        if (noMethods.contains(hash)) {
+        if (noMethods.containsKey(hash)) {
             return null;
         }
         try {
             return entity.getClass().getMethod(methodName).invoke(entity);
         } catch (Exception e) {
-            noMethods.add(hash);
+            noMethods.put(hash, true);
             return null;
         }
     }
