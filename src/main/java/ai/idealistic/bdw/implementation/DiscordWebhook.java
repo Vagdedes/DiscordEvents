@@ -1,10 +1,7 @@
 package ai.idealistic.bdw.implementation;
 
 import ai.idealistic.bdw.Register;
-import ai.idealistic.bdw.utils.AwarenessNotifications;
-import ai.idealistic.bdw.utils.JavaURL;
-import ai.idealistic.bdw.utils.RequestUtils;
-import ai.idealistic.bdw.utils.WebhookThread;
+import ai.idealistic.bdw.utils.*;
 import lombok.Getter;
 import org.bukkit.event.Event;
 import org.jetbrains.annotations.NotNull;
@@ -298,7 +295,7 @@ public class DiscordWebhook {
 
                         String[] strings = RequestUtils.get(
                                 "https://www.vagdedes.com/minecraft/cloud/?"
-                                        + "identification=BuiltByBit|%%__USER__%%|%%__NONCE__%%"
+                                        + "identification=" + IDs.platform() + "|%%__USER__%%|%%__NONCE__%%"
                                         + "&action=add"
                                         + "&data=advancedDiscordWebhook"
                                         + "&version=" + Register.plugin.getDescription().getVersion()

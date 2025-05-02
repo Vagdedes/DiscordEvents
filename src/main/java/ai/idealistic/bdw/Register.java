@@ -19,7 +19,7 @@ public class Register extends JavaPlugin {
 
     public void onEnable() {
         plugin = this;
-        //new Metrics(this, 00000);
+        //new Metrics(this, 00000); todo
 
         PluginManager pm = getServer().getPluginManager();
         pm.registerEvents(new PluginStates(), this);
