@@ -21,6 +21,8 @@ public class EventPlaceholders {
     private static final String isNull = "(null)";
     private static final Set<Integer> noMethods = new HashSet<>(1);
 
+    static final String
+            nativePlaceholder = ":native}";
     static final String[]
             worldPlaceholders = {
             ":world:name}",
@@ -119,11 +121,15 @@ public class EventPlaceholders {
                     ":player:game-mode}"
             };
 
+    static String getPlaceholder(String method, String placeholder) {
+        return "{" + method + placeholder;
+    }
+
     static String[] getPlaceholders(String method, String[] placeholders) {
         String[] result = new String[placeholders.length];
 
         for (int i = 0; i < placeholders.length; i++) {
-            result[i] = "{" + method + placeholders[i];
+            result[i] = getPlaceholder(method, placeholders[i]);
         }
         return result;
     }
@@ -912,6 +918,30 @@ public class EventPlaceholders {
                 string,
                 false
         );
+        return string;
+    }
+
+    static boolean isNative(Object object) {
+        return object instanceof Boolean
+                || object instanceof Number
+                || object instanceof String;
+    }
+
+    public static String getNative(
+            Object object,
+            String methodName,
+            String string) {
+        if (object == null) {
+            string = string.replace(
+                    "{" + methodName + nativePlaceholder,
+                    isNull
+            );
+        } else {
+            string = string.replace(
+                    "{" + methodName + nativePlaceholder,
+                    object.toString()
+            );
+        }
         return string;
     }
 

@@ -21,7 +21,24 @@ public class EventReader {
     public static String[] getPlaceholders(String methodName, Class<?> returnType) {
         Collection<String> list = new ArrayList<>();
 
-        if (returnType.equals(World.class)) {
+        if (returnType.equals(String.class)
+                || returnType.equals(Integer.class)
+                || returnType.equals(int.class)
+                || returnType.equals(Double.class)
+                || returnType.equals(double.class)
+                || returnType.equals(Float.class)
+                || returnType.equals(float.class)
+                || returnType.equals(Long.class)
+                || returnType.equals(long.class)
+                || returnType.equals(Short.class)
+                || returnType.equals(short.class)
+                || returnType.equals(Boolean.class)
+                || returnType.equals(boolean.class)) {
+            list.add(EventPlaceholders.getPlaceholder(
+                    methodName,
+                    EventPlaceholders.nativePlaceholder
+            ));
+        } else if (returnType.equals(World.class)) {
             list.addAll(Arrays.asList(EventPlaceholders.getPlaceholders(
                     methodName,
                     EventPlaceholders.worldPlaceholders
