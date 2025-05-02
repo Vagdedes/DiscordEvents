@@ -48,6 +48,7 @@ public class ConfigurationBuilder {
         }
         addOption("options.enabled", false);
         addOption("options.cooldown", 0.1);
+        addOption("options.method_call_blacklist", "methodexample1, methodexample2");
 
         addOption("webhook.avatar_url", "");
         addOption("webhook.color", "");

@@ -41,6 +41,7 @@ public class DiscordWebhook {
     private boolean enabled;
     private double cooldown;
     private long expiration;
+    private Map<String, Boolean> methodCallBlacklist;
     private final Map<String, Boolean> webhookURLs;
     private final Map<Integer, DiscordField> fields;
     private final ConfigurationBuilder config;
@@ -52,9 +53,10 @@ public class DiscordWebhook {
     ) {
         this.pluginName = pluginName;
         this.event = event;
-        this.webhookURLs = new ConcurrentHashMap<>(1);
-        this.fields = new ConcurrentHashMap<>(1);
+        this.webhookURLs = new ConcurrentHashMap<>(0);
+        this.fields = new ConcurrentHashMap<>(0);
         this.config = new ConfigurationBuilder(this);
+        this.methodCallBlacklist = new ConcurrentHashMap<>(0);
         this.methods = null;
         this.avatarURL = "";
         this.color = "";
@@ -339,8 +341,12 @@ public class DiscordWebhook {
 
                 if (!this.methods.isEmpty()) {
                     for (Map.Entry<String, Method> entry : this.methods.entrySet()) {
-                        Object result;
                         String methodName = entry.getKey();
+
+                        if (methodCallBlacklist.containsKey(methodName)) {
+                            continue;
+                        }
+                        Object result;
 
                         try {
                             result = entry.getValue().invoke(event);
@@ -500,7 +506,19 @@ public class DiscordWebhook {
         this.config.setOption("information.last_reload", date);
         this.enabled = this.config.getBoolean("options.enabled");
         this.cooldown = Math.max(this.config.getDouble("options.cooldown"), 0.0);
+        this.methodCallBlacklist.clear();
+        String[] split = this.config.getString("options.method_call_blacklist").split(
+                ",",
+                100
+        );
 
+        for (String method : split) {
+            method = method.trim();
+
+            if (!method.isEmpty()) {
+                methodCallBlacklist.put(method, true);
+            }
+        }
         this.avatarURL = this.config.getString("webhook.avatar_url");
         this.color = this.config.getString("webhook.color");
         this.author = this.config.getString("webhook.author");
