@@ -156,7 +156,7 @@ public class EventPlaceholders {
         }
     }
 
-    public static String getWorld(
+    private static String getWorld(
             World world,
             String method,
             String string
@@ -311,7 +311,7 @@ public class EventPlaceholders {
         return string;
     }
 
-    public static String getLocation(
+    private static String getLocation(
             Location location,
             String method,
             String string,
@@ -360,7 +360,7 @@ public class EventPlaceholders {
         return string;
     }
 
-    public static String getBlock(
+    private static String getBlock(
             Block block,
             String method,
             String string
@@ -409,7 +409,7 @@ public class EventPlaceholders {
         }
     }
 
-    public static String getItem(
+    private static String getItem(
             ItemStack itemStack,
             String method,
             String string
@@ -510,7 +510,7 @@ public class EventPlaceholders {
         }
     }
 
-    public static String getMaterial(
+    private static String getMaterial(
             Material material,
             String method,
             String string
@@ -608,7 +608,7 @@ public class EventPlaceholders {
         return string;
     }
 
-    public static String getPlayer(
+    private static String getPlayer(
             Player player,
             String method,
             String string
@@ -663,7 +663,7 @@ public class EventPlaceholders {
         }
     }
 
-    public static String getLivingEntity(
+    private static String getLivingEntity(
             LivingEntity entity,
             String method,
             String string
@@ -747,7 +747,7 @@ public class EventPlaceholders {
         }
     }
 
-    public static String getEntity(
+    private static String getEntity(
             Entity entity,
             String method,
             String string
@@ -921,7 +921,7 @@ public class EventPlaceholders {
         return string;
     }
 
-    public static String getCustom(
+    private static String getCustom(
             Object object,
             String methodName,
             String string) {
@@ -937,6 +937,67 @@ public class EventPlaceholders {
             );
         }
         return string;
+    }
+
+    public static String get(
+            Object object,
+            String methodName,
+            String string
+    ) {
+        if (object instanceof World) {
+            return getWorld(
+                    (World) object,
+                    methodName,
+                    string
+            );
+        } else if (object instanceof Location) {
+            return getLocation(
+                    (Location) object,
+                    methodName,
+                    string,
+                    true
+            );
+        } else if (object instanceof Block) {
+            return getBlock(
+                    (Block) object,
+                    methodName,
+                    string
+            );
+        } else if (object instanceof ItemStack) {
+            return getItem(
+                    (ItemStack) object,
+                    methodName,
+                    string
+            );
+        } else if (object instanceof Material) {
+            return getMaterial(
+                    (Material) object,
+                    methodName,
+                    string
+            );
+        } else if (object instanceof Entity) {
+            if (object instanceof Player) {
+                return getPlayer(
+                        (Player) object,
+                        methodName,
+                        string
+                );
+            } else if (object instanceof LivingEntity) {
+                return getLivingEntity(
+                        (LivingEntity) object,
+                        methodName,
+                        string
+                );
+            } else {
+                return getEntity(
+                        (Entity) object,
+                        methodName,
+                        string
+                );
+            }
+        } else {
+            return getCustom(object, methodName, string);
+        }
     }
 
 }

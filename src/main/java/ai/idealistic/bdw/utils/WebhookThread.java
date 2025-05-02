@@ -15,7 +15,7 @@ import java.util.function.Function;
 @UtilityClass
 public class WebhookThread {
 
-    private static boolean debug = false;
+    private static boolean debug = true;
     private static final char INNER_CLASS_SEPARATOR_CHAR = '$';
     public static int STOP_WATCH_TIME_MILLIS = 750;
     @Getter

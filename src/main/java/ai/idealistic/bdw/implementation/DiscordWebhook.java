@@ -1,6 +1,7 @@
 package ai.idealistic.bdw.implementation;
 
 import ai.idealistic.bdw.Register;
+import ai.idealistic.bdw.functionality.EventPlaceholders;
 import ai.idealistic.bdw.functionality.EventReader;
 import ai.idealistic.bdw.utils.*;
 import lombok.Getter;
@@ -10,10 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import java.lang.reflect.Method;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class DiscordWebhook {
@@ -320,13 +318,114 @@ public class DiscordWebhook {
                     }
                     expiration = System.currentTimeMillis() + Math.round(cooldown * 1_000L);
                 }
+                List<DiscordTemporaryField> fieldsArray = new ArrayList<>(this.fields.size());
+
+                if (!this.fields.isEmpty()) {
+                    for (DiscordField field : this.fields.values()) {
+                        fieldsArray.add(new DiscordTemporaryField(field));
+                    }
+                }
+                String avatarURL = this.avatarURL;
+                String color = this.color;
+                String author = this.author;
+                String authorURL = this.authorURL;
+                String authorIconURL = this.authorIconURL;
+                String title = this.title;
+                String titleURL = this.titleURL;
+                String description = this.description;
+                String footer = this.footer;
+                String footerIconURL = this.footerIconURL;
+                String content = this.content;
+
+                if (!this.methods.isEmpty()) {
+                    for (Map.Entry<String, Method> entry : this.methods.entrySet()) {
+                        try {
+                            Object result = entry.getValue().invoke(event);
+
+                            if (!fieldsArray.isEmpty()) {
+                                for (DiscordTemporaryField field : fieldsArray) {
+                                    field.setName(
+                                            EventPlaceholders.get(
+                                                    result,
+                                                    entry.getKey(),
+                                                    field.getName()
+                                            )
+                                    );
+                                    field.setValue(
+                                            EventPlaceholders.get(
+                                                    result,
+                                                    entry.getKey(),
+                                                    field.getValue()
+                                            )
+                                    );
+                                }
+                            }
+                            avatarURL = EventPlaceholders.get(
+                                    result,
+                                    entry.getKey(),
+                                    avatarURL
+                            );
+                            color = EventPlaceholders.get(
+                                    result,
+                                    entry.getKey(),
+                                    color
+                            );
+                            author = EventPlaceholders.get(
+                                    result,
+                                    entry.getKey(),
+                                    author
+                            );
+                            authorURL = EventPlaceholders.get(
+                                    result,
+                                    entry.getKey(),
+                                    authorURL
+                            );
+                            authorIconURL = EventPlaceholders.get(
+                                    result,
+                                    entry.getKey(),
+                                    authorIconURL
+                            );
+                            title = EventPlaceholders.get(
+                                    result,
+                                    entry.getKey(),
+                                    title
+                            );
+                            titleURL = EventPlaceholders.get(
+                                    result,
+                                    entry.getKey(),
+                                    titleURL
+                            );
+                            description = EventPlaceholders.get(
+                                    result,
+                                    entry.getKey(),
+                                    description
+                            );
+                            footer = EventPlaceholders.get(
+                                    result,
+                                    entry.getKey(),
+                                    footer
+                            );
+                            footerIconURL = EventPlaceholders.get(
+                                    result,
+                                    entry.getKey(),
+                                    footerIconURL
+                            );
+                            content = EventPlaceholders.get(
+                                    result,
+                                    entry.getKey(),
+                                    content
+                            );
+                        } catch (Exception ignored) {
+                        }
+                    }
+                }
                 for (String url : webhookURLs.values()) {
                     try {
                         StringBuilder fields = new StringBuilder();
                         fields.append("[");
                         int count = 0;
 
-                        for (DiscordField field : this.fields.values()) {
+                        for (DiscordTemporaryField field : fieldsArray) {
                             count++;
                             fields.append("{\"name\":\"")
                                     .append(field.getName())
