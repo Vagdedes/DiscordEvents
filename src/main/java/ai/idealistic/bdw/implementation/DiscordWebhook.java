@@ -41,7 +41,7 @@ public class DiscordWebhook {
     private boolean enabled;
     private double cooldown;
     private long expiration;
-    private final Map<Integer, String> webhookURLs;
+    private final Map<String, Boolean> webhookURLs;
     private final Map<Integer, DiscordField> fields;
     private final ConfigurationBuilder config;
     private Map<String, Method> methods;
@@ -86,7 +86,7 @@ public class DiscordWebhook {
             );
             return false;
         }
-        for (String url : webhookURLs.values()) {
+        for (String url : webhookURLs.keySet()) {
             if (url == null || url.isEmpty()) {
                 AwarenessNotifications.send(
                         this.invalidation = "Webhook URL of the event '"
@@ -339,107 +339,116 @@ public class DiscordWebhook {
 
                 if (!this.methods.isEmpty()) {
                     for (Map.Entry<String, Method> entry : this.methods.entrySet()) {
-                        try {
-                            Object result = entry.getValue().invoke(event);
+                        Object result;
+                        String methodName = entry.getKey();
 
-                            if (!fieldsArray.isEmpty()) {
-                                for (DiscordTemporaryField field : fieldsArray) {
-                                    field.setName(
-                                            EventPlaceholders.get(
-                                                    result,
-                                                    entry.getKey(),
-                                                    field.getName()
-                                            )
-                                    );
-                                    field.setValue(
-                                            EventPlaceholders.get(
-                                                    result,
-                                                    entry.getKey(),
-                                                    field.getValue()
-                                            )
-                                    );
-                                }
-                            }
-                            avatarURL = EventPlaceholders.get(
-                                    result,
-                                    entry.getKey(),
-                                    avatarURL
-                            );
-                            color = EventPlaceholders.get(
-                                    result,
-                                    entry.getKey(),
-                                    color
-                            );
-                            author = EventPlaceholders.get(
-                                    result,
-                                    entry.getKey(),
-                                    author
-                            );
-                            authorURL = EventPlaceholders.get(
-                                    result,
-                                    entry.getKey(),
-                                    authorURL
-                            );
-                            authorIconURL = EventPlaceholders.get(
-                                    result,
-                                    entry.getKey(),
-                                    authorIconURL
-                            );
-                            title = EventPlaceholders.get(
-                                    result,
-                                    entry.getKey(),
-                                    title
-                            );
-                            titleURL = EventPlaceholders.get(
-                                    result,
-                                    entry.getKey(),
-                                    titleURL
-                            );
-                            description = EventPlaceholders.get(
-                                    result,
-                                    entry.getKey(),
-                                    description
-                            );
-                            footer = EventPlaceholders.get(
-                                    result,
-                                    entry.getKey(),
-                                    footer
-                            );
-                            footerIconURL = EventPlaceholders.get(
-                                    result,
-                                    entry.getKey(),
-                                    footerIconURL
-                            );
-                            content = EventPlaceholders.get(
-                                    result,
-                                    entry.getKey(),
-                                    content
-                            );
+                        try {
+                            result = entry.getValue().invoke(event);
                         } catch (Exception ignored) {
+                            result = null;
                         }
+
+                        if (!fieldsArray.isEmpty()) {
+                            for (DiscordTemporaryField field : fieldsArray) {
+                                field.setName(
+                                        EventPlaceholders.get(
+                                                result,
+                                                methodName,
+                                                field.getName()
+                                        )
+                                );
+                                field.setValue(
+                                        EventPlaceholders.get(
+                                                result,
+                                                methodName,
+                                                field.getValue()
+                                        )
+                                );
+                            }
+                        }
+                        avatarURL = EventPlaceholders.get(
+                                result,
+                                methodName,
+                                avatarURL
+                        );
+                        color = EventPlaceholders.get(
+                                result,
+                                methodName,
+                                color
+                        );
+                        author = EventPlaceholders.get(
+                                result,
+                                methodName,
+                                author
+                        );
+                        authorURL = EventPlaceholders.get(
+                                result,
+                                methodName,
+                                authorURL
+                        );
+                        authorIconURL = EventPlaceholders.get(
+                                result,
+                                methodName,
+                                authorIconURL
+                        );
+                        title = EventPlaceholders.get(
+                                result,
+                                methodName,
+                                title
+                        );
+                        titleURL = EventPlaceholders.get(
+                                result,
+                                methodName,
+                                titleURL
+                        );
+                        description = EventPlaceholders.get(
+                                result,
+                                methodName,
+                                description
+                        );
+                        footer = EventPlaceholders.get(
+                                result,
+                                methodName,
+                                footer
+                        );
+                        footerIconURL = EventPlaceholders.get(
+                                result,
+                                methodName,
+                                footerIconURL
+                        );
+                        content = EventPlaceholders.get(
+                                result,
+                                methodName,
+                                content
+                        );
                     }
                 }
-                for (String url : webhookURLs.values()) {
+                for (String url : webhookURLs.keySet()) {
                     try {
                         StringBuilder fields = new StringBuilder();
-                        fields.append("[");
-                        int count = 0;
 
-                        for (DiscordTemporaryField field : fieldsArray) {
-                            count++;
-                            fields.append("{\"name\":\"")
-                                    .append(field.getName())
-                                    .append("\",\"value\":\"")
-                                    .append(field.getValue())
-                                    .append("\",\"inline\":")
-                                    .append(field.isInline())
-                                    .append("}");
+                        if (fieldsArray.isEmpty()) {
+                            fields.append("[]");
+                        } else {
+                            int count = 0;
+                            fields.append("[");
 
-                            if (count < this.fields.size()) {
-                                fields.append(",");
+                            for (DiscordTemporaryField field : fieldsArray) {
+                                count++;
+                                fields.append("{\"name\":\"")
+                                        .append(field.getName())
+                                        .append("\",\"value\":\"")
+                                        .append(field.getValue())
+                                        .append("\",\"inline\":")
+                                        .append(field.isInline())
+                                        .append("}");
+
+                                if (count < this.fields.size()) {
+                                    fields.append(",");
+                                }
                             }
+                            fields.append("]");
                         }
-                        fields.append("]");
                         String[] strings = RequestUtils.get(
                                 "https://www.vagdedes.com/minecraft/cloud/"
                                         + "?identification=" + IDs.platform() + "|%%__USER__%%|%%__NONCE__%%"
@@ -471,9 +480,7 @@ public class DiscordWebhook {
                             AwarenessNotifications.send(
                                     "The webserver returned an empty response for the event '"
                                             + getEventName()
-                                            + "' of the plugin '"
-                                            + pluginName
-                                            + "'"
+                                            + " (" + pluginName + ")'"
                             );
                         }
                     } catch (Exception ex) {
@@ -504,16 +511,14 @@ public class DiscordWebhook {
         this.footer = this.config.getString("webhook.footer");
         this.footerIconURL = this.config.getString("webhook.footer_icon_url");
         this.content = this.config.getString("webhook.content");
+        this.webhookURLs.clear();
 
         for (int i = 1; i <= DiscordWebhook.MAX_WEBHOOK_URLS; i++) {
             String url = this.config.getString("webhook.url." + i);
 
             if (url != null
-                    && !url.isEmpty()
-                    && !this.webhookURLs.containsValue(url)) {
-                this.webhookURLs.put(i, url);
-            } else {
-                this.webhookURLs.remove(i);
+                    && !url.isEmpty()) {
+                this.webhookURLs.put(url, true);
             }
         }
         for (int i = 1; i <= DiscordWebhook.MAX_FIELDS; i++) {

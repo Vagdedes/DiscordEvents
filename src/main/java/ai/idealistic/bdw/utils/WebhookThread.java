@@ -15,7 +15,8 @@ import java.util.function.Function;
 @UtilityClass
 public class WebhookThread {
 
-    private static boolean debug = true;
+    private static final boolean testing = false;
+    private static final boolean debug = false;
     private static final char INNER_CLASS_SEPARATOR_CHAR = '$';
     public static int STOP_WATCH_TIME_MILLIS = 750;
     @Getter
@@ -32,7 +33,12 @@ public class WebhookThread {
     }
 
     public static Future<?> run(Runnable runnable) {
-        return scheduler.submit(new DecoratedRunnable(runnable));
+        if (testing) {
+            runnable.run();
+            return null;
+        } else {
+            return scheduler.submit(new DecoratedRunnable(runnable));
+        }
     }
 
     public static <T> Future<T> run(Callable<T> callable) {
