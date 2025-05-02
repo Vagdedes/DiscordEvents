@@ -133,7 +133,7 @@ public class EventPlaceholders {
             String prefix,
             String type
     ) {
-        return "{" + method.toLowerCase() + ":" + prefix + ":" + type + "}";
+        return "{" + method + ":" + prefix + ":" + type + "}";
     }
 
     private static Object hasWorldMethod(World world, String methodName) {
@@ -155,6 +155,15 @@ public class EventPlaceholders {
             String method,
             String string
     ) {
+        if (world == null) {
+            for (String placeholder : worldPlaceholders) {
+                string = string.replace(
+                        "{" + method + placeholder,
+                        isNull
+                );
+            }
+            return string;
+        }
         String prefix = "world";
 
         string = string.replace(
@@ -350,6 +359,15 @@ public class EventPlaceholders {
             String method,
             String string
     ) {
+        if (block == null) {
+            for (String placeholder : blockPlaceholders) {
+                string = string.replace(
+                        "{" + method + placeholder,
+                        isNull
+                );
+            }
+            return string;
+        }
         String prefix = "block";
 
         string = string.replace(
@@ -390,6 +408,15 @@ public class EventPlaceholders {
             String method,
             String string
     ) {
+        if (itemStack == null) {
+            for (String placeholder : itemPlaceholders) {
+                string = string.replace(
+                        "{" + method + placeholder,
+                        isNull
+                );
+            }
+            return string;
+        }
         String prefix = "item";
 
         string = string.replace(
@@ -482,6 +509,15 @@ public class EventPlaceholders {
             String method,
             String string
     ) {
+        if (material == null) {
+            for (String placeholder : materialPlaceholders) {
+                string = string.replace(
+                        "{" + method + placeholder,
+                        isNull
+                );
+            }
+            return string;
+        }
         String prefix = "material";
 
         string = string.replace(
@@ -571,6 +607,15 @@ public class EventPlaceholders {
             String method,
             String string
     ) {
+        if (player == null) {
+            for (String placeholder : playerPlaceholders) {
+                string = string.replace(
+                        "{" + method + placeholder,
+                        isNull
+                );
+            }
+            return string;
+        }
         String prefix = "player";
 
         string = string.replace(
@@ -617,6 +662,15 @@ public class EventPlaceholders {
             String method,
             String string
     ) {
+        if (entity == null) {
+            for (String placeholder : livingEntityPlaceholders) {
+                string = string.replace(
+                        "{" + method + placeholder,
+                        isNull
+                );
+            }
+            return string;
+        }
         String prefix = "living-entity";
 
         string = string.replace(
@@ -692,6 +746,15 @@ public class EventPlaceholders {
             String method,
             String string
     ) {
+        if (entity == null) {
+            for (String placeholder : entityPlaceholders) {
+                string = string.replace(
+                        "{" + method + placeholder,
+                        isNull
+                );
+            }
+            return string;
+        }
         String prefix = "entity";
 
         string = string.replace(
