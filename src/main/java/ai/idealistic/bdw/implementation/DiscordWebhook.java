@@ -110,6 +110,11 @@ public class DiscordWebhook {
                 return false;
             }
         }
+        int sum = author.length()
+                + title.length()
+                + description.length()
+                + footer.length();
+
         if (fields.size() > MAX_FIELDS) {
             AwarenessNotifications.send(
                     this.invalidation = "Fields of the event '"
@@ -121,30 +126,53 @@ public class DiscordWebhook {
         } else {
             int count = 0;
 
-            for (DiscordField field : fields.values()) {
-                count++;
-
-                if (field.getName().length() > 256) {
+            if (this.fields.isEmpty()) {
+                if (sum > 6000) {
                     AwarenessNotifications.send(
-                            this.invalidation = "Field '"
-                                    + count
-                                    + "' name of the event '"
+                            this.invalidation = "Fields of the event '"
                                     + getEventName()
                                     + " (" + pluginName + ")"
-                                    + "' is too long, must be 256 characters or less"
+                                    + "' are too long, must be 6000 characters or less"
                     );
                     return false;
                 }
-                if (field.getValue().length() > 1024) {
-                    AwarenessNotifications.send(
-                            this.invalidation = "Field '"
-                                    + count
-                                    + "' value of the event '"
-                                    + getEventName()
-                                    + " (" + pluginName + ")"
-                                    + "' is too long, must be 1024 characters or less"
-                    );
-                    return false;
+            } else {
+                for (DiscordField field : fields.values()) {
+                    count++;
+
+                    if (field.getName().length() > 256) {
+                        AwarenessNotifications.send(
+                                this.invalidation = "Field '"
+                                        + count
+                                        + "' name of the event '"
+                                        + getEventName()
+                                        + " (" + pluginName + ")"
+                                        + "' is too long, must be 256 characters or less"
+                        );
+                        return false;
+                    }
+                    if (field.getValue().length() > 1024) {
+                        AwarenessNotifications.send(
+                                this.invalidation = "Field '"
+                                        + count
+                                        + "' value of the event '"
+                                        + getEventName()
+                                        + " (" + pluginName + ")"
+                                        + "' is too long, must be 1024 characters or less"
+                        );
+                        return false;
+                    }
+                    sum += field.getName().length() + field.getValue().length();
+
+                    if (sum > 6000) {
+                        AwarenessNotifications.send(
+                                this.invalidation = "Fields of the event '"
+                                        + getEventName()
+                                        + " (" + pluginName + ")"
+                                        + "' are too long, must be 6000 characters or less"
+                        );
+                        return false;
+                    }
                 }
             }
         }
