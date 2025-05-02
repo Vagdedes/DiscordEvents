@@ -13,10 +13,11 @@ import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class EventListeners implements Listener {
 
-    private static final Map<Integer, DiscordWebhook> listeners = new HashMap<>(1);
+    private static final Map<Integer, DiscordWebhook> listeners = new ConcurrentHashMap<>(1);
 
     static void update() {
         if (!Register.isPluginEnabled()) {
