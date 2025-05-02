@@ -76,8 +76,12 @@ public class DiscordWebhook {
 
     private boolean validate() {
         if (this.invalidation != null) {
-            AwarenessNotifications.send(this.invalidation);
-            return false;
+            if (this.invalidation.isEmpty()) {
+                return true;
+            } else {
+                AwarenessNotifications.send(this.invalidation);
+                return false;
+            }
         }
         if (webhookURLs.isEmpty()) {
             AwarenessNotifications.send(
@@ -291,6 +295,7 @@ public class DiscordWebhook {
             );
             return false;
         } else {
+            this.invalidation = "";
             return true;
         }
     }
