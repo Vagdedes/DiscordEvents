@@ -704,13 +704,28 @@ public class EventPlaceholders {
                 prepare(method, prefix, "is-flying"),
                 String.valueOf(player.isFlying())
         ).replace(
+                prepare(method, prefix, "can-fly"),
+                String.valueOf(player.getAllowFlight())
+        ).replace(
                 prepare(method, prefix, "is-op"),
                 String.valueOf(player.isOp())
         ).replace(
                 prepare(method, prefix, "game-mode"),
                 player.getGameMode().name().toLowerCase().replace("_", "-")
+        ).replace(
+                prepare(method, prefix, "display-name"),
+                player.getDisplayName()
+        ).replace(
+                prepare(method, prefix, "player-list-name"),
+                player.getPlayerListName()
         );
-
+        player.getClientViewDistance(); // int
+        player.getLevel(); // int
+        player.getExp(); // float
+        player.isPlayerTimeRelative();
+        player.getPlayerTime(); // long
+        player.getWalkSpeed(); // float
+        player.getFlySpeed(); // float
         Object object = hasPlayerMethod(player, "isInvisible");
 
         if (object instanceof Boolean) {
@@ -781,7 +796,28 @@ public class EventPlaceholders {
                         MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)
                                 && entity.isGliding()
                 )
+        ).replace(
+                prepare(method, prefix, "eye-height"),
+                String.valueOf(
+                        entity.getEyeHeight()
+                )
         );
+        entity.isClimbing();
+        entity.isCollidable();
+        entity.isRiptiding();
+        entity.getArrowsInBody(); // int
+        entity.isLeashed();
+        entity.getCategory(); // enum
+        entity.getCanPickupItems();
+        entity.getActivePotionEffects().size();
+        entity.getRemoveWhenFarAway();
+        entity.getKiller();
+        entity.getLastDamage(); // double
+        entity.getLeashHolder();
+        entity.getCategory(); // enum
+        entity.canBreatheUnderwater();
+        entity.getMaximumNoDamageTicks();
+        entity.getNoDamageTicks();
         Object object = hasLivingEntityMethod(entity, "isSleeping");
 
         if (object instanceof Boolean) {
@@ -878,6 +914,16 @@ public class EventPlaceholders {
                                 && entity.isFrozen()
                 )
         );
+        entity.getTicksLived();
+        entity.getFreezeTicks();
+        entity.getMaxFreezeTicks();
+        entity.getMaxFireTicks();
+        entity.getPortalCooldown();
+        entity.getPassengers().size();
+        entity.getPassenger();
+        entity.getSpawnCategory(); // enum
+        entity.getPose(); // enum
+        entity.getVehicle();
         Object object = hasEntityMethod(entity, "getName");
 
         if (object instanceof String) {
