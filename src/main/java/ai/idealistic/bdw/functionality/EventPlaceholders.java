@@ -11,8 +11,12 @@ import org.bukkit.inventory.ItemStack;
 
 import java.sql.Timestamp;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 public class EventPlaceholders {
+
+    private static final Set<Integer> noMethods = new HashSet<>(1);
 
     static final String[]
             worldPlaceholders = {
@@ -36,7 +40,7 @@ public class EventPlaceholders {
             ":world:border-size}",
             ":world:has-raids}",
             ":world:pvp-allowed}",
-            ":world:has-sky-light}"
+            ":world:has-sky-light}",
     },
             locationPlaceholders = {
 
@@ -74,9 +78,15 @@ public class EventPlaceholders {
     }
 
     private static Object hasWorldMethod(World world, String methodName) {
+        int hash = (world.getClass().hashCode() * 31) + methodName.hashCode();
+
+        if (noMethods.contains(hash)) {
+            return null;
+        }
         try {
             return world.getClass().getMethod(methodName).invoke(world);
         } catch (Exception e) {
+            noMethods.add(hash);
             return null;
         }
     }
@@ -104,9 +114,6 @@ public class EventPlaceholders {
                 prepare(method, prefix, "difficulty"),
                 world.getDifficulty().name().toLowerCase().replace("_", "-")
         ).replace(
-                prepare(method, prefix, "hardcore"),
-                world.isHardcore() ? "Hardcore" : "Not Hardcore"
-        ).replace(
                 prepare(method, prefix, "environment"),
                 world.getEnvironment().name().toLowerCase().replace("_", "-")
         ).replace(
@@ -118,9 +125,6 @@ public class EventPlaceholders {
         ).replace(
                 prepare(method, prefix, "full-time"),
                 new Timestamp(world.getFullTime()).toString().substring(0, 19)
-        ).replace(
-                prepare(method, prefix, "game-time"),
-                new Timestamp(world.getGameTime()).toString().substring(0, 19)
         ).replace(
                 prepare(method, prefix, "weather"),
                 world.isThundering()
@@ -157,7 +161,7 @@ public class EventPlaceholders {
         if (object instanceof Boolean) {
             string = string.replace(
                     prepare(method, prefix, "has-raids"),
-                    object == Boolean.TRUE ? "true" : "false"
+                    String.valueOf(object == Boolean.TRUE)
             );
         }
         object = hasWorldMethod(world, "getPVP");
@@ -165,9 +169,7 @@ public class EventPlaceholders {
         if (object instanceof Boolean) {
             string = string.replace(
                     prepare(method, prefix, "pvp-allowed"),
-                    object == Boolean.TRUE
-                            ? "PvP Allowed"
-                            : "No PvP"
+                    String.valueOf(object == Boolean.TRUE)
             );
         }
         object = hasWorldMethod(world, "hasSkyLight");
@@ -175,9 +177,31 @@ public class EventPlaceholders {
         if (object instanceof Boolean) {
             string = string.replace(
                     prepare(method, prefix, "has-sky-light"),
-                    object == Boolean.TRUE
-                            ? "Sky Light"
-                            : "No Sky Light"
+                    String.valueOf(object == Boolean.TRUE)
+            );
+        }
+        object = hasWorldMethod(world, "hasSkyLight");
+
+        if (object instanceof Boolean) {
+            string = string.replace(
+                    prepare(method, prefix, "has-sky-light"),
+                    String.valueOf(object == Boolean.TRUE)
+            );
+        }
+        object = hasWorldMethod(world, "isHardcore");
+
+        if (object instanceof Boolean) {
+            string = string.replace(
+                    prepare(method, prefix, "is-hardcore"),
+                    String.valueOf(object == Boolean.TRUE)
+            );
+        }
+        object = hasWorldMethod(world, "getGameTime");
+
+        if (object instanceof Long) {
+            string = string.replace(
+                    prepare(method, prefix, "game-time"),
+                    new Timestamp((long) object).toString().substring(0, 19)
             );
         }
         return string;
@@ -275,6 +299,20 @@ public class EventPlaceholders {
         return string;
     }
 
+    private static Object hasMaterialMethod(Material material, String methodName) {
+        int hash = (material.getClass().hashCode() * 31) + methodName.hashCode();
+
+        if (noMethods.contains(hash)) {
+            return null;
+        }
+        try {
+            return material.getClass().getMethod(methodName).invoke(material);
+        } catch (Exception e) {
+            noMethods.add(hash);
+            return null;
+        }
+    }
+
     public static String getMaterial(
             Material material,
             String method,
@@ -283,18 +321,48 @@ public class EventPlaceholders {
         String prefix = "material";
 
         string = string.replace(
-                prepare(method, prefix, "is-block"),
-                material.isBlock()
-                        ? "Block"
-                        : "No Block"
+                prepare(method, prefix, "type"),
+                material.name().toLowerCase().replace("_", "-")
         ).replace(
-                prepare(method, prefix, "is-item"),
-                material.isItem()
-                        ? "Item"
-                        : "No Item"
+                prepare(method, prefix, "is-block"),
+                String.valueOf(material.isBlock())
+        ).replace(
+                prepare(method, prefix, "is-edible"),
+                String.valueOf(material.isEdible())
+        ).replace(
+                prepare(method, prefix, "is-solid"),
+                String.valueOf(material.isSolid())
+        ).replace(
+                prepare(method, prefix, "is-transparent"),
+                String.valueOf(material.isTransparent())
+        ).replace(
+                prepare(method, prefix, "is-flammable"),
+                String.valueOf(material.isFlammable())
         );
-        // todo
+        Object object = hasMaterialMethod(material, "isItem");
 
+        if (object instanceof Boolean) {
+            string = string.replace(
+                    prepare(method, prefix, "is-item"),
+                    String.valueOf(object == Boolean.TRUE)
+            );
+        }
+        object = hasMaterialMethod(material, "isAir");
+
+        if (object instanceof Boolean) {
+            string = string.replace(
+                    prepare(method, prefix, "is-air"),
+                    String.valueOf(object == Boolean.TRUE)
+            );
+        }
+        object = hasMaterialMethod(material, "isLiquid");
+
+        if (object instanceof Boolean) {
+            string = string.replace(
+                    prepare(method, prefix, "is-item"),
+                    String.valueOf(object == Boolean.TRUE)
+            );
+        }
         return string;
     }
 
@@ -354,6 +422,20 @@ public class EventPlaceholders {
                 string
         );
         return string;
+    }
+
+    private static Object hasEntityMethod(Entity entity, String methodName) {
+        int hash = (entity.getClass().hashCode() * 31) + methodName.hashCode();
+
+        if (noMethods.contains(hash)) {
+            return null;
+        }
+        try {
+            return entity.getClass().getMethod(methodName).invoke(entity);
+        } catch (Exception e) {
+            noMethods.add(hash);
+            return null;
+        }
     }
 
     public static String getEntity(
