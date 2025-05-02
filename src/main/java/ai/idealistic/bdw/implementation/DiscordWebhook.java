@@ -342,16 +342,16 @@ public class DiscordWebhook {
                 if (!this.methods.isEmpty()) {
                     for (Map.Entry<String, Method> entry : this.methods.entrySet()) {
                         String methodName = entry.getKey();
-
-                        if (methodCallBlacklist.containsKey(methodName)) {
-                            continue;
-                        }
                         Object result;
 
-                        try {
-                            result = entry.getValue().invoke(event);
-                        } catch (Exception ignored) {
+                        if (methodCallBlacklist.containsKey(methodName)) {
                             result = null;
+                        } else {
+                            try {
+                                result = entry.getValue().invoke(event);
+                            } catch (Exception ignored) {
+                                result = null;
+                            }
                         }
 
                         if (!fieldsArray.isEmpty()) {
