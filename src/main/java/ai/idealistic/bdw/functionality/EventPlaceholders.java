@@ -113,7 +113,10 @@ public class EventPlaceholders {
                     ":entity:facing}",
                     ":entity:height}",
                     ":entity:width}",
-                    ":entity:has-gravity}"
+                    ":entity:has-gravity}",
+                    ":entity:has-passenger}",
+                    ":entity:ticks-lived}",
+                    ":entity:max-fire-ticks}",
             },
             livingEntityPlaceholders = {
                     ":living-entity:health}",
@@ -121,7 +124,15 @@ public class EventPlaceholders {
                     ":living-entity:is-swimming}",
                     ":living-entity:is-gliding}",
                     ":living-entity:is-sleeping}",
-                    ":living-entity:has-ai}"
+                    ":living-entity:has-ai}",
+                    ":living-entity:eye-height}",
+                    ":living-entity:is-leashed}",
+                    ":living-entity:can-pickup-items}",
+                    ":living-entity:active-potion-effects}",
+                    ":living-entity:remove-when-far-away}",
+                    ":living-entity:last-damage}",
+                    ":living-entity:maximum-no-damage-ticks}",
+                    ":living-entity:no-damage-ticks}",
             },
             playerPlaceholders = {
                     ":player:is-sneaking}",
@@ -130,6 +141,15 @@ public class EventPlaceholders {
                     ":player:is-op}",
                     ":player:game-mode}",
                     ":player:is-invisible}",
+                    ":player:display-name}",
+                    ":player:player-list-name}",
+                    ":player:level}",
+                    ":player:exp}",
+                    ":player:is-player-time-relative}",
+                    ":player:player-time}",
+                    ":player:walk-speed}",
+                    ":player:fly-speed}",
+                    ":player:total-experience}",
             };
 
     static String getPlaceholder(String method, String placeholder) {
@@ -881,7 +901,8 @@ public class EventPlaceholders {
         string = getEntity(
                 entity,
                 method,
-                string
+                string,
+                "entity"
         );
         return string;
     }
@@ -903,7 +924,8 @@ public class EventPlaceholders {
     private static String getEntity(
             Entity entity,
             String method,
-            String string
+            String string,
+            String prefix
     ) {
         if (entity == null) {
             for (String placeholder : entityPlaceholders) {
@@ -914,8 +936,6 @@ public class EventPlaceholders {
             }
             return string;
         }
-        String prefix = "entity";
-
         string = string.replace(
                 prepare(method, prefix, "type"),
                 entity.getType().name().toLowerCase().replace("_", "-")
@@ -1194,7 +1214,8 @@ public class EventPlaceholders {
                 return getEntity(
                         (Entity) object,
                         methodName,
-                        string
+                        string,
+                        "entity"
                 );
             }
         } else {
