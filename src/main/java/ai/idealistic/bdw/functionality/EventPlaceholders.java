@@ -45,13 +45,19 @@ public class EventPlaceholders {
 
             },
             materialPlaceholders = {
+            },
+            entityPlaceholders = {
+            },
+            livingEntityPlaceholders = {
+            },
+            playerPlaceholders = {
             };
 
     static String[] getPlaceholders(String method, String[] placeholders) {
         String[] result = new String[placeholders.length];
 
         for (int i = 0; i < placeholders.length; i++) {
-            result[i] = "{" + method.toLowerCase() + placeholders[i];
+            result[i] = "{" + method + placeholders[i];
         }
         return result;
     }
@@ -187,7 +193,8 @@ public class EventPlaceholders {
     public static String getLocation(
             Location location,
             String method,
-            String string
+            String string,
+            boolean block
     ) {
         String prefix = "location";
 
@@ -217,11 +224,13 @@ public class EventPlaceholders {
                 method,
                 string
         );
-        string = getBlock(
-                location.getBlock(),
-                method,
-                string
-        );
+        if (block) {
+            string = getBlock(
+                    location.getBlock(),
+                    method,
+                    string
+            );
+        }
         return string;
     }
 
@@ -241,7 +250,8 @@ public class EventPlaceholders {
         string = getLocation(
                 block.getLocation(),
                 method,
-                string
+                string,
+                false
         );
         string = getMaterial(
                 block.getType(),

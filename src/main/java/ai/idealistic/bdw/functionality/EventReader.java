@@ -3,6 +3,9 @@ package ai.idealistic.bdw.functionality;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import javax.xml.stream.Location;
@@ -46,6 +49,10 @@ public class EventReader {
             )));
             list.addAll(Arrays.asList(EventPlaceholders.getPlaceholders(
                     methodName,
+                    EventPlaceholders.worldPlaceholders
+            )));
+            list.addAll(Arrays.asList(EventPlaceholders.getPlaceholders(
+                    methodName,
                     EventPlaceholders.locationPlaceholders
             )));
             list.addAll(Arrays.asList(EventPlaceholders.getPlaceholders(
@@ -62,6 +69,39 @@ public class EventReader {
                     EventPlaceholders.materialPlaceholders
             )));
         } else if (object instanceof Material) {
+            list.addAll(Arrays.asList(EventPlaceholders.getPlaceholders(
+                    methodName,
+                    EventPlaceholders.materialPlaceholders
+            )));
+        } else if (object instanceof Entity) {
+            if (object instanceof Player) {
+                list.addAll(Arrays.asList(EventPlaceholders.getPlaceholders(
+                        methodName,
+                        EventPlaceholders.playerPlaceholders
+                )));
+            }
+            if (object instanceof LivingEntity) {
+                list.addAll(Arrays.asList(EventPlaceholders.getPlaceholders(
+                        methodName,
+                        EventPlaceholders.livingEntityPlaceholders
+                )));
+            }
+            list.addAll(Arrays.asList(EventPlaceholders.getPlaceholders(
+                    methodName,
+                    EventPlaceholders.entityPlaceholders
+            )));
+            list.addAll(Arrays.asList(EventPlaceholders.getPlaceholders(
+                    methodName,
+                    EventPlaceholders.locationPlaceholders
+            )));
+            list.addAll(Arrays.asList(EventPlaceholders.getPlaceholders(
+                    methodName,
+                    EventPlaceholders.worldPlaceholders
+            )));
+            list.addAll(Arrays.asList(EventPlaceholders.getPlaceholders(
+                    methodName,
+                    EventPlaceholders.blockPlaceholders
+            )));
             list.addAll(Arrays.asList(EventPlaceholders.getPlaceholders(
                     methodName,
                     EventPlaceholders.materialPlaceholders
