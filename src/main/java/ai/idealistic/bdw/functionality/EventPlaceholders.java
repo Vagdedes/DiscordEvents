@@ -3,6 +3,7 @@ package ai.idealistic.bdw.functionality;
 import org.bukkit.World;
 
 import java.sql.Timestamp;
+import java.util.Arrays;
 
 public class EventPlaceholders {
 
@@ -52,10 +53,23 @@ public class EventPlaceholders {
                 prepare(prefix, subfix, "full-time"),
                 new Timestamp(world.getFullTime()).toString().substring(0, 19)
         ).replace(
+                prepare(prefix, subfix, "game-time"),
+                new Timestamp(world.getGameTime()).toString().substring(0, 19)
+        ).replace(
                 prepare(prefix, subfix, "weather"),
                 world.isThundering()
                         ? "Thundering Weather"
                         : world.hasStorm()
+                        ? "Storm Weather"
+                        : "Clear Weather"
+        ).replace(
+                prepare(prefix, subfix, "is-thundering"),
+                world.isThundering()
+                        ? "Thundering Weather"
+                        : "Clear Weather"
+        ).replace(
+                prepare(prefix, subfix, "has-storm"),
+                world.hasStorm()
                         ? "Storm Weather"
                         : "Clear Weather"
         ).replace(
@@ -68,13 +82,23 @@ public class EventPlaceholders {
                 world.getAllowMonsters()
                         ? "Monsters Allowed"
                         : "No Monsters"
+        ).replace(
+                prepare(prefix, subfix, "game-rules"),
+                Arrays.toString(world.getGameRules())
         );
+
+        if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8)) {
+            string = string.replace(
+                    prepare(prefix, subfix, "border-size"),
+                    Double.toString(world.getWorldBorder().getSize())
+            );
+        }
 
         Object object = hasWorldMethod(world, "hasRaids");
 
         if (object instanceof Boolean) {
             string = string.replace(
-                    prepare(prefix, subfix, "raids"),
+                    prepare(prefix, subfix, "has-raids"),
                     object == Boolean.TRUE
                             ? "Raids"
                             : "No Raids"
@@ -84,10 +108,20 @@ public class EventPlaceholders {
 
         if (object instanceof Boolean) {
             string = string.replace(
-                    prepare(prefix, subfix, "raids"),
+                    prepare(prefix, subfix, "pvp-allowed"),
                     object == Boolean.TRUE
                             ? "PvP Allowed"
                             : "No PvP"
+            );
+        }
+        object = hasWorldMethod(world, "hasSkyLight");
+
+        if (object instanceof Boolean) {
+            string = string.replace(
+                    prepare(prefix, subfix, "has-sky-light"),
+                    object == Boolean.TRUE
+                            ? "Sky Light"
+                            : "No Sky Light"
             );
         }
         return string;
