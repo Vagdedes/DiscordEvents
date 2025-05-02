@@ -41,7 +41,7 @@ public class DiscordWebhook {
     private boolean enabled;
     private double cooldown;
     private long expiration;
-    private Map<String, Boolean> methodCallBlacklist;
+    private final Map<String, Boolean> methodCallBlacklist;
     private final Map<String, Boolean> webhookURLs;
     private final Map<Integer, DiscordField> fields;
     private final ConfigurationBuilder config;
