@@ -48,6 +48,11 @@ public class BdwManager {
             String optionName,
             String optionValue
     ) {
+        optionName = optionName.toLowerCase();
+
+        if (optionName.startsWith("information.")) {
+            return null;
+        }
         DiscordWebhook webhook = EventListeners.getWebhook(pluginName, eventName);
 
         if (webhook == null) {
