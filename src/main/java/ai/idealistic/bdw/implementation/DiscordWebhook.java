@@ -473,8 +473,9 @@ public class DiscordWebhook {
                         );
 
                         if (strings.length > 0) {
-                            if (strings[0].equals("true")) {
-                                AwarenessNotifications.send(strings[0]);
+                            if (strings.length != 1
+                                    || !strings[0].equals("true")) {
+                                AwarenessNotifications.send(ArrayReader.toString(strings));
                             }
                         } else {
                             AwarenessNotifications.send(
