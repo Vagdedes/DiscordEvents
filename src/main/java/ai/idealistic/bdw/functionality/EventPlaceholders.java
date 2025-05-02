@@ -55,10 +55,17 @@ public class EventPlaceholders {
                     ":location:block-y}",
                     ":location:block-z}",
                     ":location:yaw}",
-                    ":location:pitch}"
+                    ":location:pitch}",
+                    ":location:chunk-x}",
+                    ":location:chunk-z}",
             },
             blockPlaceholders = {
                     ":block:biome}",
+                    ":block:is-empty}",
+                    ":block:is-passable}",
+                    ":block:is-liquid}",
+                    ":block:is-block-powered}",
+                    ":block:is-block-indirectly-powered}",
             },
             itemPlaceholders = {
                     ":item:amount}",
@@ -103,7 +110,9 @@ public class EventPlaceholders {
                     ":entity:is-persistent}",
                     ":entity:is-visual-fire}",
                     ":entity:facing}",
-                    ":entity:height}"
+                    ":entity:height}",
+                    ":entity:width}",
+                    ":entity:has-gravity}"
             },
             livingEntityPlaceholders = {
                     ":living-entity:health}",
@@ -118,7 +127,8 @@ public class EventPlaceholders {
                     ":player:is-sprinting}",
                     ":player:is-flying}",
                     ":player:is-op}",
-                    ":player:game-mode}"
+                    ":player:game-mode}",
+                    ":player:is-invisible}",
             };
 
     static String getPlaceholder(String method, String placeholder) {
@@ -343,6 +353,12 @@ public class EventPlaceholders {
         ).replace(
                 prepare(method, prefix, "pitch"),
                 String.valueOf(location.getPitch())
+        ).replace(
+                prepare(method, prefix, "chunk-x"),
+                String.valueOf(location.getBlockX() >> 4)
+        ).replace(
+                prepare(method, prefix, "chunk-z"),
+                String.valueOf(location.getBlockZ() >> 4)
         );
 
         string = getWorld(
@@ -358,6 +374,20 @@ public class EventPlaceholders {
             );
         }
         return string;
+    }
+
+    private static Object hasBlockMethod(Block block, String methodName) {
+        int hash = (block.getClass().hashCode() * 31) + methodName.hashCode();
+
+        if (noMethods.containsKey(hash)) {
+            return null;
+        }
+        try {
+            return block.getClass().getMethod(methodName).invoke(block);
+        } catch (Exception e) {
+            noMethods.put(hash, true);
+            return null;
+        }
     }
 
     private static String getBlock(
@@ -379,7 +409,33 @@ public class EventPlaceholders {
         string = string.replace(
                 prepare(method, prefix, "biome"),
                 block.getBiome().name().toLowerCase().replace("_", "-")
+        ).replace(
+                prepare(method, prefix, "is-empty"),
+                String.valueOf(block.isEmpty())
+        ).replace(
+                prepare(method, prefix, "is-liquid"),
+                String.valueOf(block.isLiquid())
+        ).replace(
+                prepare(method, prefix, "is-block-powered"),
+                String.valueOf(block.isBlockPowered())
+        ).replace(
+                prepare(method, prefix, "is-block-indirectly-powered"),
+                String.valueOf(block.isBlockIndirectlyPowered())
         );
+
+        Object object = hasBlockMethod(block, "isPassable");
+
+        if (object instanceof Boolean) {
+            string = string.replace(
+                    prepare(method, prefix, "is-passable"),
+                    String.valueOf(object == Boolean.TRUE)
+            );
+        } else {
+            string = string.replace(
+                    prepare(method, prefix, "is-passable"),
+                    isNull
+            );
+        }
 
         string = getLocation(
                 block.getLocation(),
@@ -608,6 +664,20 @@ public class EventPlaceholders {
         return string;
     }
 
+    private static Object hasPlayerMethod(Player player, String methodName) {
+        int hash = (player.getClass().hashCode() * 31) + methodName.hashCode();
+
+        if (noMethods.containsKey(hash)) {
+            return null;
+        }
+        try {
+            return player.getClass().getMethod(methodName).invoke(player);
+        } catch (Exception e) {
+            noMethods.put(hash, true);
+            return null;
+        }
+    }
+
     private static String getPlayer(
             Player player,
             String method,
@@ -640,6 +710,20 @@ public class EventPlaceholders {
                 prepare(method, prefix, "game-mode"),
                 player.getGameMode().name().toLowerCase().replace("_", "-")
         );
+
+        Object object = hasPlayerMethod(player, "isInvisible");
+
+        if (object instanceof Boolean) {
+            string = string.replace(
+                    prepare(method, prefix, "is-invisible"),
+                    String.valueOf(object == Boolean.TRUE)
+            );
+        } else {
+            string = string.replace(
+                    prepare(method, prefix, "is-invisible"),
+                    isNull
+            );
+        }
 
         string = getLivingEntity(
                 player,
@@ -833,6 +917,19 @@ public class EventPlaceholders {
                     isNull
             );
         }
+        object = hasEntityMethod(entity, "hasGravity");
+
+        if (object instanceof Boolean) {
+            string = string.replace(
+                    prepare(method, prefix, "has-gravity"),
+                    String.valueOf(object == Boolean.TRUE)
+            );
+        } else {
+            string = string.replace(
+                    prepare(method, prefix, "has-gravity"),
+                    isNull
+            );
+        }
         object = hasEntityMethod(entity, "isSilent");
 
         if (object instanceof Boolean) {
@@ -908,6 +1005,20 @@ public class EventPlaceholders {
         } else {
             string = string.replace(
                     prepare(method, prefix, "height"),
+                    isNull
+            );
+        }
+
+        object = hasEntityMethod(entity, "getWidth");
+
+        if (object instanceof Double) {
+            string = string.replace(
+                    prepare(method, prefix, "width"),
+                    String.valueOf(object)
+            );
+        } else {
+            string = string.replace(
+                    prepare(method, prefix, "width"),
                     isNull
             );
         }
