@@ -1,6 +1,10 @@
 package ai.idealistic.bdw.functionality;
 
+import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.Block;
+import org.bukkit.inventory.ItemStack;
 
 import java.sql.Timestamp;
 import java.util.Arrays;
@@ -8,9 +12,11 @@ import java.util.Arrays;
 public class EventPlaceholders {
 
     private static String prepare(
-            String prefix, String subfix, String type
+            String method,
+            String prefix,
+            String type
     ) {
-        return "{" + prefix + ":" + (!subfix.isEmpty() ? subfix + "-" + type : type) + "}";
+        return "{" + method.toLowerCase() + ":" + prefix + ":" + type + "}";
     }
 
     private static Object hasWorldMethod(World world, String methodName) {
@@ -21,75 +27,81 @@ public class EventPlaceholders {
         }
     }
 
-    public static String getWorld(World world, String prefix, String subfix, String string) {
+    public static String getWorld(
+            World world,
+            String method,
+            String string
+    ) {
+        String prefix = "world";
+
         string = string.replace(
-                prepare(prefix, subfix, "name"),
+                prepare(method, prefix, "name"),
                 world.getName()
         ).replace(
-                prepare(prefix, subfix, "spawn-x"),
+                prepare(method, prefix, "spawn-x"),
                 String.valueOf(world.getSpawnLocation().getX())
         ).replace(
-                prepare(prefix, subfix, "spawn-y"),
+                prepare(method, prefix, "spawn-y"),
                 String.valueOf(world.getSpawnLocation().getY())
         ).replace(
-                prepare(prefix, subfix, "spawn-z"),
+                prepare(method, prefix, "spawn-z"),
                 String.valueOf(world.getSpawnLocation().getZ())
         ).replace(
-                prepare(prefix, subfix, "difficulty"),
+                prepare(method, prefix, "difficulty"),
                 world.getDifficulty().name().toLowerCase()
         ).replace(
-                prepare(prefix, subfix, "hardcore"),
+                prepare(method, prefix, "hardcore"),
                 world.isHardcore() ? "Hardcore" : "Not Hardcore"
         ).replace(
-                prepare(prefix, subfix, "environment"),
+                prepare(method, prefix, "environment"),
                 world.getEnvironment().name().toLowerCase()
         ).replace(
-                prepare(prefix, subfix, "seed"),
+                prepare(method, prefix, "seed"),
                 String.valueOf(world.getSeed())
         ).replace(
-                prepare(prefix, subfix, "time"),
+                prepare(method, prefix, "time"),
                 new Timestamp(world.getTime()).toString().substring(0, 19)
         ).replace(
-                prepare(prefix, subfix, "full-time"),
+                prepare(method, prefix, "full-time"),
                 new Timestamp(world.getFullTime()).toString().substring(0, 19)
         ).replace(
-                prepare(prefix, subfix, "game-time"),
+                prepare(method, prefix, "game-time"),
                 new Timestamp(world.getGameTime()).toString().substring(0, 19)
         ).replace(
-                prepare(prefix, subfix, "weather"),
+                prepare(method, prefix, "weather"),
                 world.isThundering()
                         ? "Thundering Weather"
                         : world.hasStorm()
                         ? "Storm Weather"
                         : "Clear Weather"
         ).replace(
-                prepare(prefix, subfix, "is-thundering"),
+                prepare(method, prefix, "is-thundering"),
                 world.isThundering()
                         ? "Thundering Weather"
                         : "Clear Weather"
         ).replace(
-                prepare(prefix, subfix, "has-storm"),
+                prepare(method, prefix, "has-storm"),
                 world.hasStorm()
                         ? "Storm Weather"
                         : "Clear Weather"
         ).replace(
-                prepare(prefix, subfix, "allow-animals"),
+                prepare(method, prefix, "allow-animals"),
                 world.getAllowAnimals()
                         ? "Animals Allowed"
                         : "No Animals"
         ).replace(
-                prepare(prefix, subfix, "allow-monsters"),
+                prepare(method, prefix, "allow-monsters"),
                 world.getAllowMonsters()
                         ? "Monsters Allowed"
                         : "No Monsters"
         ).replace(
-                prepare(prefix, subfix, "game-rules"),
+                prepare(method, prefix, "game-rules"),
                 Arrays.toString(world.getGameRules())
         );
 
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8)) {
             string = string.replace(
-                    prepare(prefix, subfix, "border-size"),
+                    prepare(method, prefix, "border-size"),
                     Double.toString(world.getWorldBorder().getSize())
             );
         }
@@ -98,7 +110,7 @@ public class EventPlaceholders {
 
         if (object instanceof Boolean) {
             string = string.replace(
-                    prepare(prefix, subfix, "has-raids"),
+                    prepare(method, prefix, "has-raids"),
                     object == Boolean.TRUE
                             ? "Raids"
                             : "No Raids"
@@ -108,7 +120,7 @@ public class EventPlaceholders {
 
         if (object instanceof Boolean) {
             string = string.replace(
-                    prepare(prefix, subfix, "pvp-allowed"),
+                    prepare(method, prefix, "pvp-allowed"),
                     object == Boolean.TRUE
                             ? "PvP Allowed"
                             : "No PvP"
@@ -118,13 +130,118 @@ public class EventPlaceholders {
 
         if (object instanceof Boolean) {
             string = string.replace(
-                    prepare(prefix, subfix, "has-sky-light"),
+                    prepare(method, prefix, "has-sky-light"),
                     object == Boolean.TRUE
                             ? "Sky Light"
                             : "No Sky Light"
             );
         }
         return string;
+    }
+
+    public static String getLocation(
+            Location location,
+            String method,
+            String string
+    ) {
+        String prefix = "location";
+
+        string = string.replace(
+                prepare(method, prefix, "world"),
+                location.getWorld().getName()
+        ).replace(
+                prepare(method, prefix, "x"),
+                String.valueOf(location.getX())
+        ).replace(
+                prepare(method, prefix, "y"),
+                String.valueOf(location.getY())
+        ).replace(
+                prepare(method, prefix, "z"),
+                String.valueOf(location.getZ())
+        ).replace(
+                prepare(method, prefix, "yaw"),
+                String.valueOf(location.getYaw())
+        ).replace(
+                prepare(method, prefix, "pitch"),
+                String.valueOf(location.getPitch())
+        );
+        // todo
+
+        string = getWorld(
+                location.getWorld(),
+                method,
+                string
+        );
+        return string;
+    }
+
+    public static String getBlock(
+            Block block,
+            String method,
+            String string
+    ) {
+        String prefix = "block";
+
+        string = string.replace(
+                prepare(method, prefix, "biome"),
+                block.getBiome().name().toLowerCase()
+        );
+        // todo
+
+        string = getLocation(
+                block.getLocation(),
+                method,
+                string
+        );
+        string = getMaterial(
+                block.getType(),
+                method,
+                string
+        );
+        return null;
+    }
+
+    public static String getItem(
+            ItemStack itemStack,
+            String method,
+            String string
+    ) {
+        String prefix = "item";
+
+        string = string.replace(
+                prepare(method, prefix, "amount"),
+                String.valueOf(itemStack.getAmount())
+        );
+        // todo
+
+        string = getMaterial(
+                itemStack.getType(),
+                method,
+                string
+        );
+        return string;
+    }
+
+    public static String getMaterial(
+            Material material,
+            String method,
+            String string
+    ) {
+        String prefix = "material";
+
+        string = string.replace(
+                prepare(method, prefix, "is-block"),
+                material.isBlock()
+                        ? "Block"
+                        : "No Block"
+        ).replace(
+                prepare(method, prefix, "is-item"),
+                material.isItem()
+                        ? "Item"
+                        : "No Item"
+        );
+        // todo
+        return null;
     }
 
 }
