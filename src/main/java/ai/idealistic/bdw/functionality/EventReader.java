@@ -171,8 +171,7 @@ public class EventReader {
                         && !Modifier.isStatic(method.getModifiers())) {
                     String methodName = method.getName().toLowerCase();
 
-                    if (!methodName.equals("callevent")
-                            && !methodName.equals("gethandlers")) {
+                    if (!methodName.equals("callevent")) {
                         methods.putIfAbsent(methodName, method);
                     }
                 }
