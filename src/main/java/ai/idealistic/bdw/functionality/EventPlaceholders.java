@@ -4,6 +4,9 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.sql.Timestamp;
@@ -302,6 +305,54 @@ public class EventPlaceholders {
         );
         // todo
 
+        return string;
+    }
+
+    public static String getPlayer(
+            Player player,
+            String method,
+            String string
+    ) {
+        String prefix = "player";
+        // todo
+
+        string = getLivingEntity(
+                player,
+                method,
+                string
+        );
+        return string;
+    }
+
+    public static String getLivingEntity(
+            LivingEntity entity,
+            String method,
+            String string
+    ) {
+        String prefix = "living-entity";
+
+        string = getEntity(
+                entity,
+                method,
+                string
+        );
+        return string;
+    }
+
+    public static String getEntity(
+            Entity entity,
+            String method,
+            String string
+    ) {
+        String prefix = "entity";
+        // todo
+
+        string = getLocation(
+                entity.getLocation(),
+                method,
+                string,
+                false
+        );
         return string;
     }
 

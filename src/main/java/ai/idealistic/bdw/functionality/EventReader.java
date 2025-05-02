@@ -16,7 +16,7 @@ import java.util.List;
 
 public class EventReader {
 
-    public static String[] getAvailablePlaceholders(Method method, Object object) {
+    public static String[] getPlaceholders(Method method, Object object) {
         List<String> list = new ArrayList<>();
         String methodName = method.getName().toLowerCase();
 
@@ -79,8 +79,11 @@ public class EventReader {
                         methodName,
                         EventPlaceholders.playerPlaceholders
                 )));
-            }
-            if (object instanceof LivingEntity) {
+                list.addAll(Arrays.asList(EventPlaceholders.getPlaceholders(
+                        methodName,
+                        EventPlaceholders.livingEntityPlaceholders
+                )));
+            } else if (object instanceof LivingEntity) {
                 list.addAll(Arrays.asList(EventPlaceholders.getPlaceholders(
                         methodName,
                         EventPlaceholders.livingEntityPlaceholders
