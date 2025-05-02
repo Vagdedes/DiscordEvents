@@ -11,6 +11,7 @@ import java.lang.reflect.Method;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -270,7 +271,10 @@ public class DiscordWebhook {
         this.methods = methods;
 
         if (!methods.isEmpty()) {
-            for (Map.Entry<String, Method> entry : methods.entrySet()) {
+            Iterator<Map.Entry<String, Method>> iterator = methods.entrySet().iterator();
+
+            while (iterator.hasNext()) {
+                Map.Entry<String, Method> entry = iterator.next();
                 String methodName = entry.getKey();
                 String[] placeholders = EventReader.getPlaceholders(
                         methodName,
@@ -282,6 +286,7 @@ public class DiscordWebhook {
                             "information.placeholders." + methodName,
                             null
                     );
+                    iterator.remove();
                 } else {
                     config.setOption(
                             "information.placeholders." + methodName,
