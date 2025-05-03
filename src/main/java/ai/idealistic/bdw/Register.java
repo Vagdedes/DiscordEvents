@@ -10,6 +10,8 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.logging.Level;
+
 public class Register extends JavaPlugin {
 
     public static Plugin plugin = null;
@@ -18,6 +20,7 @@ public class Register extends JavaPlugin {
             shortCommand = "bdw";
 
     public void onEnable() {
+        java.util.logging.Logger.getLogger("org.reflections.Reflections").setLevel(Level.OFF);
         plugin = this;
         //new Metrics(this, 00000); todo
 
