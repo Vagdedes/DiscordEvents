@@ -138,6 +138,8 @@ public class EventFinder {
                 URLClassLoader loader = (URLClassLoader) plugin.getClass().getClassLoader();
                 jarFile.stream()
                         .filter(e -> e.getName().endsWith(".class"))
+                        .filter(e -> !e.getName().startsWith("META-INF/"))
+                        .filter(e -> !e.getName().endsWith("module-info.class"))
                         .forEach(entry -> {
                             String className = entry.getName()
                                     .replace('/', '.')
