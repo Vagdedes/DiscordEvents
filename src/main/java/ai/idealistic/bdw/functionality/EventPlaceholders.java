@@ -117,6 +117,8 @@ public class EventPlaceholders {
                     ":entity:has-passenger}",
                     ":entity:ticks-lived}",
                     ":entity:max-fire-ticks}",
+                    ":entity:portal-cooldown}",
+                    ":entity:vehicle}",
             },
             livingEntityPlaceholders = {
                     ":living-entity:health}",
@@ -725,7 +727,8 @@ public class EventPlaceholders {
             Player player,
             String method,
             String string,
-            String prefix
+            String prefix,
+            boolean recursive
     ) {
         if (player == null) {
             for (String placeholder : playerPlaceholders) {
@@ -782,7 +785,6 @@ public class EventPlaceholders {
                 prepare(method, prefix, "total-experience"),
                 String.valueOf(player.getTotalExperience())
         );
-        player.getClientViewDistance(); // int
         Object object = hasPlayerMethod(player, "isInvisible");
 
         if (object instanceof Boolean) {
@@ -796,11 +798,26 @@ public class EventPlaceholders {
                     isNull
             );
         }
+        object = hasPlayerMethod(player, "getClientViewDistance");
+
+        if (object instanceof Integer) {
+            string = string.replace(
+                    prepare(method, prefix, "client-view-distance"),
+                    String.valueOf(object)
+            );
+        } else {
+            string = string.replace(
+                    prepare(method, prefix, "client-view-distance"),
+                    isNull
+            );
+        }
 
         string = getLivingEntity(
                 player,
                 method,
-                string
+                string,
+                "living-entity",
+                recursive
         );
         return string;
     }
@@ -822,7 +839,9 @@ public class EventPlaceholders {
     private static String getLivingEntity(
             LivingEntity entity,
             String method,
-            String string
+            String string,
+            String prefix,
+            boolean recursive
     ) {
         if (entity == null) {
             for (String placeholder : livingEntityPlaceholders) {
@@ -839,8 +858,6 @@ public class EventPlaceholders {
             }
             return string;
         }
-        String prefix = "living-entity";
-
         string = string.replace(
                 prepare(method, prefix, "health"),
                 String.valueOf(entity.getHealth())
@@ -884,26 +901,55 @@ public class EventPlaceholders {
                 prepare(method, prefix, "no-damage-ticks"),
                 String.valueOf(entity.getNoDamageTicks())
         );
-        entity.isClimbing();
-        entity.isCollidable();
-        entity.isRiptiding();
-        entity.getArrowsInBody(); // int
-        entity.getCategory(); // enum
-        entity.getLeashHolder();
-        entity.getCategory(); // enum
-        entity.canBreatheUnderwater();
         Player killer = entity.getKiller();
 
-        if (killer != null) {
+        if (recursive
+                && killer != null) {
             string = getPlayer(
                     killer,
                     method,
                     string,
-                    "killer"
+                    "killer",
+                    false
             );
         } else {
             string = string.replace(
                     prepare(method, prefix, "killer"),
+                    isNull
+            );
+        }
+        Entity leashHolder = entity.getLeashHolder();
+
+        if (recursive
+                && leashHolder != null) {
+            if (leashHolder instanceof Player) {
+                string = getPlayer(
+                        (Player) leashHolder,
+                        method,
+                        string,
+                        "leash-holder",
+                        false
+                );
+            } else if (leashHolder instanceof LivingEntity) {
+                string = getLivingEntity(
+                        (LivingEntity) leashHolder,
+                        method,
+                        string,
+                        "leash-holder",
+                        false
+                );
+            } else {
+                string = getEntity(
+                        leashHolder,
+                        method,
+                        string,
+                        "leash-holder",
+                        false
+                );
+            }
+        } else {
+            string = string.replace(
+                    prepare(method, prefix, "leash-holder"),
                     isNull
             );
         }
@@ -933,12 +979,91 @@ public class EventPlaceholders {
                     isNull
             );
         }
+        object = hasLivingEntityMethod(entity, "isClimbing");
+
+        if (object instanceof Boolean) {
+            string = string.replace(
+                    prepare(method, prefix, "is-climbing"),
+                    String.valueOf(object == Boolean.TRUE)
+            );
+        } else {
+            string = string.replace(
+                    prepare(method, prefix, "is-climbing"),
+                    isNull
+            );
+        }
+        object = hasLivingEntityMethod(entity, "isCollidable");
+
+        if (object instanceof Boolean) {
+            string = string.replace(
+                    prepare(method, prefix, "is-collidable"),
+                    String.valueOf(object == Boolean.TRUE)
+            );
+        } else {
+            string = string.replace(
+                    prepare(method, prefix, "is-collidable"),
+                    isNull
+            );
+        }
+        object = hasLivingEntityMethod(entity, "isRiptiding");
+
+        if (object instanceof Boolean) {
+            string = string.replace(
+                    prepare(method, prefix, "is-riptiding"),
+                    String.valueOf(object == Boolean.TRUE)
+            );
+        } else {
+            string = string.replace(
+                    prepare(method, prefix, "is-riptiding"),
+                    isNull
+            );
+        }
+        object = hasLivingEntityMethod(entity, "canBreatheUnderwater");
+
+        if (object instanceof Boolean) {
+            string = string.replace(
+                    prepare(method, prefix, "can-breathe-underwater"),
+                    String.valueOf(object == Boolean.TRUE)
+            );
+        } else {
+            string = string.replace(
+                    prepare(method, prefix, "can-breathe-underwater"),
+                    isNull
+            );
+        }
+        object = hasLivingEntityMethod(entity, "getCategory");
+
+        if (object != null) {
+            string = string.replace(
+                    prepare(method, prefix, "category"),
+                    object.toString().toLowerCase().replace("_", "-")
+            );
+        } else {
+            string = string.replace(
+                    prepare(method, prefix, "category"),
+                    isNull
+            );
+        }
+        object = hasLivingEntityMethod(entity, "getArrowsInBody");
+
+        if (object instanceof Integer) {
+            string = string.replace(
+                    prepare(method, prefix, "arrows-in-body"),
+                    String.valueOf(object)
+            );
+        } else {
+            string = string.replace(
+                    prepare(method, prefix, "arrows-in-body"),
+                    isNull
+            );
+        }
 
         string = getEntity(
                 entity,
                 method,
                 string,
-                "entity"
+                "entity",
+                recursive
         );
         return string;
     }
@@ -961,7 +1086,8 @@ public class EventPlaceholders {
             Entity entity,
             String method,
             String string,
-            String prefix
+            String prefix,
+            boolean recursive
     ) {
         if (entity == null) {
             for (String placeholder : entityPlaceholders) {
@@ -1018,13 +1144,41 @@ public class EventPlaceholders {
                         entity.getMaxFireTicks()
                 )
         );
-        entity.getFreezeTicks();
-        entity.getMaxFreezeTicks();
-        entity.getPortalCooldown();
-        entity.getPassengers().size();
-        entity.getSpawnCategory(); // enum
-        entity.getPose(); // enum
-        entity.getVehicle();
+        Entity vehicle = entity.getVehicle();
+
+        if (recursive
+                && vehicle != null) {
+            if (vehicle instanceof Player) {
+                string = getPlayer(
+                        (Player) vehicle,
+                        method,
+                        string,
+                        "vehicle",
+                        false
+                );
+            } else if (vehicle instanceof LivingEntity) {
+                string = getLivingEntity(
+                        (LivingEntity) vehicle,
+                        method,
+                        string,
+                        "vehicle",
+                        false
+                );
+            } else {
+                string = getEntity(
+                        vehicle,
+                        method,
+                        string,
+                        "vehicle",
+                        false
+                );
+            }
+        } else {
+            string = string.replace(
+                    prepare(method, prefix, "vehicle"),
+                    isNull
+            );
+        }
         Object object = hasEntityMethod(entity, "getName");
 
         if (object instanceof String) {
@@ -1155,7 +1309,6 @@ public class EventPlaceholders {
                     isNull
             );
         }
-
         object = hasEntityMethod(entity, "getWidth");
 
         if (object instanceof Double) {
@@ -1166,6 +1319,71 @@ public class EventPlaceholders {
         } else {
             string = string.replace(
                     prepare(method, prefix, "width"),
+                    isNull
+            );
+        }
+        object = hasEntityMethod(entity, "getPose");
+
+        if (object != null) {
+            string = string.replace(
+                    prepare(method, prefix, "pose"),
+                    object.toString().toLowerCase().replace("_", "-")
+            );
+        } else {
+            string = string.replace(
+                    prepare(method, prefix, "pose"),
+                    isNull
+            );
+        }
+        object = hasEntityMethod(entity, "getSpawnCategory");
+
+        if (object != null) {
+            string = string.replace(
+                    prepare(method, prefix, "spawn-category"),
+                    object.toString().toLowerCase().replace("_", "-")
+            );
+        } else {
+            string = string.replace(
+                    prepare(method, prefix, "spawn-category"),
+                    isNull
+            );
+        }
+        object = hasEntityMethod(entity, "getFreezeTicks");
+
+        if (object instanceof Integer) {
+            string = string.replace(
+                    prepare(method, prefix, "freeze-ticks"),
+                    String.valueOf(object)
+            );
+        } else {
+            string = string.replace(
+                    prepare(method, prefix, "freeze-ticks"),
+                    isNull
+            );
+        }
+        object = hasEntityMethod(entity, "getMaxFreezeTicks");
+
+        if (object instanceof Integer) {
+            string = string.replace(
+                    prepare(method, prefix, "max-freeze-ticks"),
+                    String.valueOf(object)
+            );
+        } else {
+            string = string.replace(
+                    prepare(method, prefix, "max-freeze-ticks"),
+                    isNull
+            );
+        }
+        object = hasEntityMethod(entity, "getPortalCooldown");
+
+        if (object instanceof Integer) {
+            string = string.replace(
+                    prepare(method, prefix, "portal-cooldown"),
+                    String.valueOf(object)
+            );
+        } else {
+            string = string.replace(
+                    prepare(method, prefix, "portal-cooldown"),
                     isNull
             );
         }
@@ -1239,20 +1457,24 @@ public class EventPlaceholders {
                         (Player) object,
                         methodName,
                         string,
-                        "player"
+                        "player",
+                        true
                 );
             } else if (object instanceof LivingEntity) {
                 return getLivingEntity(
                         (LivingEntity) object,
                         methodName,
-                        string
+                        string,
+                        "living-entity",
+                        true
                 );
             } else {
                 return getEntity(
                         (Entity) object,
                         methodName,
                         string,
-                        "entity"
+                        "entity",
+                        true
                 );
             }
         } else {
