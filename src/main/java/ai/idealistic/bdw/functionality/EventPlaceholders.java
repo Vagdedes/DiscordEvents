@@ -133,7 +133,6 @@ public class EventPlaceholders {
                     ":living-entity:maximum-no-damage-ticks}",
                     ":living-entity:no-damage-ticks}",
                     ":living-entity:arrows-in-body}",
-                    ":living-entity:category}",
                     ":living-entity:is-riptiding}",
                     ":living-entity:is-climbing}",
                     ":living-entity:is-collidable}",
@@ -146,6 +145,7 @@ public class EventPlaceholders {
                     ":player:is-op}",
                     ":player:game-mode}",
                     ":player:is-invisible}",
+                    ":player:name}",
                     ":player:display-name}",
                     ":player:player-list-name}",
                     ":player:level}",
@@ -672,6 +672,9 @@ public class EventPlaceholders {
                 prepare(method, prefix, "player-list-name"),
                 player.getPlayerListName()
         ).replace(
+                prepare(method, prefix, "name"),
+                player.getName()
+        ).replace(
                 prepare(method, prefix, "level"),
                 String.valueOf(player.getLevel())
         ).replace(
@@ -800,11 +803,6 @@ public class EventPlaceholders {
                                 ? entity.getArrowsInBody()
                                 : -1
                 )
-        ).replace(
-                prepare(method, prefix, "category"),
-                MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)
-                        ? entity.getCategory().name().toLowerCase().replace("_", "-")
-                        : isNull
         ).replace(
                 prepare(method, prefix, "can-breathe-underwater"),
                 String.valueOf(
