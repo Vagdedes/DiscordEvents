@@ -13,6 +13,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.lang.reflect.Method;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -227,12 +228,20 @@ public class EventPlaceholders {
         if (noMethods.containsKey(hash)) {
             return null;
         }
-        try {
-            return world.getClass().getMethod(methodName).invoke(world);
-        } catch (Exception e) {
-            noMethods.put(hash, true);
-            return null;
+        Class<?> current = world.getClass();
+        while (current != null) {
+            try {
+                Method method = current.getDeclaredMethod(methodName);
+                method.setAccessible(true);
+                return method.invoke(world);
+            } catch (NoSuchMethodException e) {
+                current = current.getSuperclass();
+            } catch (Exception e) {
+                return null;
+            }
         }
+        noMethods.put(hash, true);
+        return null;
     }
 
     private static String getWorld(
@@ -478,12 +487,20 @@ public class EventPlaceholders {
         if (noMethods.containsKey(hash)) {
             return null;
         }
-        try {
-            return block.getClass().getMethod(methodName).invoke(block);
-        } catch (Exception e) {
-            noMethods.put(hash, true);
-            return null;
+        Class<?> current = block.getClass();
+        while (current != null) {
+            try {
+                Method method = current.getDeclaredMethod(methodName);
+                method.setAccessible(true);
+                return method.invoke(block);
+            } catch (NoSuchMethodException e) {
+                current = current.getSuperclass();
+            } catch (Exception e) {
+                return null;
+            }
         }
+        noMethods.put(hash, true);
+        return null;
     }
 
     private static String getBlock(
@@ -564,12 +581,20 @@ public class EventPlaceholders {
         if (noMethods.containsKey(hash)) {
             return null;
         }
-        try {
-            return meta.getClass().getMethod(methodName).invoke(meta);
-        } catch (Exception e) {
-            noMethods.put(hash, true);
-            return null;
+        Class<?> current = meta.getClass();
+        while (current != null) {
+            try {
+                Method method = current.getDeclaredMethod(methodName);
+                method.setAccessible(true);
+                return method.invoke(meta);
+            } catch (NoSuchMethodException e) {
+                current = current.getSuperclass();
+            } catch (Exception e) {
+                return null;
+            }
         }
+        noMethods.put(hash, true);
+        return null;
     }
 
     private static String getItem(
@@ -671,12 +696,20 @@ public class EventPlaceholders {
         if (noMethods.containsKey(hash)) {
             return null;
         }
-        try {
-            return material.getClass().getMethod(methodName).invoke(material);
-        } catch (Exception e) {
-            noMethods.put(hash, true);
-            return null;
+        Class<?> current = material.getClass();
+        while (current != null) {
+            try {
+                Method method = current.getDeclaredMethod(methodName);
+                method.setAccessible(true);
+                return method.invoke(material);
+            } catch (NoSuchMethodException e) {
+                current = current.getSuperclass();
+            } catch (Exception e) {
+                return null;
+            }
         }
+        noMethods.put(hash, true);
+        return null;
     }
 
     private static String getMaterial(
@@ -783,12 +816,20 @@ public class EventPlaceholders {
         if (noMethods.containsKey(hash)) {
             return null;
         }
-        try {
-            return player.getClass().getMethod(methodName).invoke(player);
-        } catch (Exception e) {
-            noMethods.put(hash, true);
-            return null;
+        Class<?> current = player.getClass();
+        while (current != null) {
+            try {
+                Method method = current.getDeclaredMethod(methodName);
+                method.setAccessible(true);
+                return method.invoke(player);
+            } catch (NoSuchMethodException e) {
+                current = current.getSuperclass();
+            } catch (Exception e) {
+                return null;
+            }
         }
+        noMethods.put(hash, true);
+        return null;
     }
 
     private static String getPlayer(
@@ -920,12 +961,20 @@ public class EventPlaceholders {
         if (noMethods.containsKey(hash)) {
             return null;
         }
-        try {
-            return entity.getClass().getMethod(methodName).invoke(entity);
-        } catch (Exception e) {
-            noMethods.put(hash, true);
-            return null;
+        Class<?> current = entity.getClass();
+        while (current != null) {
+            try {
+                Method method = current.getDeclaredMethod(methodName);
+                method.setAccessible(true);
+                return method.invoke(entity);
+            } catch (NoSuchMethodException e) {
+                current = current.getSuperclass();
+            } catch (Exception e) {
+                return null;
+            }
         }
+        noMethods.put(hash, true);
+        return null;
     }
 
     private static String getLivingEntity(
@@ -1145,12 +1194,20 @@ public class EventPlaceholders {
         if (noMethods.containsKey(hash)) {
             return null;
         }
-        try {
-            return entity.getClass().getMethod(methodName).invoke(entity);
-        } catch (Exception e) {
-            noMethods.put(hash, true);
-            return null;
+        Class<?> current = entity.getClass();
+        while (current != null) {
+            try {
+                Method method = current.getDeclaredMethod(methodName);
+                method.setAccessible(true);
+                return method.invoke(entity);
+            } catch (NoSuchMethodException e) {
+                current = current.getSuperclass();
+            } catch (Exception e) {
+                return null;
+            }
         }
+        noMethods.put(hash, true);
+        return null;
     }
 
     private static String getEntity(

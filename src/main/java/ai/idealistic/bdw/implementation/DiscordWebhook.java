@@ -13,8 +13,6 @@ import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class DiscordWebhook {
 
@@ -22,11 +20,6 @@ public class DiscordWebhook {
     public static final int MAX_FIELDS = 25;
     private static final int TIME_OUT_MILLISECONDS = 3_000;
     private static final String CONNECTION_METHOD = "POST";
-    private static final ExecutorService thread = Executors.newSingleThreadExecutor();
-
-    public static void shutdown() {
-        thread.shutdown();
-    }
 
     @Getter
     private final String pluginName;
@@ -351,9 +344,11 @@ public class DiscordWebhook {
     }
 
     public void send(Event event) {
-        thread.submit(() -> {
-            if (enabled
-                    && validate()) {
+        if (enabled) {
+            WebhookThread.run(() -> {
+                if (!validate()) {
+                    return;
+                }
                 if (cooldown > 0.0) {
                     if (expiration > System.currentTimeMillis()) {
                         return;
@@ -534,8 +529,8 @@ public class DiscordWebhook {
                         AwarenessNotifications.send(ex.getMessage());
                     }
                 }
-            }
-        });
+            });
+        }
     }
 
     public void reload() {
