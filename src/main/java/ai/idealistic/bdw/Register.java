@@ -6,6 +6,7 @@ import ai.idealistic.bdw.functionality.BdwManager;
 import ai.idealistic.bdw.listeners.AllEvents;
 import ai.idealistic.bdw.listeners.ChunksEvent;
 import ai.idealistic.bdw.listeners.PluginStates;
+import ai.idealistic.bdw.utils.Metrics;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -19,7 +20,7 @@ public class Register extends JavaPlugin {
 
     public void onEnable() {
         plugin = this;
-        //new Metrics(this, 00000); todo
+        new Metrics(this, 25723);
 
         PluginManager pm = getServer().getPluginManager();
         pm.registerEvents(new PluginStates(), this);
