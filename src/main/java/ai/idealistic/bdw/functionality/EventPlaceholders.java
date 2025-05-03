@@ -14,6 +14,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -159,7 +161,14 @@ public class EventPlaceholders {
                     ":player:fly-speed}",
                     ":player:total-experience}",
                     ":player:client-view-distance}",
-            };
+            },
+            killerPlaceholders = {},
+            vehiclePlaceholders = {},
+            leashHolderPlaceholders = {};
+
+    static {
+        List<String> placeholders = new ArrayList<>(1);
+    }
 
     static String getPlaceholder(String method, String placeholder) {
         return "{" + method + placeholder;
@@ -357,6 +366,33 @@ public class EventPlaceholders {
             String string,
             boolean block
     ) {
+        if (location == null) {
+            for (String placeholder : locationPlaceholders) {
+                string = string.replace(
+                        "{" + method + placeholder,
+                        isNull
+                );
+            }
+            for (String placeholder : worldPlaceholders) {
+                string = string.replace(
+                        "{" + method + placeholder,
+                        isNull
+                );
+            }
+            for (String placeholder : blockPlaceholders) {
+                string = string.replace(
+                        "{" + method + placeholder,
+                        isNull
+                );
+            }
+            for (String placeholder : materialPlaceholders) {
+                string = string.replace(
+                        "{" + method + placeholder,
+                        isNull
+                );
+            }
+            return string;
+        }
         String prefix = "location";
 
         string = string.replace(
@@ -437,6 +473,12 @@ public class EventPlaceholders {
                         isNull
                 );
             }
+            for (String placeholder : materialPlaceholders) {
+                string = string.replace(
+                        "{" + method + placeholder,
+                        isNull
+                );
+            }
             return string;
         }
         String prefix = "block";
@@ -507,6 +549,12 @@ public class EventPlaceholders {
     ) {
         if (itemStack == null) {
             for (String placeholder : itemPlaceholders) {
+                string = string.replace(
+                        "{" + method + placeholder,
+                        isNull
+                );
+            }
+            for (String placeholder : materialPlaceholders) {
                 string = string.replace(
                         "{" + method + placeholder,
                         isNull
@@ -727,6 +775,18 @@ public class EventPlaceholders {
                         isNull
                 );
             }
+            for (String placeholder : livingEntityPlaceholders) {
+                string = string.replace(
+                        "{" + method + placeholder,
+                        isNull
+                );
+            }
+            for (String placeholder : entityPlaceholders) {
+                string = string.replace(
+                        "{" + method + placeholder,
+                        isNull
+                );
+            }
             return string;
         }
         string = string.replace(
@@ -840,6 +900,12 @@ public class EventPlaceholders {
                         isNull
                 );
             }
+            for (String placeholder : entityPlaceholders) {
+                string = string.replace(
+                        "{" + method + placeholder,
+                        isNull
+                );
+            }
             return string;
         }
         string = string.replace(
@@ -887,8 +953,7 @@ public class EventPlaceholders {
         );
         Player killer = entity.getKiller();
 
-        if (recursive
-                && killer != null) {
+        if (recursive) {
             string = getPlayer(
                     killer,
                     method,
@@ -897,9 +962,12 @@ public class EventPlaceholders {
                     false
             );
         } else {
-            string = string.replace(
-                    prepare(method, prefix, "killer"),
-                    isNull
+            string = getPlayer(
+                    null,
+                    method,
+                    string,
+                    "killer",
+                    false
             );
         }
         Entity leashHolder = entity.getLeashHolder();
@@ -932,9 +1000,12 @@ public class EventPlaceholders {
                 );
             }
         } else {
-            string = string.replace(
-                    prepare(method, prefix, "leash-holder"),
-                    isNull
+            string = getPlayer(
+                    null,
+                    method,
+                    string,
+                    "leash-holder",
+                    false
             );
         }
         Object object = hasLivingEntityMethod(entity, "isSleeping");
@@ -1158,9 +1229,12 @@ public class EventPlaceholders {
                 );
             }
         } else {
-            string = string.replace(
-                    prepare(method, prefix, "vehicle"),
-                    isNull
+            string = getPlayer(
+                    null,
+                    method,
+                    string,
+                    "vehicle",
+                    false
             );
         }
         Object object = hasEntityMethod(entity, "getName");
