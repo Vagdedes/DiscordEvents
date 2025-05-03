@@ -86,10 +86,6 @@ public class EventReader {
             )));
             list.addAll(Arrays.asList(EventPlaceholders.getPlaceholders(
                     methodName,
-                    EventPlaceholders.killerPlaceholders
-            )));
-            list.addAll(Arrays.asList(EventPlaceholders.getPlaceholders(
-                    methodName,
                     EventPlaceholders.entityPlaceholders
             )));
             list.addAll(Arrays.asList(EventPlaceholders.getPlaceholders(
@@ -112,10 +108,6 @@ public class EventReader {
             list.addAll(Arrays.asList(EventPlaceholders.getPlaceholders(
                     methodName,
                     EventPlaceholders.livingEntityPlaceholders
-            )));
-            list.addAll(Arrays.asList(EventPlaceholders.getPlaceholders(
-                    methodName,
-                    EventPlaceholders.killerPlaceholders
             )));
             list.addAll(Arrays.asList(EventPlaceholders.getPlaceholders(
                     methodName,

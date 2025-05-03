@@ -135,6 +135,12 @@ public class EventPlaceholders {
                     ":living-entity:last-damage}",
                     ":living-entity:maximum-no-damage-ticks}",
                     ":living-entity:no-damage-ticks}",
+                    ":living-entity:arrows-in-body}",
+                    ":living-entity:category}",
+                    ":living-entity:is-riptiding}",
+                    ":living-entity:is-climbing}",
+                    ":living-entity:is-collidable}",
+                    ":living-entity:can-breathe-underwater}",
             },
             playerPlaceholders = {
                     ":player:is-sneaking}",
@@ -152,23 +158,7 @@ public class EventPlaceholders {
                     ":player:walk-speed}",
                     ":player:fly-speed}",
                     ":player:total-experience}",
-            },
-            killerPlaceholders = { // same as player but for killer
-                    ":killer:is-sneaking}",
-                    ":killer:is-sprinting}",
-                    ":killer:is-flying}",
-                    ":killer:is-op}",
-                    ":killer:game-mode}",
-                    ":killer:is-invisible}",
-                    ":killer:display-name}",
-                    ":killer:player-list-name}",
-                    ":killer:level}",
-                    ":killer:exp}",
-                    ":killer:is-player-time-relative}",
-                    ":killer:player-time}",
-                    ":killer:walk-speed}",
-                    ":killer:fly-speed}",
-                    ":killer:total-experience}",
+                    ":player:client-view-distance}",
             };
 
     static String getPlaceholder(String method, String placeholder) {
@@ -845,12 +835,6 @@ public class EventPlaceholders {
     ) {
         if (entity == null) {
             for (String placeholder : livingEntityPlaceholders) {
-                string = string.replace(
-                        "{" + method + placeholder,
-                        isNull
-                );
-            }
-            for (String placeholder : killerPlaceholders) {
                 string = string.replace(
                         "{" + method + placeholder,
                         isNull
