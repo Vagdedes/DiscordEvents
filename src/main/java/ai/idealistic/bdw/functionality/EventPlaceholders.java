@@ -15,6 +15,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -162,12 +163,53 @@ public class EventPlaceholders {
                     ":player:total-experience}",
                     ":player:client-view-distance}",
             },
-            killerPlaceholders = {},
-            vehiclePlaceholders = {},
-            leashHolderPlaceholders = {};
+            killerPlaceholders,
+            vehiclePlaceholders,
+            leashHolderPlaceholders;
 
     static {
-        List<String> placeholders = new ArrayList<>(1);
+        int size = playerPlaceholders.length
+                + livingEntityPlaceholders.length
+                + entityPlaceholders.length;
+        List<String>
+                placeholders = new ArrayList<>(size),
+                add = new ArrayList<>(size);
+
+        placeholders.addAll(Arrays.asList(playerPlaceholders));
+        placeholders.addAll(Arrays.asList(livingEntityPlaceholders));
+        placeholders.addAll(Arrays.asList(entityPlaceholders));
+
+        for (String placeholder : placeholders) {
+            add.add(
+                    placeholder
+                            .replace(":player:", ":killer:")
+                            .replace(":living-entity:", ":killer:")
+                            .replace(":entity:", ":killer:")
+            );
+        }
+        killerPlaceholders = add.toArray(new String[0]);
+        add.clear();
+
+        for (String placeholder : entityPlaceholders) {
+            add.add(
+                    placeholder
+                            .replace(":player:", ":leash-holder:")
+                            .replace(":living-entity:", ":leash-holder:")
+                            .replace(":entity:", ":leash-holder:")
+            );
+        }
+        leashHolderPlaceholders = add.toArray(new String[0]);
+        add.clear();
+
+        for (String placeholder : entityPlaceholders) {
+            add.add(
+                    placeholder
+                            .replace(":player:", ":vehicle:")
+                            .replace(":living-entity:", ":vehicle:")
+                            .replace(":entity:", ":vehicle:")
+            );
+        }
+        vehiclePlaceholders = add.toArray(new String[0]);
     }
 
     static String getPlaceholder(String method, String placeholder) {
@@ -787,6 +829,24 @@ public class EventPlaceholders {
                         isNull
                 );
             }
+            for (String placeholder : killerPlaceholders) {
+                string = string.replace(
+                        "{" + method + placeholder,
+                        isNull
+                );
+            }
+            for (String placeholder : leashHolderPlaceholders) {
+                string = string.replace(
+                        "{" + method + placeholder,
+                        isNull
+                );
+            }
+            for (String placeholder : vehiclePlaceholders) {
+                string = string.replace(
+                        "{" + method + placeholder,
+                        isNull
+                );
+            }
             return string;
         }
         string = string.replace(
@@ -901,6 +961,24 @@ public class EventPlaceholders {
                 );
             }
             for (String placeholder : entityPlaceholders) {
+                string = string.replace(
+                        "{" + method + placeholder,
+                        isNull
+                );
+            }
+            for (String placeholder : killerPlaceholders) {
+                string = string.replace(
+                        "{" + method + placeholder,
+                        isNull
+                );
+            }
+            for (String placeholder : leashHolderPlaceholders) {
+                string = string.replace(
+                        "{" + method + placeholder,
+                        isNull
+                );
+            }
+            for (String placeholder : vehiclePlaceholders) {
                 string = string.replace(
                         "{" + method + placeholder,
                         isNull
@@ -1146,6 +1224,12 @@ public class EventPlaceholders {
     ) {
         if (entity == null) {
             for (String placeholder : entityPlaceholders) {
+                string = string.replace(
+                        "{" + method + placeholder,
+                        isNull
+                );
+            }
+            for (String placeholder : vehiclePlaceholders) {
                 string = string.replace(
                         "{" + method + placeholder,
                         isNull
