@@ -201,6 +201,58 @@ public class EventPlaceholders {
         vehiclePlaceholders = add.toArray(new String[0]);
     }
 
+    private static Object hasMethod(Object object, String methodName) {
+        int hash = (object.getClass().hashCode() * 31) + methodName.hashCode();
+        if (noMethods.containsKey(hash)) {
+            return null;
+        }
+        try {
+            Method method = object.getClass().getMethod(methodName);
+            method.setAccessible(true);
+            return method.invoke(object);
+        } catch (NoSuchMethodException ignored) {
+        } catch (Exception e) {
+            return null;
+        }
+        Class<?> current = object.getClass();
+        while (current != null) {
+            for (Method method : current.getDeclaredMethods()) {
+                if (method.getName().equals(methodName) && method.getParameterCount() == 0) {
+                    try {
+                        method.setAccessible(true);
+                        return method.invoke(object);
+                    } catch (Exception e) {
+                        return null;
+                    }
+                }
+            }
+            current = current.getSuperclass();
+        }
+        Object result = searchInterfaces(object.getClass().getInterfaces(), object, methodName);
+        
+        if (result != null) {
+            return result;
+        }
+        noMethods.put(hash, true);
+        return null;
+    }
+
+    private static Object searchInterfaces(Class<?>[] interfaces, Object object, String methodName) {
+        for (Class<?> iface : interfaces) {
+            try {
+                Method method = iface.getMethod(methodName);
+                method.setAccessible(true);
+                return method.invoke(object);
+            } catch (NoSuchMethodException ignored) {
+                Object result = searchInterfaces(iface.getInterfaces(), object, methodName);
+                if (result != null) return result;
+            } catch (Exception e) {
+                return null;
+            }
+        }
+        return null;
+    }
+
     static String getPlaceholder(String method, String placeholder) {
         return "{" + method + placeholder;
     }
@@ -220,28 +272,6 @@ public class EventPlaceholders {
             String type
     ) {
         return "{" + method + ":" + prefix + ":" + type + "}";
-    }
-
-    private static Object hasWorldMethod(World world, String methodName) {
-        int hash = (world.getClass().hashCode() * 31) + methodName.hashCode();
-
-        if (noMethods.containsKey(hash)) {
-            return null;
-        }
-        Class<?> current = world.getClass();
-        while (current != null) {
-            try {
-                Method method = current.getDeclaredMethod(methodName);
-                method.setAccessible(true);
-                return method.invoke(world);
-            } catch (NoSuchMethodException e) {
-                current = current.getSuperclass();
-            } catch (Exception e) {
-                return null;
-            }
-        }
-        noMethods.put(hash, true);
-        return null;
     }
 
     private static String getWorld(
@@ -318,7 +348,7 @@ public class EventPlaceholders {
                 )
         );
 
-        Object object = hasWorldMethod(world, "hasRaids");
+        Object object = hasMethod(world, "hasRaids");
 
         if (object instanceof Boolean) {
             string = string.replace(
@@ -331,7 +361,7 @@ public class EventPlaceholders {
                     isNull
             );
         }
-        object = hasWorldMethod(world, "getPVP");
+        object = hasMethod(world, "getPVP");
 
         if (object instanceof Boolean) {
             string = string.replace(
@@ -344,7 +374,7 @@ public class EventPlaceholders {
                     isNull
             );
         }
-        object = hasWorldMethod(world, "hasSkyLight");
+        object = hasMethod(world, "hasSkyLight");
 
         if (object instanceof Boolean) {
             string = string.replace(
@@ -357,7 +387,7 @@ public class EventPlaceholders {
                     isNull
             );
         }
-        object = hasWorldMethod(world, "hasSkyLight");
+        object = hasMethod(world, "hasSkyLight");
 
         if (object instanceof Boolean) {
             string = string.replace(
@@ -370,7 +400,7 @@ public class EventPlaceholders {
                     isNull
             );
         }
-        object = hasWorldMethod(world, "isHardcore");
+        object = hasMethod(world, "isHardcore");
 
         if (object instanceof Boolean) {
             string = string.replace(
@@ -383,7 +413,7 @@ public class EventPlaceholders {
                     isNull
             );
         }
-        object = hasWorldMethod(world, "getGameTime");
+        object = hasMethod(world, "getGameTime");
 
         if (object instanceof Long) {
             string = string.replace(
@@ -481,28 +511,6 @@ public class EventPlaceholders {
         return string;
     }
 
-    private static Object hasBlockMethod(Block block, String methodName) {
-        int hash = (block.getClass().hashCode() * 31) + methodName.hashCode();
-
-        if (noMethods.containsKey(hash)) {
-            return null;
-        }
-        Class<?> current = block.getClass();
-        while (current != null) {
-            try {
-                Method method = current.getDeclaredMethod(methodName);
-                method.setAccessible(true);
-                return method.invoke(block);
-            } catch (NoSuchMethodException e) {
-                current = current.getSuperclass();
-            } catch (Exception e) {
-                return null;
-            }
-        }
-        noMethods.put(hash, true);
-        return null;
-    }
-
     private static String getBlock(
             Block block,
             String method,
@@ -547,7 +555,7 @@ public class EventPlaceholders {
                 String.valueOf(block.isBlockIndirectlyPowered())
         );
 
-        Object object = hasBlockMethod(block, "isPassable");
+        Object object = hasMethod(block, "isPassable");
 
         if (object instanceof Boolean) {
             string = string.replace(
@@ -573,28 +581,6 @@ public class EventPlaceholders {
                 string
         );
         return string;
-    }
-
-    private static Object hasItemMetaMethod(ItemMeta meta, String methodName) {
-        int hash = (meta.getClass().hashCode() * 31) + methodName.hashCode();
-
-        if (noMethods.containsKey(hash)) {
-            return null;
-        }
-        Class<?> current = meta.getClass();
-        while (current != null) {
-            try {
-                Method method = current.getDeclaredMethod(methodName);
-                method.setAccessible(true);
-                return method.invoke(meta);
-            } catch (NoSuchMethodException e) {
-                current = current.getSuperclass();
-            } catch (Exception e) {
-                return null;
-            }
-        }
-        noMethods.put(hash, true);
-        return null;
     }
 
     private static String getItem(
@@ -654,7 +640,7 @@ public class EventPlaceholders {
 
         if (itemStack.hasItemMeta()) {
             ItemMeta meta = itemStack.getItemMeta();
-            Object object = hasItemMetaMethod(meta, "hasCustomModelData");
+            Object object = hasMethod(meta, "hasCustomModelData");
 
             if (object instanceof Integer) {
                 string = string.replace(
@@ -667,7 +653,7 @@ public class EventPlaceholders {
                         isNull
                 );
             }
-            object = hasItemMetaMethod(meta, "hasLocalizedName");
+            object = hasMethod(meta, "hasLocalizedName");
 
             if (object instanceof String) {
                 string = string.replace(
@@ -688,28 +674,6 @@ public class EventPlaceholders {
                 string
         );
         return string;
-    }
-
-    private static Object hasMaterialMethod(Material material, String methodName) {
-        int hash = (material.getClass().hashCode() * 31) + methodName.hashCode();
-
-        if (noMethods.containsKey(hash)) {
-            return null;
-        }
-        Class<?> current = material.getClass();
-        while (current != null) {
-            try {
-                Method method = current.getDeclaredMethod(methodName);
-                method.setAccessible(true);
-                return method.invoke(material);
-            } catch (NoSuchMethodException e) {
-                current = current.getSuperclass();
-            } catch (Exception e) {
-                return null;
-            }
-        }
-        noMethods.put(hash, true);
-        return null;
     }
 
     private static String getMaterial(
@@ -747,7 +711,7 @@ public class EventPlaceholders {
                 prepare(method, prefix, "is-flammable"),
                 String.valueOf(material.isFlammable())
         );
-        Object object = hasMaterialMethod(material, "isItem");
+        Object object = hasMethod(material, "isItem");
 
         if (object instanceof Boolean) {
             string = string.replace(
@@ -755,7 +719,7 @@ public class EventPlaceholders {
                     String.valueOf(object == Boolean.TRUE)
             );
         }
-        object = hasMaterialMethod(material, "isAir");
+        object = hasMethod(material, "isAir");
 
         if (object instanceof Boolean) {
             string = string.replace(
@@ -768,7 +732,7 @@ public class EventPlaceholders {
                     isNull
             );
         }
-        object = hasMaterialMethod(material, "isLiquid");
+        object = hasMethod(material, "isLiquid");
 
         if (object instanceof Boolean) {
             string = string.replace(
@@ -781,7 +745,7 @@ public class EventPlaceholders {
                     isNull
             );
         }
-        object = hasMaterialMethod(material, "isInteractable");
+        object = hasMethod(material, "isInteractable");
 
         if (object instanceof Boolean) {
             string = string.replace(
@@ -794,7 +758,7 @@ public class EventPlaceholders {
                     isNull
             );
         }
-        object = hasMaterialMethod(material, "isOccluding");
+        object = hasMethod(material, "isOccluding");
 
         if (object instanceof Boolean) {
             string = string.replace(
@@ -808,28 +772,6 @@ public class EventPlaceholders {
             );
         }
         return string;
-    }
-
-    private static Object hasPlayerMethod(Player player, String methodName) {
-        int hash = (player.getClass().hashCode() * 31) + methodName.hashCode();
-
-        if (noMethods.containsKey(hash)) {
-            return null;
-        }
-        Class<?> current = player.getClass();
-        while (current != null) {
-            try {
-                Method method = current.getDeclaredMethod(methodName);
-                method.setAccessible(true);
-                return method.invoke(player);
-            } catch (NoSuchMethodException e) {
-                current = current.getSuperclass();
-            } catch (Exception e) {
-                return null;
-            }
-        }
-        noMethods.put(hash, true);
-        return null;
     }
 
     private static String getPlayer(
@@ -918,7 +860,7 @@ public class EventPlaceholders {
                 prepare(method, prefix, "total-experience"),
                 String.valueOf(player.getTotalExperience())
         );
-        Object object = hasPlayerMethod(player, "isInvisible");
+        Object object = hasMethod(player, "isInvisible");
 
         if (object instanceof Boolean) {
             string = string.replace(
@@ -931,7 +873,7 @@ public class EventPlaceholders {
                     isNull
             );
         }
-        object = hasPlayerMethod(player, "getClientViewDistance");
+        object = hasMethod(player, "getClientViewDistance");
 
         if (object instanceof Integer) {
             string = string.replace(
@@ -953,28 +895,6 @@ public class EventPlaceholders {
                 recursive
         );
         return string;
-    }
-
-    private static Object hasLivingEntityMethod(LivingEntity entity, String methodName) {
-        int hash = (entity.getClass().hashCode() * 31) + methodName.hashCode();
-
-        if (noMethods.containsKey(hash)) {
-            return null;
-        }
-        Class<?> current = entity.getClass();
-        while (current != null) {
-            try {
-                Method method = current.getDeclaredMethod(methodName);
-                method.setAccessible(true);
-                return method.invoke(entity);
-            } catch (NoSuchMethodException e) {
-                current = current.getSuperclass();
-            } catch (Exception e) {
-                return null;
-            }
-        }
-        noMethods.put(hash, true);
-        return null;
     }
 
     private static String getLivingEntity(
@@ -1073,7 +993,7 @@ public class EventPlaceholders {
                     false
             );
         }
-        Object object = hasLivingEntityMethod(entity, "isSleeping");
+        Object object = hasMethod(entity, "isSleeping");
 
         if (object instanceof Boolean) {
             string = string.replace(
@@ -1086,7 +1006,7 @@ public class EventPlaceholders {
                     isNull
             );
         }
-        object = hasLivingEntityMethod(entity, "hasAI");
+        object = hasMethod(entity, "hasAI");
 
         if (object instanceof Boolean) {
             string = string.replace(
@@ -1099,7 +1019,7 @@ public class EventPlaceholders {
                     isNull
             );
         }
-        object = hasLivingEntityMethod(entity, "isClimbing");
+        object = hasMethod(entity, "isClimbing");
 
         if (object instanceof Boolean) {
             string = string.replace(
@@ -1112,7 +1032,7 @@ public class EventPlaceholders {
                     isNull
             );
         }
-        object = hasLivingEntityMethod(entity, "isCollidable");
+        object = hasMethod(entity, "isCollidable");
 
         if (object instanceof Boolean) {
             string = string.replace(
@@ -1125,7 +1045,7 @@ public class EventPlaceholders {
                     isNull
             );
         }
-        object = hasLivingEntityMethod(entity, "isRiptiding");
+        object = hasMethod(entity, "isRiptiding");
 
         if (object instanceof Boolean) {
             string = string.replace(
@@ -1138,7 +1058,7 @@ public class EventPlaceholders {
                     isNull
             );
         }
-        object = hasLivingEntityMethod(entity, "canBreatheUnderwater");
+        object = hasMethod(entity, "canBreatheUnderwater");
 
         if (object instanceof Boolean) {
             string = string.replace(
@@ -1151,7 +1071,7 @@ public class EventPlaceholders {
                     isNull
             );
         }
-        object = hasLivingEntityMethod(entity, "getCategory");
+        object = hasMethod(entity, "getCategory");
 
         if (object != null) {
             string = string.replace(
@@ -1164,7 +1084,7 @@ public class EventPlaceholders {
                     isNull
             );
         }
-        object = hasLivingEntityMethod(entity, "getArrowsInBody");
+        object = hasMethod(entity, "getArrowsInBody");
 
         if (object instanceof Integer) {
             string = string.replace(
@@ -1186,28 +1106,6 @@ public class EventPlaceholders {
                 recursive
         );
         return string;
-    }
-
-    private static Object hasEntityMethod(Entity entity, String methodName) {
-        int hash = (entity.getClass().hashCode() * 31) + methodName.hashCode();
-
-        if (noMethods.containsKey(hash)) {
-            return null;
-        }
-        Class<?> current = entity.getClass();
-        while (current != null) {
-            try {
-                Method method = current.getDeclaredMethod(methodName);
-                method.setAccessible(true);
-                return method.invoke(entity);
-            } catch (NoSuchMethodException e) {
-                current = current.getSuperclass();
-            } catch (Exception e) {
-                return null;
-            }
-        }
-        noMethods.put(hash, true);
-        return null;
     }
 
     private static String getEntity(
@@ -1316,7 +1214,7 @@ public class EventPlaceholders {
                     false
             );
         }
-        Object object = hasEntityMethod(entity, "getName");
+        Object object = hasMethod(entity, "getName");
 
         if (object instanceof String) {
             string = string.replace(
@@ -1329,7 +1227,7 @@ public class EventPlaceholders {
                     isNull
             );
         }
-        object = hasEntityMethod(entity, "getCustomName");
+        object = hasMethod(entity, "getCustomName");
 
         if (object instanceof String) {
             string = string.replace(
@@ -1342,7 +1240,7 @@ public class EventPlaceholders {
                     isNull
             );
         }
-        object = hasEntityMethod(entity, "isCustomNameVisible");
+        object = hasMethod(entity, "isCustomNameVisible");
 
         if (object instanceof Boolean) {
             string = string.replace(
@@ -1355,7 +1253,7 @@ public class EventPlaceholders {
                     isNull
             );
         }
-        object = hasEntityMethod(entity, "hasGravity");
+        object = hasMethod(entity, "hasGravity");
 
         if (object instanceof Boolean) {
             string = string.replace(
@@ -1368,7 +1266,7 @@ public class EventPlaceholders {
                     isNull
             );
         }
-        object = hasEntityMethod(entity, "isSilent");
+        object = hasMethod(entity, "isSilent");
 
         if (object instanceof Boolean) {
             string = string.replace(
@@ -1381,7 +1279,7 @@ public class EventPlaceholders {
                     isNull
             );
         }
-        object = hasEntityMethod(entity, "isGlowing");
+        object = hasMethod(entity, "isGlowing");
 
         if (object instanceof Boolean) {
             string = string.replace(
@@ -1394,7 +1292,7 @@ public class EventPlaceholders {
                     isNull
             );
         }
-        object = hasEntityMethod(entity, "isPersistent");
+        object = hasMethod(entity, "isPersistent");
 
         if (object instanceof Boolean) {
             string = string.replace(
@@ -1407,7 +1305,7 @@ public class EventPlaceholders {
                     isNull
             );
         }
-        object = hasEntityMethod(entity, "isVisualFire");
+        object = hasMethod(entity, "isVisualFire");
 
         if (object instanceof Boolean) {
             string = string.replace(
@@ -1420,7 +1318,7 @@ public class EventPlaceholders {
                     isNull
             );
         }
-        object = hasEntityMethod(entity, "getFacing");
+        object = hasMethod(entity, "getFacing");
 
         if (object instanceof BlockFace) {
             string = string.replace(
@@ -1433,7 +1331,7 @@ public class EventPlaceholders {
                     isNull
             );
         }
-        object = hasEntityMethod(entity, "getHeight");
+        object = hasMethod(entity, "getHeight");
 
         if (object instanceof Double) {
             string = string.replace(
@@ -1446,7 +1344,7 @@ public class EventPlaceholders {
                     isNull
             );
         }
-        object = hasEntityMethod(entity, "getWidth");
+        object = hasMethod(entity, "getWidth");
 
         if (object instanceof Double) {
             string = string.replace(
@@ -1459,7 +1357,7 @@ public class EventPlaceholders {
                     isNull
             );
         }
-        object = hasEntityMethod(entity, "getPose");
+        object = hasMethod(entity, "getPose");
 
         if (object != null) {
             string = string.replace(
@@ -1472,7 +1370,7 @@ public class EventPlaceholders {
                     isNull
             );
         }
-        object = hasEntityMethod(entity, "getSpawnCategory");
+        object = hasMethod(entity, "getSpawnCategory");
 
         if (object != null) {
             string = string.replace(
@@ -1485,7 +1383,7 @@ public class EventPlaceholders {
                     isNull
             );
         }
-        object = hasEntityMethod(entity, "getFreezeTicks");
+        object = hasMethod(entity, "getFreezeTicks");
 
         if (object instanceof Integer) {
             string = string.replace(
@@ -1498,7 +1396,7 @@ public class EventPlaceholders {
                     isNull
             );
         }
-        object = hasEntityMethod(entity, "getMaxFreezeTicks");
+        object = hasMethod(entity, "getMaxFreezeTicks");
 
         if (object instanceof Integer) {
             string = string.replace(
@@ -1511,7 +1409,7 @@ public class EventPlaceholders {
                     isNull
             );
         }
-        object = hasEntityMethod(entity, "getPortalCooldown");
+        object = hasMethod(entity, "getPortalCooldown");
 
         if (object instanceof Integer) {
             string = string.replace(
