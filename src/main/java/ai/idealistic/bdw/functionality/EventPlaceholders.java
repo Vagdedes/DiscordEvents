@@ -164,8 +164,7 @@ public class EventPlaceholders {
                     ":player:client-view-distance}",
             },
             killerPlaceholders,
-            vehiclePlaceholders,
-            leashHolderPlaceholders;
+            vehiclePlaceholders;
 
     static {
         int size = playerPlaceholders.length
@@ -188,17 +187,6 @@ public class EventPlaceholders {
             );
         }
         killerPlaceholders = add.toArray(new String[0]);
-        add.clear();
-
-        for (String placeholder : entityPlaceholders) {
-            add.add(
-                    placeholder
-                            .replace(":player:", ":leash-holder:")
-                            .replace(":living-entity:", ":leash-holder:")
-                            .replace(":entity:", ":leash-holder:")
-            );
-        }
-        leashHolderPlaceholders = add.toArray(new String[0]);
         add.clear();
 
         for (String placeholder : entityPlaceholders) {
@@ -835,12 +823,6 @@ public class EventPlaceholders {
                         isNull
                 );
             }
-            for (String placeholder : leashHolderPlaceholders) {
-                string = string.replace(
-                        "{" + method + placeholder,
-                        isNull
-                );
-            }
             for (String placeholder : vehiclePlaceholders) {
                 string = string.replace(
                         "{" + method + placeholder,
@@ -972,12 +954,6 @@ public class EventPlaceholders {
                         isNull
                 );
             }
-            for (String placeholder : leashHolderPlaceholders) {
-                string = string.replace(
-                        "{" + method + placeholder,
-                        isNull
-                );
-            }
             for (String placeholder : vehiclePlaceholders) {
                 string = string.replace(
                         "{" + method + placeholder,
@@ -1045,44 +1021,6 @@ public class EventPlaceholders {
                     method,
                     string,
                     "killer",
-                    false
-            );
-        }
-        Entity leashHolder = entity.getLeashHolder();
-
-        if (recursive
-                && leashHolder != null) {
-            if (leashHolder instanceof Player) {
-                string = getPlayer(
-                        (Player) leashHolder,
-                        method,
-                        string,
-                        "leash-holder",
-                        false
-                );
-            } else if (leashHolder instanceof LivingEntity) {
-                string = getLivingEntity(
-                        (LivingEntity) leashHolder,
-                        method,
-                        string,
-                        "leash-holder",
-                        false
-                );
-            } else {
-                string = getEntity(
-                        leashHolder,
-                        method,
-                        string,
-                        "leash-holder",
-                        false
-                );
-            }
-        } else {
-            string = getPlayer(
-                    null,
-                    method,
-                    string,
-                    "leash-holder",
                     false
             );
         }

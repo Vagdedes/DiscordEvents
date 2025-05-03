@@ -1,7 +1,6 @@
 package ai.idealistic.bdw.functionality;
 
 import ai.idealistic.bdw.implementation.DiscordWebhook;
-import ai.idealistic.bdw.utils.WebhookThread;
 import org.bukkit.plugin.Plugin;
 
 import java.util.concurrent.ExecutorService;
@@ -28,7 +27,7 @@ public class BdwManager {
 
     public static void disable() {
         thread.shutdown();
-        WebhookThread.shutdown();
+        DiscordWebhook.shutdown();
     }
 
     public static Boolean toggle(String pluginName, String eventName) {

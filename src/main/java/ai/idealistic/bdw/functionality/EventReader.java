@@ -90,10 +90,6 @@ public class EventReader {
             )));
             list.addAll(Arrays.asList(EventPlaceholders.getPlaceholders(
                     methodName,
-                    EventPlaceholders.leashHolderPlaceholders
-            )));
-            list.addAll(Arrays.asList(EventPlaceholders.getPlaceholders(
-                    methodName,
                     EventPlaceholders.vehiclePlaceholders
             )));
             list.addAll(Arrays.asList(EventPlaceholders.getPlaceholders(
@@ -124,10 +120,6 @@ public class EventReader {
             list.addAll(Arrays.asList(EventPlaceholders.getPlaceholders(
                     methodName,
                     EventPlaceholders.killerPlaceholders
-            )));
-            list.addAll(Arrays.asList(EventPlaceholders.getPlaceholders(
-                    methodName,
-                    EventPlaceholders.leashHolderPlaceholders
             )));
             list.addAll(Arrays.asList(EventPlaceholders.getPlaceholders(
                     methodName,
