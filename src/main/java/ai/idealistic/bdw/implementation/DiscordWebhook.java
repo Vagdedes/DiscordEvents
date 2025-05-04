@@ -511,7 +511,12 @@ public class DiscordWebhook {
                         if (strings.length > 0) {
                             if (strings.length != 1
                                     || !strings[0].equals("true")) {
-                                AwarenessNotifications.send(ArrayReader.toString(strings));
+                                AwarenessNotifications.send(
+                                        "The webserver returned an error response for the event '"
+                                                + getEventName()
+                                                + " (" + pluginName + ")': "
+                                                + ArrayReader.toString(strings)
+                                );
                             }
                         } else {
                             AwarenessNotifications.send(
@@ -521,7 +526,11 @@ public class DiscordWebhook {
                             );
                         }
                     } catch (Exception ex) {
-                        AwarenessNotifications.send(ex.getMessage());
+                        AwarenessNotifications.send(
+                                "The code run into an error response for the event '"
+                                        + getEventName()
+                                        + " (" + pluginName + ")': "
+                                        + ex.getMessage());
                     }
                 }
             });
