@@ -45,6 +45,9 @@ public class DiscordWebhook {
             notImplementedText;
     @Getter
     private boolean enabled;
+    private boolean
+            escapeMarkdownBeforeMethodCall,
+            escapeMarkdownAfterMethodCall;
     private double cooldown;
     private long expiration;
     private final Map<String, Boolean> methodCallBlacklist;
@@ -365,7 +368,17 @@ public class DiscordWebhook {
 
                 if (!this.fields.isEmpty()) {
                     for (DiscordField field : this.fields.values()) {
-                        fieldsArray.add(new DiscordTemporaryField(field));
+                        DiscordTemporaryField tmpField = new DiscordTemporaryField(field);
+                        fieldsArray.add(tmpField);
+
+                        if (this.escapeMarkdownBeforeMethodCall) {
+                            tmpField.setName(
+                                    DiscordUtils.escapeMarkdown(tmpField.getName())
+                            );
+                            tmpField.setValue(
+                                    DiscordUtils.escapeMarkdown(tmpField.getValue())
+                            );
+                        }
                     }
                 }
                 String avatarURL = this.avatarURL;
@@ -379,6 +392,20 @@ public class DiscordWebhook {
                 String footer = this.footer;
                 String footerIconURL = this.footerIconURL;
                 String content = this.content;
+
+                if (this.escapeMarkdownBeforeMethodCall) {
+                    avatarURL = DiscordUtils.escapeMarkdown(avatarURL);
+                    color = DiscordUtils.escapeMarkdown(color);
+                    author = DiscordUtils.escapeMarkdown(author);
+                    authorURL = DiscordUtils.escapeMarkdown(authorURL);
+                    authorIconURL = DiscordUtils.escapeMarkdown(authorIconURL);
+                    title = DiscordUtils.escapeMarkdown(title);
+                    titleURL = DiscordUtils.escapeMarkdown(titleURL);
+                    description = DiscordUtils.escapeMarkdown(description);
+                    footer = DiscordUtils.escapeMarkdown(footer);
+                    footerIconURL = DiscordUtils.escapeMarkdown(footerIconURL);
+                    content = DiscordUtils.escapeMarkdown(content);
+                }
 
                 if (!this.methods.isEmpty()) {
                     for (Map.Entry<String, Method> entry : this.methods.entrySet()) {
@@ -573,6 +600,8 @@ public class DiscordWebhook {
         String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
         this.config.setOption("information.last_reload", date);
         this.enabled = this.config.getBoolean("options.enabled");
+        this.escapeMarkdownBeforeMethodCall = this.config.getBoolean("options.escape_markdown_before_method_call");
+        this.escapeMarkdownAfterMethodCall = this.config.getBoolean("options.escape_markdown_after_method_call");
         this.cooldown = Math.max(this.config.getDouble("options.cooldown"), 0.0);
         this.methodCallBlacklist.clear();
         String[] split = this.config.getString("options.method_call_blacklist").split(

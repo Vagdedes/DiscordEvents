@@ -47,6 +47,8 @@ public class ConfigurationBuilder {
             }
         }
         addOption("options.enabled", false);
+        addOption("options.escape_markdown_before_method_call", false);
+        addOption("options.escape_markdown_after_method_call", false);
         addOption("options.cooldown", 0.1);
         addOption("options.method_call_blacklist", "methodexample1, methodexample2");
 
