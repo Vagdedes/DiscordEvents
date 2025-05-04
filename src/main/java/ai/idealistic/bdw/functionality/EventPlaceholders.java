@@ -1149,12 +1149,13 @@ public class EventPlaceholders {
                     webhook.getNullText()
             );
         } else {
-            boolean isEnum = method.getReturnType().isEnum();
             string = string.replace(
                     "{" + methodName + customPlaceholder,
-                    isEnum
-                            ? object.toString().toLowerCase().replace("_", "-")
-                            : object.toString()
+                    webhook.escapeMarkdownAfterMethodCall(
+                            method.getReturnType().isEnum()
+                                    ? object.toString().toLowerCase().replace("_", "-")
+                                    : object.toString()
+                    )
             );
         }
         return string;
