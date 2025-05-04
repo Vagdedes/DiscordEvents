@@ -158,6 +158,9 @@ public class EventPlaceholders {
                     ":player:big-head-image-url}",
                     ":player:medium-head-image-url}",
                     ":player:small-head-image-url}",
+                    ":player:big-head-image-url-nohelm}",
+                    ":player:medium-head-image-url-nohelm}",
+                    ":player:small-head-image-url-nohelm}",
             },
             killerPlaceholders,
             vehiclePlaceholders;
@@ -747,6 +750,15 @@ public class EventPlaceholders {
         ).replace(
                 prepare(method, prefix, "small-head-image-url"),
                 "https://mc-heads.net/avatar/" + player.getName() + "/50"
+        ).replace(
+                prepare(method, prefix, "big-head-image-url-nohelm"),
+                "https://mc-heads.net/avatar/" + player.getName() + "/200/nohelm"
+        ).replace(
+                prepare(method, prefix, "medium-head-image-url-nohelm"),
+                "https://mc-heads.net/avatar/" + player.getName() + "/100/nohelm"
+        ).replace(
+                prepare(method, prefix, "small-head-image-url-nohelm"),
+                "https://mc-heads.net/avatar/" + player.getName() + "/50/nohelm"
         );
 
         string = getLivingEntity(
