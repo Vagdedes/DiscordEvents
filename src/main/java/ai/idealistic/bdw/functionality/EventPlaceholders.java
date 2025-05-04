@@ -155,6 +155,9 @@ public class EventPlaceholders {
                     ":player:fly-speed}",
                     ":player:total-experience}",
                     ":player:client-view-distance}",
+                    ":player:big-head-image-url}",
+                    ":player:medium-head-image-url}",
+                    ":player:small-head-image-url}",
             },
             killerPlaceholders,
             vehiclePlaceholders;
@@ -735,6 +738,15 @@ public class EventPlaceholders {
                                 ? player.getClientViewDistance()
                                 : webhook.getNotImplementedText()
                 )
+        ).replace(
+                prepare(method, prefix, "big-head-image-url"),
+                "https://mc-heads.net/avatar/" + player.getName() + "/200"
+        ).replace(
+                prepare(method, prefix, "medium-head-image-url"),
+                "https://mc-heads.net/avatar/" + player.getName() + "/100"
+        ).replace(
+                prepare(method, prefix, "small-head-image-url"),
+                "https://mc-heads.net/avatar/" + player.getName() + "/50"
         );
 
         string = getLivingEntity(
