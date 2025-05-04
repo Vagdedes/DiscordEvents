@@ -1,5 +1,6 @@
 package ai.idealistic.bdw.functionality;
 
+import ai.idealistic.bdw.implementation.DiscordWebhook;
 import ai.idealistic.bdw.listeners.ChunksEvent;
 import ai.idealistic.bdw.utils.ArrayReader;
 import org.bukkit.Location;
@@ -17,8 +18,6 @@ import java.util.Arrays;
 import java.util.List;
 
 public class EventPlaceholders {
-
-    private static final String isNull = "(null)";
 
     static final String
             customPlaceholder = ":custom}";
@@ -207,6 +206,12 @@ public class EventPlaceholders {
         return result;
     }
 
+    private static String bool(DiscordWebhook webhook, boolean b) {
+        return b
+                ? webhook.getTrueText()
+                : webhook.getFalseText();
+    }
+
     private static String prepare(
             String method,
             String prefix,
@@ -216,6 +221,7 @@ public class EventPlaceholders {
     }
 
     private static String getWorld(
+            DiscordWebhook webhook,
             World world,
             String method,
             String string
@@ -224,7 +230,7 @@ public class EventPlaceholders {
             for (String placeholder : worldPlaceholders) {
                 string = string.replace(
                         "{" + method + placeholder,
-                        isNull
+                        webhook.getNullText()
                 );
             }
             return string;
@@ -267,16 +273,16 @@ public class EventPlaceholders {
                         : "Clear Weather"
         ).replace(
                 prepare(method, prefix, "is-thundering"),
-                String.valueOf(world.isThundering())
+                bool(webhook, world.isThundering())
         ).replace(
                 prepare(method, prefix, "has-storm"),
-                String.valueOf(world.hasStorm())
+                bool(webhook, world.hasStorm())
         ).replace(
                 prepare(method, prefix, "allow-animals"),
-                String.valueOf(world.getAllowAnimals())
+                bool(webhook, world.getAllowAnimals())
         ).replace(
                 prepare(method, prefix, "allow-monsters"),
-                String.valueOf(world.getAllowMonsters())
+                bool(webhook, world.getAllowMonsters())
         ).replace(
                 prepare(method, prefix, "game-rules"),
                 ArrayReader.toString(world.getGameRules())
@@ -285,29 +291,29 @@ public class EventPlaceholders {
                 String.valueOf(
                         MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8)
                                 ? world.getWorldBorder().getSize()
-                                : -1
+                                : webhook.getNotImplementedText()
                 )
         ).replace(
                 prepare(method, prefix, "has-raids"),
-                String.valueOf(
+                bool(webhook,
                         MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8)
                                 && world.hasRaids()
                 )
         ).replace(
                 prepare(method, prefix, "has-sky-light"),
-                String.valueOf(
+                bool(webhook,
                         MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)
                                 && world.hasSkyLight()
                 )
         ).replace(
                 prepare(method, prefix, "pvp-allowed"),
-                String.valueOf(
+                bool(webhook,
                         MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)
                                 && world.getPVP()
                 )
         ).replace(
                 prepare(method, prefix, "is-hardcore"),
-                String.valueOf(
+                bool(webhook,
                         MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)
                                 && world.isHardcore()
                 )
@@ -316,13 +322,14 @@ public class EventPlaceholders {
                 String.valueOf(
                         MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)
                                 ? world.getGameTime()
-                                : -1
+                                : webhook.getNotImplementedText()
                 )
         );
         return string;
     }
 
     private static String getLocation(
+            DiscordWebhook webhook,
             Location location,
             String method,
             String string,
@@ -332,25 +339,25 @@ public class EventPlaceholders {
             for (String placeholder : locationPlaceholders) {
                 string = string.replace(
                         "{" + method + placeholder,
-                        isNull
+                        webhook.getNullText()
                 );
             }
             for (String placeholder : worldPlaceholders) {
                 string = string.replace(
                         "{" + method + placeholder,
-                        isNull
+                        webhook.getNullText()
                 );
             }
             for (String placeholder : blockPlaceholders) {
                 string = string.replace(
                         "{" + method + placeholder,
-                        isNull
+                        webhook.getNullText()
                 );
             }
             for (String placeholder : materialPlaceholders) {
                 string = string.replace(
                         "{" + method + placeholder,
-                        isNull
+                        webhook.getNullText()
                 );
             }
             return string;
@@ -390,12 +397,14 @@ public class EventPlaceholders {
         );
 
         string = getWorld(
+                webhook,
                 location.getWorld(),
                 method,
                 string
         );
         if (block) {
             string = getBlock(
+                    webhook,
                     location.getBlock(),
                     method,
                     string
@@ -405,6 +414,7 @@ public class EventPlaceholders {
     }
 
     private static String getBlock(
+            DiscordWebhook webhook,
             Block block,
             String method,
             String string
@@ -418,13 +428,13 @@ public class EventPlaceholders {
             for (String placeholder : blockPlaceholders) {
                 string = string.replace(
                         "{" + method + placeholder,
-                        isNull
+                        webhook.getNullText()
                 );
             }
             for (String placeholder : materialPlaceholders) {
                 string = string.replace(
                         "{" + method + placeholder,
-                        isNull
+                        webhook.getNullText()
                 );
             }
             return string;
@@ -436,30 +446,32 @@ public class EventPlaceholders {
                 block.getBiome().name().toLowerCase().replace("_", "-")
         ).replace(
                 prepare(method, prefix, "is-empty"),
-                String.valueOf(block.isEmpty())
+                bool(webhook, block.isEmpty())
         ).replace(
                 prepare(method, prefix, "is-liquid"),
-                String.valueOf(block.isLiquid())
+                bool(webhook, block.isLiquid())
         ).replace(
                 prepare(method, prefix, "is-block-powered"),
-                String.valueOf(block.isBlockPowered())
+                bool(webhook, block.isBlockPowered())
         ).replace(
                 prepare(method, prefix, "is-block-indirectly-powered"),
-                String.valueOf(block.isBlockIndirectlyPowered())
+                bool(webhook, block.isBlockIndirectlyPowered())
         ).replace(
                 prepare(method, prefix, "is-passable"),
-                String.valueOf(
+                bool(webhook,
                         MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)
                                 && block.isPassable()
                 )
         );
         string = getLocation(
+                webhook,
                 block.getLocation(),
                 method,
                 string,
                 false
         );
         string = getMaterial(
+                webhook,
                 block.getType(),
                 method,
                 string
@@ -468,6 +480,7 @@ public class EventPlaceholders {
     }
 
     private static String getItem(
+            DiscordWebhook webhook,
             ItemStack itemStack,
             String method,
             String string
@@ -476,13 +489,13 @@ public class EventPlaceholders {
             for (String placeholder : itemPlaceholders) {
                 string = string.replace(
                         "{" + method + placeholder,
-                        isNull
+                        webhook.getNullText()
                 );
             }
             for (String placeholder : materialPlaceholders) {
                 string = string.replace(
                         "{" + method + placeholder,
-                        isNull
+                        webhook.getNullText()
                 );
             }
             return string;
@@ -500,29 +513,34 @@ public class EventPlaceholders {
                 itemStack.getType().name().toLowerCase().replace("_", "-")
         ).replace(
                 prepare(method, prefix, "has-meta"),
-                String.valueOf(itemStack.hasItemMeta())
+                bool(webhook, itemStack.hasItemMeta())
         ).replace(
                 prepare(method, prefix, "has-enchants"),
-                String.valueOf(itemStack.hasItemMeta()
-                        && itemStack.getItemMeta().hasEnchants())
+                bool(webhook,
+                        itemStack.hasItemMeta()
+                                && itemStack.getItemMeta().hasEnchants()
+                )
         ).replace(
                 prepare(method, prefix, "enchantment-count"),
                 String.valueOf(itemStack.getEnchantments().size())
         ).replace(
                 prepare(method, prefix, "has-display-name"),
-                String.valueOf(
+                bool(
+                        webhook,
                         itemStack.hasItemMeta()
                                 && itemStack.getItemMeta().hasDisplayName()
                 )
         ).replace(
                 prepare(method, prefix, "has-lore"),
-                String.valueOf(
+                bool(
+                        webhook,
                         itemStack.hasItemMeta()
                                 && itemStack.getItemMeta().hasLore()
                 )
         ).replace(
                 prepare(method, prefix, "has-custom-model-data"),
-                String.valueOf(
+                bool(
+                        webhook,
                         MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_14)
                                 && itemStack.hasItemMeta()
                                 && itemStack.getItemMeta().hasLore()
@@ -530,7 +548,8 @@ public class EventPlaceholders {
                 )
         ).replace(
                 prepare(method, prefix, "has-localized-name"),
-                String.valueOf(
+                bool(
+                        webhook,
                         MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_14)
                                 && itemStack.hasItemMeta()
                                 && itemStack.getItemMeta().hasLore()
@@ -538,6 +557,7 @@ public class EventPlaceholders {
                 )
         );
         string = getMaterial(
+                webhook,
                 itemStack.getType(),
                 method,
                 string
@@ -546,6 +566,7 @@ public class EventPlaceholders {
     }
 
     private static String getMaterial(
+            DiscordWebhook webhook,
             Material material,
             String method,
             String string
@@ -554,7 +575,7 @@ public class EventPlaceholders {
             for (String placeholder : materialPlaceholders) {
                 string = string.replace(
                         "{" + method + placeholder,
-                        isNull
+                        webhook.getNullText()
                 );
             }
             return string;
@@ -566,40 +587,44 @@ public class EventPlaceholders {
                 material.name().toLowerCase().replace("_", "-")
         ).replace(
                 prepare(method, prefix, "is-block"),
-                String.valueOf(material.isBlock())
+                bool(webhook, material.isBlock())
         ).replace(
                 prepare(method, prefix, "is-edible"),
-                String.valueOf(material.isEdible())
+                bool(webhook, material.isEdible())
         ).replace(
                 prepare(method, prefix, "is-solid"),
-                String.valueOf(material.isSolid())
+                bool(webhook, material.isSolid())
         ).replace(
                 prepare(method, prefix, "is-transparent"),
-                String.valueOf(material.isTransparent())
+                bool(webhook, material.isTransparent())
         ).replace(
                 prepare(method, prefix, "is-flammable"),
-                String.valueOf(material.isFlammable())
+                bool(webhook, material.isFlammable())
         ).replace(
                 prepare(method, prefix, "is-item"),
-                String.valueOf(
+                bool(
+                        webhook,
                         MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)
                                 && material.isItem()
                 )
         ).replace(
                 prepare(method, prefix, "is-air"),
-                String.valueOf(
+                bool(
+                        webhook,
                         MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)
                                 && material.isAir()
                 )
         ).replace(
                 prepare(method, prefix, "is-interactable"),
-                String.valueOf(
+                bool(
+                        webhook,
                         MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_14)
                                 && material.isInteractable()
                 )
         ).replace(
                 prepare(method, prefix, "is-occluding"),
-                String.valueOf(
+                bool(
+                        webhook,
                         MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)
                                 && material.isOccluding()
                 )
@@ -608,6 +633,7 @@ public class EventPlaceholders {
     }
 
     private static String getPlayer(
+            DiscordWebhook webhook,
             Player player,
             String method,
             String string,
@@ -618,50 +644,50 @@ public class EventPlaceholders {
             for (String placeholder : playerPlaceholders) {
                 string = string.replace(
                         "{" + method + placeholder,
-                        isNull
+                        webhook.getNullText()
                 );
             }
             for (String placeholder : livingEntityPlaceholders) {
                 string = string.replace(
                         "{" + method + placeholder,
-                        isNull
+                        webhook.getNullText()
                 );
             }
             for (String placeholder : entityPlaceholders) {
                 string = string.replace(
                         "{" + method + placeholder,
-                        isNull
+                        webhook.getNullText()
                 );
             }
             for (String placeholder : killerPlaceholders) {
                 string = string.replace(
                         "{" + method + placeholder,
-                        isNull
+                        webhook.getNullText()
                 );
             }
             for (String placeholder : vehiclePlaceholders) {
                 string = string.replace(
                         "{" + method + placeholder,
-                        isNull
+                        webhook.getNullText()
                 );
             }
             return string;
         }
         string = string.replace(
                 prepare(method, prefix, "is-sneaking"),
-                String.valueOf(player.isSneaking())
+                bool(webhook, player.isSneaking())
         ).replace(
                 prepare(method, prefix, "is-sprinting"),
-                String.valueOf(player.isSprinting())
+                bool(webhook, player.isSprinting())
         ).replace(
                 prepare(method, prefix, "is-flying"),
-                String.valueOf(player.isFlying())
+                bool(webhook, player.isFlying())
         ).replace(
                 prepare(method, prefix, "can-fly"),
-                String.valueOf(player.getAllowFlight())
+                bool(webhook, player.getAllowFlight())
         ).replace(
                 prepare(method, prefix, "is-op"),
-                String.valueOf(player.isOp())
+                bool(webhook, player.isOp())
         ).replace(
                 prepare(method, prefix, "game-mode"),
                 player.getGameMode().name().toLowerCase().replace("_", "-")
@@ -682,7 +708,7 @@ public class EventPlaceholders {
                 String.valueOf(player.getExp())
         ).replace(
                 prepare(method, prefix, "is-player-time-relative"),
-                String.valueOf(player.isPlayerTimeRelative())
+                bool(webhook, player.isPlayerTimeRelative())
         ).replace(
                 prepare(method, prefix, "player-time"),
                 String.valueOf(player.getPlayerTime()) // todo
@@ -697,7 +723,8 @@ public class EventPlaceholders {
                 String.valueOf(player.getTotalExperience())
         ).replace(
                 prepare(method, prefix, "is-invisible"),
-                String.valueOf(
+                bool(
+                        webhook,
                         MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8)
                                 && player.isInvisible()
                 )
@@ -706,11 +733,12 @@ public class EventPlaceholders {
                 String.valueOf(
                         MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_18)
                                 ? player.getClientViewDistance()
-                                : -1
+                                : webhook.getNotImplementedText()
                 )
         );
 
         string = getLivingEntity(
+                webhook,
                 player,
                 method,
                 string,
@@ -721,6 +749,7 @@ public class EventPlaceholders {
     }
 
     private static String getLivingEntity(
+            DiscordWebhook webhook,
             LivingEntity entity,
             String method,
             String string,
@@ -731,25 +760,25 @@ public class EventPlaceholders {
             for (String placeholder : livingEntityPlaceholders) {
                 string = string.replace(
                         "{" + method + placeholder,
-                        isNull
+                        webhook.getNullText()
                 );
             }
             for (String placeholder : entityPlaceholders) {
                 string = string.replace(
                         "{" + method + placeholder,
-                        isNull
+                        webhook.getNullText()
                 );
             }
             for (String placeholder : killerPlaceholders) {
                 string = string.replace(
                         "{" + method + placeholder,
-                        isNull
+                        webhook.getNullText()
                 );
             }
             for (String placeholder : vehiclePlaceholders) {
                 string = string.replace(
                         "{" + method + placeholder,
-                        isNull
+                        webhook.getNullText()
                 );
             }
             return string;
@@ -762,13 +791,15 @@ public class EventPlaceholders {
                 String.valueOf(entity.getMaxHealth())
         ).replace(
                 prepare(method, prefix, "is-swimming"),
-                String.valueOf(
+                bool(
+                        webhook,
                         MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)
                                 && entity.isSwimming()
                 )
         ).replace(
                 prepare(method, prefix, "is-gliding"),
-                String.valueOf(
+                bool(
+                        webhook,
                         MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)
                                 && entity.isGliding()
                 )
@@ -777,16 +808,16 @@ public class EventPlaceholders {
                 String.valueOf(entity.getEyeHeight())
         ).replace(
                 prepare(method, prefix, "is-leashed"),
-                String.valueOf(entity.isLeashed())
+                bool(webhook, entity.isLeashed())
         ).replace(
                 prepare(method, prefix, "can-pickup-items"),
-                String.valueOf(entity.getCanPickupItems())
+                bool(webhook, entity.getCanPickupItems())
         ).replace(
                 prepare(method, prefix, "active-potion-effects"),
                 String.valueOf(entity.getActivePotionEffects().size())
         ).replace(
                 prepare(method, prefix, "remove-when-far-away"),
-                String.valueOf(entity.getRemoveWhenFarAway())
+                bool(webhook, entity.getRemoveWhenFarAway())
         ).replace(
                 prepare(method, prefix, "last-damage"),
                 String.valueOf(entity.getLastDamage())
@@ -801,41 +832,47 @@ public class EventPlaceholders {
                 String.valueOf(
                         MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)
                                 ? entity.getArrowsInBody()
-                                : -1
+                                : webhook.getNotImplementedText()
                 )
         ).replace(
                 prepare(method, prefix, "can-breathe-underwater"),
-                String.valueOf(
+                bool(
+                        webhook,
                         MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)
                                 && entity.canBreatheUnderwater()
                 )
         ).replace(
                 prepare(method, prefix, "is-riptiding"),
-                String.valueOf(
+                bool(
+                        webhook,
                         MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)
                                 && entity.isRiptiding()
                 )
         ).replace(
                 prepare(method, prefix, "is-climbing"),
-                String.valueOf(
+                bool(
+                        webhook,
                         MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)
                                 && entity.isClimbing()
                 )
         ).replace(
                 prepare(method, prefix, "is-collidable"),
-                String.valueOf(
+                bool(
+                        webhook,
                         MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)
                                 && entity.isCollidable()
                 )
         ).replace(
                 prepare(method, prefix, "has-ai"),
-                String.valueOf(
+                bool(
+                        webhook,
                         MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_14)
                                 && entity.hasAI()
                 )
         ).replace(
                 prepare(method, prefix, "is-sleeping"),
-                String.valueOf(
+                bool(
+                        webhook,
                         MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8)
                                 && entity.isSleeping()
                 )
@@ -844,6 +881,7 @@ public class EventPlaceholders {
 
         if (recursive) {
             string = getPlayer(
+                    webhook,
                     killer,
                     method,
                     string,
@@ -852,6 +890,7 @@ public class EventPlaceholders {
             );
         } else {
             string = getPlayer(
+                    webhook,
                     null,
                     method,
                     string,
@@ -860,6 +899,7 @@ public class EventPlaceholders {
             );
         }
         string = getEntity(
+                webhook,
                 entity,
                 method,
                 string,
@@ -870,6 +910,7 @@ public class EventPlaceholders {
     }
 
     private static String getEntity(
+            DiscordWebhook webhook,
             Entity entity,
             String method,
             String string,
@@ -880,13 +921,13 @@ public class EventPlaceholders {
             for (String placeholder : entityPlaceholders) {
                 string = string.replace(
                         "{" + method + placeholder,
-                        isNull
+                        webhook.getNullText()
                 );
             }
             for (String placeholder : vehiclePlaceholders) {
                 string = string.replace(
                         "{" + method + placeholder,
-                        isNull
+                        webhook.getNullText()
                 );
             }
             return string;
@@ -908,16 +949,17 @@ public class EventPlaceholders {
                 String.valueOf(entity.getFireTicks())
         ).replace(
                 prepare(method, prefix, "is-valid"),
-                String.valueOf(entity.isValid())
+                bool(webhook, entity.isValid())
         ).replace(
                 prepare(method, prefix, "is-inside-vehicle"),
-                String.valueOf(entity.isInsideVehicle())
+                bool(webhook, entity.isInsideVehicle())
         ).replace(
                 prepare(method, prefix, "is-dead"),
-                String.valueOf(entity.isDead())
+                bool(webhook, entity.isDead())
         ).replace(
                 prepare(method, prefix, "is-frozen"),
-                String.valueOf(
+                bool(
+                        webhook,
                         MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)
                                 && entity.isFrozen()
                 )
@@ -928,7 +970,8 @@ public class EventPlaceholders {
                 )
         ).replace(
                 prepare(method, prefix, "has-passenger"),
-                String.valueOf(
+                bool(
+                        webhook,
                         entity.getPassenger() != null
                 )
         ).replace(
@@ -940,47 +983,53 @@ public class EventPlaceholders {
                 prepare(method, prefix, "name"),
                 MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8)
                         ? entity.getName()
-                        : isNull
+                        : webhook.getNullText()
         ).replace(
                 prepare(method, prefix, "custom-name"),
                 MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8)
                         ? (entity.getCustomName() == null
-                        ? isNull
+                        ? webhook.getNullText()
                         : entity.getCustomName())
-                        : isNull
+                        : webhook.getNullText()
         ).replace(
                 prepare(method, prefix, "custom-name-visible"),
-                String.valueOf(
+                bool(
+                        webhook,
                         MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8)
                                 && entity.isCustomNameVisible()
                 )
         ).replace(
                 prepare(method, prefix, "has-gravity"),
-                String.valueOf(
+                bool(
+                        webhook,
                         MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_10)
                                 && entity.hasGravity()
                 )
         ).replace(
                 prepare(method, prefix, "is-silent"),
-                String.valueOf(
+                bool(
+                        webhook,
                         MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)
                                 && entity.isSilent()
                 )
         ).replace(
                 prepare(method, prefix, "is-glowing"),
-                String.valueOf(
+                bool(
+                        webhook,
                         MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)
                                 && entity.isGlowing()
                 )
         ).replace(
                 prepare(method, prefix, "is-persistent"),
-                String.valueOf(
+                bool(
+                        webhook,
                         MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8)
                                 && entity.isPersistent()
                 )
         ).replace(
                 prepare(method, prefix, "is-visual-fire"),
-                String.valueOf(
+                bool(
+                        webhook,
                         MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)
                                 && entity.isVisualFire()
                 )
@@ -988,51 +1037,51 @@ public class EventPlaceholders {
                 prepare(method, prefix, "facing"),
                 MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)
                         ? entity.getFacing().name().toLowerCase().replace("_", "-")
-                        : isNull
+                        : webhook.getNullText()
         ).replace(
                 prepare(method, prefix, "height"),
                 String.valueOf(
                         MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)
                                 ? entity.getHeight()
-                                : isNull
+                                : webhook.getNullText()
                 )
         ).replace(
                 prepare(method, prefix, "width"),
                 String.valueOf(
                         MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)
                                 ? entity.getWidth()
-                                : isNull
+                                : webhook.getNullText()
                 )
         ).replace(
                 prepare(method, prefix, "pose"),
                 MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)
                         ? entity.getPose().name().toLowerCase().replace("_", "-")
-                        : isNull
+                        : webhook.getNullText()
         ).replace(
                 prepare(method, prefix, "spawn-category"),
                 MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_18)
                         ? entity.getSpawnCategory().name().toLowerCase().replace("_", "-")
-                        : isNull
+                        : webhook.getNullText()
         ).replace(
                 prepare(method, prefix, "freeze-ticks"),
                 String.valueOf(
                         MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)
                                 ? entity.getFreezeTicks()
-                                : -1
+                                : webhook.getNotImplementedText()
                 )
         ).replace(
                 prepare(method, prefix, "max-freeze-ticks"),
                 String.valueOf(
                         MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)
                                 ? entity.getMaxFreezeTicks()
-                                : -1
+                                : webhook.getNotImplementedText()
                 )
         ).replace(
                 prepare(method, prefix, "portal-cooldown"),
                 String.valueOf(
                         MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)
                                 ? entity.getPortalCooldown()
-                                : -1
+                                : webhook.getNotImplementedText()
                 )
         );
         Entity vehicle = entity.getVehicle();
@@ -1041,6 +1090,7 @@ public class EventPlaceholders {
                 && vehicle != null) {
             if (vehicle instanceof Player) {
                 string = getPlayer(
+                        webhook,
                         (Player) vehicle,
                         method,
                         string,
@@ -1049,6 +1099,7 @@ public class EventPlaceholders {
                 );
             } else if (vehicle instanceof LivingEntity) {
                 string = getLivingEntity(
+                        webhook,
                         (LivingEntity) vehicle,
                         method,
                         string,
@@ -1057,6 +1108,7 @@ public class EventPlaceholders {
                 );
             } else {
                 string = getEntity(
+                        webhook,
                         vehicle,
                         method,
                         string,
@@ -1066,6 +1118,7 @@ public class EventPlaceholders {
             }
         } else {
             string = getPlayer(
+                    webhook,
                     null,
                     method,
                     string,
@@ -1075,6 +1128,7 @@ public class EventPlaceholders {
         }
 
         string = getLocation(
+                webhook,
                 entity.getLocation(),
                 method,
                 string,
@@ -1084,13 +1138,14 @@ public class EventPlaceholders {
     }
 
     private static String getCustom(
+            DiscordWebhook webhook,
             Object object,
             String methodName,
             String string) {
         if (object == null) {
             string = string.replace(
                     "{" + methodName + customPlaceholder,
-                    isNull
+                    webhook.getNullText()
             );
         } else {
             string = string.replace(
@@ -1102,18 +1157,21 @@ public class EventPlaceholders {
     }
 
     public static String get(
+            DiscordWebhook webhook,
             Object object,
             String methodName,
             String string
     ) {
         if (object instanceof World) {
             return getWorld(
+                    webhook,
                     (World) object,
                     methodName,
                     string
             );
         } else if (object instanceof Location) {
             return getLocation(
+                    webhook,
                     (Location) object,
                     methodName,
                     string,
@@ -1121,18 +1179,21 @@ public class EventPlaceholders {
             );
         } else if (object instanceof Block) {
             return getBlock(
+                    webhook,
                     (Block) object,
                     methodName,
                     string
             );
         } else if (object instanceof ItemStack) {
             return getItem(
+                    webhook,
                     (ItemStack) object,
                     methodName,
                     string
             );
         } else if (object instanceof Material) {
             return getMaterial(
+                    webhook,
                     (Material) object,
                     methodName,
                     string
@@ -1140,6 +1201,7 @@ public class EventPlaceholders {
         } else if (object instanceof Entity) {
             if (object instanceof Player) {
                 return getPlayer(
+                        webhook,
                         (Player) object,
                         methodName,
                         string,
@@ -1148,6 +1210,7 @@ public class EventPlaceholders {
                 );
             } else if (object instanceof LivingEntity) {
                 return getLivingEntity(
+                        webhook,
                         (LivingEntity) object,
                         methodName,
                         string,
@@ -1156,6 +1219,7 @@ public class EventPlaceholders {
                 );
             } else {
                 return getEntity(
+                        webhook,
                         (Entity) object,
                         methodName,
                         string,
@@ -1164,7 +1228,12 @@ public class EventPlaceholders {
                 );
             }
         } else {
-            return getCustom(object, methodName, string);
+            return getCustom(
+                    webhook,
+                    object,
+                    methodName,
+                    string
+            );
         }
     }
 

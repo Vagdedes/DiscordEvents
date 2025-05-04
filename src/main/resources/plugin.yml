@@ -1,7 +1,7 @@
 name: BukkitDiscordWebhooks
 authors: [Evangelos Dedes @Vagdedes]
 main: ai.idealistic.bdw.Register
-version: 1.0.0
+version: 1.0.1
 website: https://builtbybit.com/resources/64165
 description: Bridge every Minecraft event to Discord with full control. No fluff. No coding. Just raw power.
 api-version: 1.13

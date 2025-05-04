@@ -38,6 +38,12 @@ public class DiscordWebhook {
             content,
             invalidation;
     @Getter
+    private String
+            trueText,
+            falseText,
+            nullText,
+            notImplementedText;
+    @Getter
     private boolean enabled;
     private double cooldown;
     private long expiration;
@@ -393,6 +399,7 @@ public class DiscordWebhook {
                             for (DiscordTemporaryField field : fieldsArray) {
                                 field.setName(
                                         EventPlaceholders.get(
+                                                this,
                                                 result,
                                                 methodName,
                                                 field.getName()
@@ -400,6 +407,7 @@ public class DiscordWebhook {
                                 );
                                 field.setValue(
                                         EventPlaceholders.get(
+                                                this,
                                                 result,
                                                 methodName,
                                                 field.getValue()
@@ -408,56 +416,67 @@ public class DiscordWebhook {
                             }
                         }
                         avatarURL = EventPlaceholders.get(
+                                this,
                                 result,
                                 methodName,
                                 avatarURL
                         );
                         color = EventPlaceholders.get(
+                                this,
                                 result,
                                 methodName,
                                 color
                         );
                         author = EventPlaceholders.get(
+                                this,
                                 result,
                                 methodName,
                                 author
                         );
                         authorURL = EventPlaceholders.get(
+                                this,
                                 result,
                                 methodName,
                                 authorURL
                         );
                         authorIconURL = EventPlaceholders.get(
+                                this,
                                 result,
                                 methodName,
                                 authorIconURL
                         );
                         title = EventPlaceholders.get(
+                                this,
                                 result,
                                 methodName,
                                 title
                         );
                         titleURL = EventPlaceholders.get(
+                                this,
                                 result,
                                 methodName,
                                 titleURL
                         );
                         description = EventPlaceholders.get(
+                                this,
                                 result,
                                 methodName,
                                 description
                         );
                         footer = EventPlaceholders.get(
+                                this,
                                 result,
                                 methodName,
                                 footer
                         );
                         footerIconURL = EventPlaceholders.get(
+                                this,
                                 result,
                                 methodName,
                                 footerIconURL
                         );
                         content = EventPlaceholders.get(
+                                this,
                                 result,
                                 methodName,
                                 content
@@ -554,6 +573,12 @@ public class DiscordWebhook {
                 methodCallBlacklist.put(method, true);
             }
         }
+
+        this.trueText = this.config.getString("text.true");
+        this.falseText = this.config.getString("text.false");
+        this.nullText = this.config.getString("text.null");
+        this.notImplementedText = this.config.getString("text.not_implemented");
+
         this.avatarURL = this.config.getString("webhook.avatar_url");
         this.color = this.config.getString("webhook.color");
         this.author = this.config.getString("webhook.author");

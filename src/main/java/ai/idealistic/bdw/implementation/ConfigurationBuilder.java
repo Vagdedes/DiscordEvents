@@ -50,6 +50,11 @@ public class ConfigurationBuilder {
         addOption("options.cooldown", 0.1);
         addOption("options.method_call_blacklist", "methodexample1, methodexample2");
 
+        addOption("text.true", "true");
+        addOption("text.false", "false");
+        addOption("text.null", "(null)");
+        addOption("text.not_implemented", "(method-missing)");
+
         addOption("webhook.avatar_url", "");
         addOption("webhook.color", "");
         addOption("webhook.author", "");
