@@ -682,4 +682,12 @@ public class DiscordWebhook {
         }
     }
 
+    public String escapeMarkdownAfterMethodCall(Object object) {
+        if (escapeMarkdownAfterMethodCall) {
+            return DiscordUtils.escapeMarkdown(object.toString());
+        } else {
+            return object.toString();
+        }
+    }
+
 }

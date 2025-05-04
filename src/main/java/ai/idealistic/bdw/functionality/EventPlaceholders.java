@@ -249,13 +249,13 @@ public class EventPlaceholders {
                 world.getName()
         ).replace(
                 prepare(method, prefix, "spawn-x"),
-                String.valueOf(world.getSpawnLocation().getX())
+                webhook.escapeMarkdownAfterMethodCall(world.getSpawnLocation().getX())
         ).replace(
                 prepare(method, prefix, "spawn-y"),
-                String.valueOf(world.getSpawnLocation().getY())
+                webhook.escapeMarkdownAfterMethodCall(world.getSpawnLocation().getY())
         ).replace(
                 prepare(method, prefix, "spawn-z"),
-                String.valueOf(world.getSpawnLocation().getZ())
+                webhook.escapeMarkdownAfterMethodCall(world.getSpawnLocation().getZ())
         ).replace(
                 prepare(method, prefix, "difficulty"),
                 world.getDifficulty().name().toLowerCase().replace("_", "-")
@@ -264,7 +264,7 @@ public class EventPlaceholders {
                 world.getEnvironment().name().toLowerCase().replace("_", "-")
         ).replace(
                 prepare(method, prefix, "seed"),
-                String.valueOf(world.getSeed())
+                webhook.escapeMarkdownAfterMethodCall(world.getSeed())
         ).replace(
                 prepare(method, prefix, "time"),
                 new Timestamp(world.getTime()).toString().substring(0, 19)
@@ -295,11 +295,9 @@ public class EventPlaceholders {
                 ArrayReader.toString(world.getGameRules())
         ).replace(
                 prepare(method, prefix, "border-size"),
-                String.valueOf(
-                        MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8)
-                                ? world.getWorldBorder().getSize()
-                                : webhook.getNotImplementedText()
-                )
+                MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8)
+                        ? webhook.escapeMarkdownAfterMethodCall(world.getWorldBorder().getSize())
+                        : webhook.getNotImplementedText()
         ).replace(
                 prepare(method, prefix, "has-raids"),
                 bool(webhook,
@@ -326,11 +324,9 @@ public class EventPlaceholders {
                 )
         ).replace(
                 prepare(method, prefix, "game-time"),
-                String.valueOf(
-                        MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)
-                                ? world.getGameTime()
-                                : webhook.getNotImplementedText()
-                )
+                MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)
+                        ? webhook.escapeMarkdownAfterMethodCall(world.getGameTime())
+                        : webhook.getNotImplementedText()
         );
         return string;
     }
@@ -373,34 +369,34 @@ public class EventPlaceholders {
 
         string = string.replace(
                 prepare(method, prefix, "x"),
-                String.valueOf(location.getX())
+                webhook.escapeMarkdownAfterMethodCall(location.getX())
         ).replace(
                 prepare(method, prefix, "y"),
-                String.valueOf(location.getY())
+                webhook.escapeMarkdownAfterMethodCall(location.getY())
         ).replace(
                 prepare(method, prefix, "z"),
-                String.valueOf(location.getZ())
+                webhook.escapeMarkdownAfterMethodCall(location.getZ())
         ).replace(
                 prepare(method, prefix, "block-x"),
-                String.valueOf(location.getBlockX())
+                webhook.escapeMarkdownAfterMethodCall(location.getBlockX())
         ).replace(
                 prepare(method, prefix, "block-y"),
-                String.valueOf(location.getBlockY())
+                webhook.escapeMarkdownAfterMethodCall(location.getBlockY())
         ).replace(
                 prepare(method, prefix, "block-z"),
-                String.valueOf(location.getBlockZ())
+                webhook.escapeMarkdownAfterMethodCall(location.getBlockZ())
         ).replace(
                 prepare(method, prefix, "yaw"),
-                String.valueOf(location.getYaw())
+                webhook.escapeMarkdownAfterMethodCall(location.getYaw())
         ).replace(
                 prepare(method, prefix, "pitch"),
-                String.valueOf(location.getPitch())
+                webhook.escapeMarkdownAfterMethodCall(location.getPitch())
         ).replace(
                 prepare(method, prefix, "chunk-x"),
-                String.valueOf(location.getBlockX() >> 4)
+                webhook.escapeMarkdownAfterMethodCall(location.getBlockX() >> 4)
         ).replace(
                 prepare(method, prefix, "chunk-z"),
-                String.valueOf(location.getBlockZ() >> 4)
+                webhook.escapeMarkdownAfterMethodCall(location.getBlockZ() >> 4)
         );
 
         string = getWorld(
@@ -511,10 +507,10 @@ public class EventPlaceholders {
 
         string = string.replace(
                 prepare(method, prefix, "amount"),
-                String.valueOf(itemStack.getAmount())
+                webhook.escapeMarkdownAfterMethodCall(itemStack.getAmount())
         ).replace(
                 prepare(method, prefix, "durability"),
-                String.valueOf(itemStack.getDurability())
+                webhook.escapeMarkdownAfterMethodCall(itemStack.getDurability())
         ).replace(
                 prepare(method, prefix, "type"),
                 itemStack.getType().name().toLowerCase().replace("_", "-")
@@ -529,7 +525,7 @@ public class EventPlaceholders {
                 )
         ).replace(
                 prepare(method, prefix, "enchantment-count"),
-                String.valueOf(itemStack.getEnchantments().size())
+                webhook.escapeMarkdownAfterMethodCall(itemStack.getEnchantments().size())
         ).replace(
                 prepare(method, prefix, "has-display-name"),
                 bool(
@@ -709,25 +705,25 @@ public class EventPlaceholders {
                 player.getName()
         ).replace(
                 prepare(method, prefix, "level"),
-                String.valueOf(player.getLevel())
+                webhook.escapeMarkdownAfterMethodCall(player.getLevel())
         ).replace(
                 prepare(method, prefix, "exp"),
-                String.valueOf(player.getExp())
+                webhook.escapeMarkdownAfterMethodCall(player.getExp())
         ).replace(
                 prepare(method, prefix, "is-player-time-relative"),
                 bool(webhook, player.isPlayerTimeRelative())
         ).replace(
                 prepare(method, prefix, "player-time"),
-                String.valueOf(player.getPlayerTime()) // todo
+                webhook.escapeMarkdownAfterMethodCall(player.getPlayerTime()) // todo
         ).replace(
                 prepare(method, prefix, "walk-speed"),
-                String.valueOf(player.getWalkSpeed())
+                webhook.escapeMarkdownAfterMethodCall(player.getWalkSpeed())
         ).replace(
                 prepare(method, prefix, "fly-speed"),
-                String.valueOf(player.getFlySpeed())
+                webhook.escapeMarkdownAfterMethodCall(player.getFlySpeed())
         ).replace(
                 prepare(method, prefix, "total-experience"),
-                String.valueOf(player.getTotalExperience())
+                webhook.escapeMarkdownAfterMethodCall(player.getTotalExperience())
         ).replace(
                 prepare(method, prefix, "is-invisible"),
                 bool(
@@ -737,11 +733,9 @@ public class EventPlaceholders {
                 )
         ).replace(
                 prepare(method, prefix, "is-invisible"),
-                String.valueOf(
-                        MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_18)
-                                ? player.getClientViewDistance()
-                                : webhook.getNotImplementedText()
-                )
+                MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_18)
+                        ? webhook.escapeMarkdownAfterMethodCall(player.getClientViewDistance())
+                        : webhook.getNotImplementedText()
         ).replace(
                 prepare(method, prefix, "big-head-image-url"),
                 "https://mc-heads.net/avatar/" + player.getName() + "/200"
@@ -810,10 +804,10 @@ public class EventPlaceholders {
         }
         string = string.replace(
                 prepare(method, prefix, "health"),
-                String.valueOf(entity.getHealth())
+                webhook.escapeMarkdownAfterMethodCall(entity.getHealth())
         ).replace(
                 prepare(method, prefix, "max-health"),
-                String.valueOf(entity.getMaxHealth())
+                webhook.escapeMarkdownAfterMethodCall(entity.getMaxHealth())
         ).replace(
                 prepare(method, prefix, "is-swimming"),
                 bool(
@@ -830,7 +824,7 @@ public class EventPlaceholders {
                 )
         ).replace(
                 prepare(method, prefix, "eye-height"),
-                String.valueOf(entity.getEyeHeight())
+                webhook.escapeMarkdownAfterMethodCall(entity.getEyeHeight())
         ).replace(
                 prepare(method, prefix, "is-leashed"),
                 bool(webhook, entity.isLeashed())
@@ -839,26 +833,24 @@ public class EventPlaceholders {
                 bool(webhook, entity.getCanPickupItems())
         ).replace(
                 prepare(method, prefix, "active-potion-effects"),
-                String.valueOf(entity.getActivePotionEffects().size())
+                webhook.escapeMarkdownAfterMethodCall(entity.getActivePotionEffects().size())
         ).replace(
                 prepare(method, prefix, "remove-when-far-away"),
                 bool(webhook, entity.getRemoveWhenFarAway())
         ).replace(
                 prepare(method, prefix, "last-damage"),
-                String.valueOf(entity.getLastDamage())
+                webhook.escapeMarkdownAfterMethodCall(entity.getLastDamage())
         ).replace(
                 prepare(method, prefix, "maximum-no-damage-ticks"),
-                String.valueOf(entity.getMaximumNoDamageTicks())
+                webhook.escapeMarkdownAfterMethodCall(entity.getMaximumNoDamageTicks())
         ).replace(
                 prepare(method, prefix, "no-damage-ticks"),
-                String.valueOf(entity.getNoDamageTicks())
+                webhook.escapeMarkdownAfterMethodCall(entity.getNoDamageTicks())
         ).replace(
                 prepare(method, prefix, "arrows-in-body"),
-                String.valueOf(
-                        MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)
-                                ? entity.getArrowsInBody()
-                                : webhook.getNotImplementedText()
-                )
+                MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)
+                        ? webhook.escapeMarkdownAfterMethodCall(entity.getArrowsInBody())
+                        : webhook.getNotImplementedText()
         ).replace(
                 prepare(method, prefix, "can-breathe-underwater"),
                 bool(
@@ -962,16 +954,16 @@ public class EventPlaceholders {
                 entity.getType().name().toLowerCase().replace("_", "-")
         ).replace(
                 prepare(method, prefix, "id"),
-                String.valueOf(entity.getEntityId())
+                webhook.escapeMarkdownAfterMethodCall(entity.getEntityId())
         ).replace(
                 prepare(method, prefix, "uuid"),
                 entity.getUniqueId().toString()
         ).replace(
                 prepare(method, prefix, "fall-distance"),
-                String.valueOf(entity.getFallDistance())
+                webhook.escapeMarkdownAfterMethodCall(entity.getFallDistance())
         ).replace(
                 prepare(method, prefix, "fire-ticks"),
-                String.valueOf(entity.getFireTicks())
+                webhook.escapeMarkdownAfterMethodCall(entity.getFireTicks())
         ).replace(
                 prepare(method, prefix, "is-valid"),
                 bool(webhook, entity.isValid())
@@ -990,31 +982,23 @@ public class EventPlaceholders {
                 )
         ).replace(
                 prepare(method, prefix, "ticks-lived"),
-                String.valueOf(
-                        entity.getTicksLived()
-                )
+                webhook.escapeMarkdownAfterMethodCall(entity.getTicksLived())
         ).replace(
                 prepare(method, prefix, "has-passenger"),
-                bool(
-                        webhook,
-                        entity.getPassenger() != null
-                )
+                bool(webhook, entity.getPassenger() != null)
         ).replace(
                 prepare(method, prefix, "max-fire-ticks"),
-                String.valueOf(
-                        entity.getMaxFireTicks()
-                )
+                webhook.escapeMarkdownAfterMethodCall(entity.getMaxFireTicks())
         ).replace(
                 prepare(method, prefix, "name"),
                 MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8)
-                        ? entity.getName()
+                        ? webhook.escapeMarkdownAfterMethodCall(entity.getName())
                         : webhook.getNullText()
         ).replace(
                 prepare(method, prefix, "custom-name"),
                 MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8)
-                        ? (entity.getCustomName() == null
-                        ? webhook.getNullText()
-                        : entity.getCustomName())
+                        && entity.getCustomName() != null
+                        ? webhook.escapeMarkdownAfterMethodCall(entity.getCustomName())
                         : webhook.getNullText()
         ).replace(
                 prepare(method, prefix, "custom-name-visible"),
@@ -1065,18 +1049,14 @@ public class EventPlaceholders {
                         : webhook.getNullText()
         ).replace(
                 prepare(method, prefix, "height"),
-                String.valueOf(
-                        MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)
-                                ? entity.getHeight()
-                                : webhook.getNullText()
-                )
+                MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)
+                        ? webhook.escapeMarkdownAfterMethodCall(entity.getHeight())
+                        : webhook.getNullText()
         ).replace(
                 prepare(method, prefix, "width"),
-                String.valueOf(
-                        MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)
-                                ? entity.getWidth()
-                                : webhook.getNullText()
-                )
+                MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)
+                        ? webhook.escapeMarkdownAfterMethodCall(entity.getWidth())
+                        : webhook.getNullText()
         ).replace(
                 prepare(method, prefix, "pose"),
                 MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)
@@ -1089,25 +1069,19 @@ public class EventPlaceholders {
                         : webhook.getNullText()
         ).replace(
                 prepare(method, prefix, "freeze-ticks"),
-                String.valueOf(
-                        MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)
-                                ? entity.getFreezeTicks()
-                                : webhook.getNotImplementedText()
-                )
+                MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)
+                        ? webhook.escapeMarkdownAfterMethodCall(entity.getFreezeTicks())
+                        : webhook.getNotImplementedText()
         ).replace(
                 prepare(method, prefix, "max-freeze-ticks"),
-                String.valueOf(
-                        MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)
-                                ? entity.getMaxFreezeTicks()
-                                : webhook.getNotImplementedText()
-                )
+                MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)
+                        ? webhook.escapeMarkdownAfterMethodCall(entity.getMaxFreezeTicks())
+                        : webhook.getNotImplementedText()
         ).replace(
                 prepare(method, prefix, "portal-cooldown"),
-                String.valueOf(
-                        MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)
-                                ? entity.getPortalCooldown()
-                                : webhook.getNotImplementedText()
-                )
+                MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)
+                        ? webhook.escapeMarkdownAfterMethodCall(entity.getPortalCooldown())
+                        : webhook.getNotImplementedText()
         );
         Entity vehicle = entity.getVehicle();
 
