@@ -7,6 +7,8 @@ import ai.idealistic.bdw.utils.*;
 import lombok.Getter;
 import org.bukkit.event.Event;
 import org.jetbrains.annotations.NotNull;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.lang.reflect.Method;
 import java.net.URLEncoder;
@@ -209,8 +211,7 @@ public class DiscordWebhook {
                             + "' is too long, must be 2000 characters or less"
             );
             return false;
-        } else if (description != null
-                && description.length() > 4096) {
+        } else if (description.length() > 4096) {
             AwarenessNotifications.send(
                     this.invalidation = "Description of the event '"
                             + getEventName()
@@ -218,8 +219,7 @@ public class DiscordWebhook {
                             + "' is too long, must be 2048 characters or less"
             );
             return false;
-        } else if (footer != null
-                && footer.length() > 2048) {
+        } else if (footer.length() > 2048) {
             AwarenessNotifications.send(
                     this.invalidation = "Footer name of the event '"
                             + getEventName()
@@ -227,8 +227,7 @@ public class DiscordWebhook {
                             + "' is too long, must be 2048 characters or less"
             );
             return false;
-        } else if (title != null
-                && title.length() > 256) {
+        } else if (title.length() > 256) {
             AwarenessNotifications.send(
                     this.invalidation = "Title of the event '"
                             + getEventName()
@@ -236,8 +235,7 @@ public class DiscordWebhook {
                             + "' is too long, must be 256 characters or less"
             );
             return false;
-        } else if (author != null
-                && author.length() > 256) {
+        } else if (author.length() > 256) {
             AwarenessNotifications.send(
                     this.invalidation = "Author name of the event '"
                             + getEventName()
@@ -474,32 +472,19 @@ public class DiscordWebhook {
                         );
                     }
                 }
+                JSONArray fields = new JSONArray();
+
+                if (!fieldsArray.isEmpty()) {
+                    for (DiscordTemporaryField field : fieldsArray) {
+                        JSONObject jsonObject = new JSONObject();
+                        jsonObject.put("name", field.getName());
+                        jsonObject.put("value", field.getValue());
+                        jsonObject.put("inline", field.isInline());
+                        fields.put(jsonObject);
+                    }
+                }
                 for (String url : webhookURLs.keySet()) {
                     try {
-                        StringBuilder fields = new StringBuilder();
-
-                        if (fieldsArray.isEmpty()) {
-                            fields.append("[]");
-                        } else {
-                            int count = 0;
-                            fields.append("[");
-
-                            for (DiscordTemporaryField field : fieldsArray) {
-                                count++;
-                                fields.append("{\"name\":\"")
-                                        .append(field.getName())
-                                        .append("\",\"value\":\"")
-                                        .append(field.getValue())
-                                        .append("\",\"inline\":")
-                                        .append(field.isInline())
-                                        .append("}");
-
-                                if (count < this.fields.size()) {
-                                    fields.append(",");
-                                }
-                            }
-                            fields.append("]");
-                        }
                         String[] strings = RequestUtils.get(
                                 "https://www.vagdedes.com/minecraft/cloud/"
                                         + "?identification=" + IDs.platform() + "|%%__USER__%%|%%__NONCE__%%"
@@ -594,21 +579,21 @@ public class DiscordWebhook {
             }
         }
         for (int i = 1; i <= DiscordWebhook.MAX_FIELDS; i++) {
-            String name = this.config.getString("webhook.field." + i + ".name");
+            String name = this.config.getString("webhook.fields." + i + ".name");
 
             if (name != null
                     && !name.isEmpty()) {
-                String value = this.config.getString("webhook.field." + i + ".value");
+                String value = this.config.getString("webhook.fields." + i + ".value");
 
                 if (value != null
                         && !value.isEmpty()) {
-                    boolean inline = this.config.getBoolean("webhook.field." + i + ".inline");
+                    boolean inline = this.config.getBoolean("webhook.fields." + i + ".inline");
                     this.fields.put(i, new DiscordField(name, value, inline));
                 } else {
                     this.fields.remove(i);
                 }
             } else {
-                this.fields.remove(i - 1);
+                this.fields.remove(i);
             }
         }
         this.invalidation = null;
