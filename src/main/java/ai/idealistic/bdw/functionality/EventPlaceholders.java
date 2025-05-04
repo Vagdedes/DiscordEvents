@@ -12,6 +12,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.lang.reflect.Method;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -1165,16 +1166,21 @@ public class EventPlaceholders {
             DiscordWebhook webhook,
             Object object,
             String methodName,
-            String string) {
+            Method method,
+            String string
+    ) {
         if (object == null) {
             string = string.replace(
                     "{" + methodName + customPlaceholder,
                     webhook.getNullText()
             );
         } else {
+            boolean isEnum = method.getReturnType().isEnum();
             string = string.replace(
                     "{" + methodName + customPlaceholder,
-                    object.toString()
+                    isEnum
+                            ? object.toString().toLowerCase().replace("_", "-")
+                            : object.toString()
             );
         }
         return string;
@@ -1184,6 +1190,7 @@ public class EventPlaceholders {
             DiscordWebhook webhook,
             Object object,
             String methodName,
+            Method method,
             String string
     ) {
         if (object instanceof World) {
@@ -1256,6 +1263,7 @@ public class EventPlaceholders {
                     webhook,
                     object,
                     methodName,
+                    method,
                     string
             );
         }

@@ -383,13 +383,14 @@ public class DiscordWebhook {
                 if (!this.methods.isEmpty()) {
                     for (Map.Entry<String, Method> entry : this.methods.entrySet()) {
                         String methodName = entry.getKey();
+                        Method method = entry.getValue();
                         Object result;
 
                         if (methodCallBlacklist.containsKey(methodName)) {
                             result = null;
                         } else {
                             try {
-                                result = entry.getValue().invoke(event);
+                                result = method.invoke(event);
                             } catch (Exception ignored) {
                                 result = null;
                             }
@@ -402,6 +403,7 @@ public class DiscordWebhook {
                                                 this,
                                                 result,
                                                 methodName,
+                                                method,
                                                 field.getName()
                                         )
                                 );
@@ -410,6 +412,7 @@ public class DiscordWebhook {
                                                 this,
                                                 result,
                                                 methodName,
+                                                method,
                                                 field.getValue()
                                         )
                                 );
@@ -419,66 +422,77 @@ public class DiscordWebhook {
                                 this,
                                 result,
                                 methodName,
+                                method,
                                 avatarURL
                         );
                         color = EventPlaceholders.get(
                                 this,
                                 result,
                                 methodName,
+                                method,
                                 color
                         );
                         author = EventPlaceholders.get(
                                 this,
                                 result,
                                 methodName,
+                                method,
                                 author
                         );
                         authorURL = EventPlaceholders.get(
                                 this,
                                 result,
                                 methodName,
+                                method,
                                 authorURL
                         );
                         authorIconURL = EventPlaceholders.get(
                                 this,
                                 result,
                                 methodName,
+                                method,
                                 authorIconURL
                         );
                         title = EventPlaceholders.get(
                                 this,
                                 result,
                                 methodName,
+                                method,
                                 title
                         );
                         titleURL = EventPlaceholders.get(
                                 this,
                                 result,
                                 methodName,
+                                method,
                                 titleURL
                         );
                         description = EventPlaceholders.get(
                                 this,
                                 result,
                                 methodName,
+                                method,
                                 description
                         );
                         footer = EventPlaceholders.get(
                                 this,
                                 result,
                                 methodName,
+                                method,
                                 footer
                         );
                         footerIconURL = EventPlaceholders.get(
                                 this,
                                 result,
                                 methodName,
+                                method,
                                 footerIconURL
                         );
                         content = EventPlaceholders.get(
                                 this,
                                 result,
                                 methodName,
+                                method,
                                 content
                         );
                     }
