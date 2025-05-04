@@ -189,57 +189,7 @@ public class DiscordWebhook {
                 }
             }
         }
-        if (!JavaURL.isValid(avatarURL, true)) {
-            AwarenessNotifications.send(
-                    this.invalidation = "Avatar URL '"
-                            + avatarURL
-                            + "' of the event '"
-                            + getEventName()
-                            + " (" + pluginName + ")"
-                            + "' is invalid"
-            );
-            return false;
-        } else if (!JavaURL.isValid(authorURL, true)) {
-            AwarenessNotifications.send(
-                    this.invalidation = "Author URL '"
-                            + authorURL
-                            + "' of the event '"
-                            + getEventName()
-                            + " (" + pluginName + ")"
-                            + "' is invalid"
-            );
-            return false;
-        } else if (!JavaURL.isValid(authorIconURL, true)) {
-            AwarenessNotifications.send(
-                    this.invalidation = "Author icon URL '"
-                            + authorIconURL
-                            + "' of the event '"
-                            + getEventName()
-                            + " (" + pluginName + ")"
-                            + "' is invalid"
-            );
-            return false;
-        } else if (!JavaURL.isValid(titleURL, true)) {
-            AwarenessNotifications.send(
-                    this.invalidation = "Title URL '"
-                            + titleURL
-                            + "' of the event '"
-                            + getEventName()
-                            + " (" + pluginName + ")"
-                            + "' is invalid"
-            );
-            return false;
-        } else if (!JavaURL.isValid(footerIconURL, true)) {
-            AwarenessNotifications.send(
-                    this.invalidation = "Footer icon URL '"
-                            + footerIconURL
-                            + "' of the event '"
-                            + getEventName()
-                            + " (" + pluginName + ")"
-                            + "' is invalid"
-            );
-            return false;
-        } else if (color != null
+        if (color != null
                 && color.length() != 6) {
             AwarenessNotifications.send(
                     this.invalidation = "Color '"
