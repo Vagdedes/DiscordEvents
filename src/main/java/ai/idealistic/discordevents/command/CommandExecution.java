@@ -90,12 +90,10 @@ public class CommandExecution implements CommandExecutor {
             if (!isPlayer
                     || Permissions.has((Player) sender, Permission.RELOAD)) {
                 sender.sendMessage("§a/" + Register.command + " reload");
-                sender.sendMessage("§a/" + Register.shortCommand + " reload");
             }
             if (!isPlayer
                     || Permissions.has((Player) sender, Permission.TOGGLE)) {
                 sender.sendMessage("§a/" + Register.command + " toggle <plugin-name> <event-name>");
-                sender.sendMessage("§a/" + Register.shortCommand + " toggle <plugin-name> <event-name>");
             }
             sender.sendMessage("");
         } else {
